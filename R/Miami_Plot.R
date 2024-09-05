@@ -371,6 +371,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 
 
+
   Top_Data <- Top_Data %>%
     dplyr::mutate(GENPOS = as.numeric(GENPOS), CHROM = as.numeric(CHROM))
 
