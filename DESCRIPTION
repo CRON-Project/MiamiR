@@ -21,7 +21,6 @@ Imports:
 biocViews: Visualization, Software
 Depends: 
     R (>= 2.10)
-    ggmanh (>= 1.8.0)
 LazyData: true
 Suggests: 
     knitr,
