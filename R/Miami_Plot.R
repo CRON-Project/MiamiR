@@ -372,10 +372,10 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 
   Top_Data <- Top_Data %>%
-    dplyr::mutate(GENPOS = as.numeric(POS), CHROM = as.numeric(CHR))
+    dplyr::mutate(GENPOS = as.numeric(GENPOS), CHROM = as.numeric(CHROM))
 
   Bottom_Data <- Bottom_Data %>%
-    dplyr::mutate(GENPOS = as.numeric(BPos), CHROM = as.numeric(Chr))
+    dplyr::mutate(GENPOS = as.numeric(GENPOS), CHROM = as.numeric(CHROM))
 
   # Create combined keys in both datasets
   Top_Data <- Top_Data %>%
