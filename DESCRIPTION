@@ -1,0 +1,27 @@
+Package: MiamiR
+Title: Create annotated Miami and Manhattan Plots from summary statistics
+Version: 0.0.0.9000
+Authors@R: 
+    person("Callum R", "O'Neill", , "spet5590@ox.ac.uk", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: What the package does (one paragraph).
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: 
+    biomaRt,
+    dplyr,
+    ggmanh,
+    ggplot2,
+    ggtext,
+    magrittr,
+    tidyr
+Depends: 
+    R (>= 2.10)
+LazyData: true
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
