@@ -18,8 +18,10 @@ Imports:
     ggtext,
     magrittr,
     tidyr
+biocViews: Visualization, Software
 Depends: 
     R (>= 2.10)
+    ggmanh
 LazyData: true
 Suggests: 
     knitr,
