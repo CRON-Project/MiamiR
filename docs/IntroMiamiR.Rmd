@@ -48,7 +48,7 @@ Here's how to create a sole Manhattan plot of our labelled summary statistics us
 
 ```{r, results="hide", warning = FALSE, message = FALSE}
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
 
 Manhattan_Plot <- Single_Plot(Data = Labelled_Data,
                         Chromosome_Column = "CHROM",
@@ -73,7 +73,7 @@ We have not annotated these data frames as they already have RS codes as their S
 
 ```{r, results="hide", warning = FALSE, message = FALSE}
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
 
 Miami_Plot <- Miami_Plot(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Household_Income_Sum_Stats,
                        Top_Chromosome_Column = "CHROM",
@@ -106,7 +106,7 @@ Here's how to create a Forest Plot centred around BETA values of key SNPs from o
 
 ```{r, results="hide", warning = FALSE, message = FALSE}
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
 
 
 Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats", "Intelligence_Sum_Stats"),
@@ -149,7 +149,7 @@ The MiamiR package also allows for the use of odds ratios (OR) as well, by modif
 
 ```{r, results="hide", warning = FALSE, message = FALSE}
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
 
 
 Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDementia_Sum_Stats"),
@@ -210,7 +210,7 @@ Now let's plot the covariate effects from the munged linear model data frame, in
 
 ```{r, results="hide", warning = FALSE, message = FALSE}
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
 
 
 Forest_Plot_Model_LM <- Forest_Plot(Data_Sets = c("ModelSumLM", "ModelSumLM"),
@@ -246,7 +246,7 @@ The MiamiR package also formats model plots based off of OR test statistics as w
 
 ```{r, results="hide", warning = FALSE, message = FALSE}
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
 
 
 Forest_Plot_Model_GLM <- Forest_Plot(Data_Sets = c("ModelSumGLM", "ModelSumGLM"),
