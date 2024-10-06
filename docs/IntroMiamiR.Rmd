@@ -1,12 +1,12 @@
 ---
 title: "Introduction To MiamiR"
-output: 
-  html_document:
-    fig_caption: yes
-    theme: cerulean
-    toc: yes
-    toc_depth: 3
-    toc_float: yes
+output: github_document
+  # html_document:
+  #   fig_caption: yes
+  #   theme: cerulean
+  #   toc: yes
+  #   toc_depth: 3
+  #   toc_float: yes
 ---
 
 ```{r, include = FALSE}
