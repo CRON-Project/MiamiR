@@ -72,7 +72,7 @@ object and a saved .jpg file.
 
 ``` r
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
+#setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
 
 Manhattan_Plot <- Single_Plot(Data = Labelled_Data,
                         Chromosome_Column = "CHROM",
@@ -104,7 +104,7 @@ assign these to a newly created Lab column.
 
 ``` r
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
+#setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
 
 Miami_Plot <- Miami_Plot(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Household_Income_Sum_Stats,
                        Top_Chromosome_Column = "CHROM",
@@ -141,7 +141,7 @@ Miami_Plot() function - it will return a plotting object and a saved
 
 ``` r
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
+#setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
 
 
 Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats", "Intelligence_Sum_Stats"),
@@ -169,14 +169,14 @@ Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats",
 )
 ```
 
-<img src="../Forest_Plot_Intelligence_Income.jpg" width="675px" />
+<img src="Forest_Plot_Intelligence_Income.jpg" width="675px" />
 
 The MiamiR package also allows for the use of odds ratios (OR) as well,
 by modifying the Test_Statistic argument in the Forest_Plot() function.
 
 ``` r
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
+
 
 
 Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDementia_Sum_Stats"),
@@ -205,7 +205,7 @@ Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDeme
 )
 ```
 
-<img src="../Dementia.jpg" width="675px" />
+<img src="Dementia.jpg" width="675px" />
 
 The MiamiR package also allows for the same figures to be produced but
 for covariate effects from the raw outputs of lm() or glm() models in
@@ -258,7 +258,7 @@ Model_Reference argument to TRUE in the Forest_Plot() function.
 
 ``` r
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
+#setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
 
 
 Forest_Plot_Model_LM <- Forest_Plot(Data_Sets = c("ModelSumLM", "ModelSumLM"),
@@ -280,7 +280,7 @@ Forest_Plot_Model_LM <- Forest_Plot(Data_Sets = c("ModelSumLM", "ModelSumLM"),
 )
 ```
 
-<img src="../Forest_Plot_LM.jpg" width="675px" />
+<img src="Forest_Plot_LM.jpg" width="675px" />
 
 The MiamiR package also formats model plots based off of OR test
 statistics as well. Let’s plot the glm, again via modifying the
@@ -288,7 +288,7 @@ Test_Statistic argument in the Forest_Plot function.
 
 ``` r
 
-setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
+#setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
 
 
 Forest_Plot_Model_GLM <- Forest_Plot(Data_Sets = c("ModelSumGLM", "ModelSumGLM"),
@@ -311,4 +311,4 @@ Forest_Plot_Model_GLM <- Forest_Plot(Data_Sets = c("ModelSumGLM", "ModelSumGLM")
 )
 ```
 
-<img src="../Forest_Plot_GLM.jpg" width="675px" />
+<img src="Forest_Plot_GLM.jpg" width="675px" />
