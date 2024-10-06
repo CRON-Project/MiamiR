@@ -1,10 +1,12 @@
 ---
 title: "Introduction To MiamiR"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Introduction_To_MiamiR}
-  %\VignetteEngine{knitr::rmarkdown}  
-  %\VignetteEncoding{UTF-8}
+output: 
+  html_document:
+    fig_caption: yes
+    theme: cerulean
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
 ---
 
 ```{r, include = FALSE}
@@ -58,7 +60,7 @@ Manhattan_Plot <- Single_Plot(Data = Labelled_Data,
 
 
 ```
-```{r, results="hide", warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=900, out.width="100%"}
+```{r, results="hide", warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
 # Your ggplot code here
 print(Manhattan_Plot)
 ```
@@ -89,7 +91,7 @@ Miami_Plot <- Miami_Plot(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househ
 
 
 
-```{r, results="hide", warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=900, out.width="100%"}
+```{r, results="hide", warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
 # Open a new page for grid drawing
 grid::grid.newpage()
 
