@@ -2,8 +2,7 @@ Installation:
 
 library(remotes)
 
-install_github("CRON-Project/MiamiR")
-
+BiocManager::install("CRON-Project/MiamiR")
 
 Usage:
 
