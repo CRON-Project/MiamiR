@@ -1,0 +1,281 @@
+---
+title: "Introduction To MiamiR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction_To_MiamiR}
+  %\VignetteEngine{knitr::rmarkdown}  
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Let's load in the MiamiR package.
+
+```{r setup}
+library(MiamiR)
+```
+
+Here's how to annotate the coordinates of your data with RSIDs for the index SNPs on each chromosome - these will be added to the data frame in a new column called Lab.
+
+We will be using the Intelligence_Sum_Stats data frame which is part of the MiamiR package
+and utilising the Annotate_Data() function to do this - it will return a modified data frame called Labelled_Data
+
+```{r, results="hide", warning = FALSE, message = FALSE}
+Labelled_Data <- Annotate_Data(Data = Intelligence_Sum_Stats,
+                        Chromosome_Column = "CHROM",
+                        Position_Column = "GENPOS", SNP_ID_Column = "ID",
+                        PValue_Column = "P", Build = "HG19")
+
+
+
+```
+
+Let's inspect the data before plotting:
+
+```{r}
+print(head(Labelled_Data, n = 10))
+```
+
+Here's how to create a sole Manhattan plot of our labelled summary statistics using the Single_Plot() function - it will return a plotting object and a saved .jpg file.
+
+
+```{r, results="hide", warning = FALSE, message = FALSE}
+
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+
+Manhattan_Plot <- Single_Plot(Data = Labelled_Data,
+                        Chromosome_Column = "CHROM",
+                        Position_Column = "GENPOS", SNP_ID_Column = "ID",
+                        PValue_Column = "P",
+                        Title = "Intelligence",
+                        Chromosome_Colours = c("blue", "turquoise"),
+                        File_Name = "Manhattan_Plot")
+
+
+```
+```{r, results="hide", warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=900, out.width="100%"}
+# Your ggplot code here
+print(Manhattan_Plot)
+```
+
+Here's how to create a Miami plot of a pair of summary statistics using the Miami_Plot() function - it will return a plotting object and a saved .jpg file.
+
+We will be using the Intelligence_Sum_Stats and Household_Income_Sum_Stats data frames which are part of the MiamiR package.
+
+We have not annotated these data frames as they already have RS codes as their SNP IDs and the MiamiR package will automatically detect this and assign these to a newly created Lab column.
+
+```{r, results="hide", warning = FALSE, message = FALSE}
+
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+
+Miami_Plot <- Miami_Plot(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Household_Income_Sum_Stats,
+                       Top_Chromosome_Column = "CHROM",
+                       Top_Position_Column = "GENPOS", Top_SNP_ID_Column = "ID",
+                       Top_PValue_Column = "P",
+                       Top_Colour_One = "green", Top_Colour_Two = "purple",
+                       Bottom_Colour_One = "green", Bottom_Colour_Two = "purple",
+                       Bottom_Chromosome_Column = "CHROM",
+                       Bottom_Position_Column = "GENPOS", Bottom_SNP_ID_Column = "ID",
+                       Bottom_PValue_Column = "P",
+                       Top_Title = "Intelligence", Bottom_Title = "Household Income",
+                       File_Name = "Miami_Plot", Width = 30, Height = 15, Quality = 900,
+                       File_Type = "jpg")
+```
+
+
+
+```{r, results="hide", warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=900, out.width="100%"}
+# Open a new page for grid drawing
+grid::grid.newpage()
+
+# Draw the Miami_Plot grid object
+grid::grid.draw(Miami_Plot)
+
+```
+
+The MiamiR package can also be used to inspect key SNPs in single or multiple sets of GWAS summary statistics by using the Forest_Plot() function.
+
+Here's how to create a Forest Plot centred around BETA values of key SNPs from our previously described pair of summary statistics using the Miami_Plot() function - it will return a plotting object and a saved .jpg file.
+
+```{r, results="hide", warning = FALSE, message = FALSE}
+
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+
+
+Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats", "Intelligence_Sum_Stats"),
+                        Names = c("Income", "IQ"),
+                        Model_Reference = FALSE,
+                        Line_Space = 1.5,
+                        Border_Space_Right = 40,
+                        Border_Space_Left = 20,
+                        Test_Statistic = "BETA", #could be OR
+                        Display_Test_Stat_Se_Column = TRUE,
+                        Display_P_Value_Column = TRUE,
+                        X_Axis_Separation = 0.01,
+                        Pre_Calculated_CIs = FALSE,
+                        X_Axis_Text_Resolution = 2,
+                        Legend_Title = "Study",
+                        Left_Title = "SNP",
+                        P_Value_Title = "p-value",
+                        Test_Stat_Se_Title = "BETA (SE)",
+                        Match_Allele_Direction = TRUE,
+                        Match_Allele_Study = "Household_Income_Sum_Stats",
+                        Selected_SNPs = c("rs74832835",  "rs1157671",   "rs1790177",
+                                          "rs9508063",   "rs225682",  "rs56201315" ),
+             File_Name = "Forest_Plot_Intelligence_Income", Width =10, Height = 6, Quality = 900,
+                        File_Type = "jpg"
+)
+```
+
+
+```{r echo=FALSE, fig.fullwidth=TRUE,  out.width = "675px"}
+# Include the saved image in the document
+knitr::include_graphics(
+  "C:/Users/callumon/Miami_Package_R/MiamiR/Forest_Plot_Intelligence_Income.jpg")  # Set to match saved height
+
+
+
+```
+
+
+The MiamiR package also allows for the use of odds ratios (OR) as well, by modifying the Test_Statistic argument in the Forest_Plot() function.
+
+```{r, results="hide", warning = FALSE, message = FALSE}
+
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+
+
+Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDementia_Sum_Stats"),
+                                     Names = c("Dementia (1)", "Dementia (2)"),
+                                     Model_Reference = FALSE,
+                                     Line_Space = 1.1,
+                                     Border_Space_Left = 7,
+                                     Border_Space_Right = 30,
+                                     X_Axis_Text_Resolution = 2,
+                                     Test_Statistic = "OR",
+                                     Display_P_Value_Column = TRUE,
+                                     Display_Test_Stat_CI_Column = TRUE,
+                                     X_Axis_Separation = 0.2,
+                                     Pre_Calculated_CIs = FALSE,
+                                     Legend_Title = "Study",
+                                     Left_Title = "SNP",
+                                     P_Value_Title = "p-value",
+                                     Test_Stat_Se_Title = "OR (CI)",
+                                     Match_Allele_Direction = TRUE,
+                                     Match_Allele_Study = "LbDementia_Sum_Stats",
+                                     Selected_SNPs = c("rs59867714","rs7913723","rs79007041",
+                                                       "rs34624328", "rs492457",
+                                                       "rs7974838"  ),
+                               File_Name = "Dementia", Width =10, Height = 6, Quality = 900,
+                                     File_Type = "jpg"
+)
+
+
+```
+
+```{r echo=FALSE, fig.fullwidth=TRUE,  out.width = "675px"}
+
+
+# Include the saved image in the document
+knitr::include_graphics("C:/Users/callumon/Miami_Package_R/MiamiR/Dementia.jpg")  # Set to match saved height
+
+
+```
+
+The MiamiR package also allows for the same figures to be produced but for covariate effects from the raw outputs of lm() or glm() models in base R, when saved as objects and munged, using the Model_Munge() function before using the Forest_Plot() function.
+
+Here's how to process both glm and lm model objects. We will be using the Model and Model2 regression model objects which are part of the MiamiR package, which are linear and logistic regression models of Dementia diagnoses and BMI measures, respectively, based off of simulated data called Fake_Demo_Data, also available in the MiamiR package.
+
+```{r, results="hide", warning = FALSE, message = FALSE}
+
+ModelSumGLM <- Model_Munge(Model_Object = "Model", Model_Type = "glm") #Dementia
+ModelSumLM <- Model_Munge(Model_Object = "Model2",  Model_Type = "lm") # BMI
+```
+
+Let's inspect the data before plotting:
+
+```{r}
+print(ModelSumGLM)
+print(ModelSumLM)
+```
+
+Now let's plot the covariate effects from the munged linear model data frame, indicating that we are using a munged model object by setting the Model_Reference argument to TRUE in the Forest_Plot() function.
+
+```{r, results="hide", warning = FALSE, message = FALSE}
+
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+
+
+Forest_Plot_Model_LM <- Forest_Plot(Data_Sets = c("ModelSumLM", "ModelSumLM"),
+                                     Names = c("BMI LM (1)", "BMI LM (2)"),
+                                     Model_Reference = TRUE,
+                                     Test_Statistic = "BETA", #could be OR
+                                     Display_P_Value_Column = TRUE,
+                                     Display_Test_Stat_Se_Column = TRUE,
+                                     X_Axis_Separation = 0.8,
+                                     Border_Space_Left = 30,
+                                     Border_Space_Right = 75,
+                                     Strips = TRUE,
+                                     Pre_Calculated_CIs = FALSE,
+                                     Legend_Title = "Model",
+                                     Left_Title = "Covariate",
+                                     Test_Stat_Se_Title = "BETA (SE)",
+                         File_Name = "Forest_Plot_LM", Width =10, Height = 6, Quality = 900,
+                                     File_Type = "jpg"
+)
+
+```
+
+```{r echo=FALSE, fig.fullwidth=TRUE,  out.width = "675px"}
+
+
+# Include the saved image in the document
+knitr::include_graphics("C:/Users/callumon/Miami_Package_R/MiamiR/Forest_Plot_LM.jpg")  # Set to match saved height
+
+
+```
+
+The MiamiR package also formats model plots based off of OR test statistics as well. Let's plot the glm, again via modifying the Test_Statistic argument in the Forest_Plot function.
+
+```{r, results="hide", warning = FALSE, message = FALSE}
+
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+
+
+Forest_Plot_Model_GLM <- Forest_Plot(Data_Sets = c("ModelSumGLM", "ModelSumGLM"),
+                        Names = c("Dementia GLM (1)", "Dementia GLM (2)"),
+                        Model_Reference = TRUE,
+                        Test_Statistic = "OR",
+                        X_Axis_Text_Resolution = 2,
+                        Border_Space_Left = 2.8,
+                        Border_Space_Right = 4.7,
+                        Display_Test_Stat_CI_Column = TRUE,
+                        Display_P_Value_Column = TRUE,
+                        X_Axis_Separation = 0.02,
+                        Pre_Calculated_CIs = FALSE,
+                        Legend_Title = "Model",
+                        Left_Title = "Covariate",
+                        P_Value_Title = "p-value",
+                        Test_Stat_Se_Title = "OR (CI)",
+                        File_Name = "Forest_Plot_GLM", Width =10, Height = 6, Quality = 900,
+                        File_Type = "jpg"
+)
+
+
+```
+
+
+```{r echo=FALSE, fig.fullwidth=TRUE,  out.width = "675px"}
+
+
+# Include the saved image in the document
+knitr::include_graphics("C:/Users/callumon/Miami_Package_R/MiamiR/Forest_Plot_GLM.jpg")  # Set to match saved height
+
+
+```
+
