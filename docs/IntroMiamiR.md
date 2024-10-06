@@ -169,7 +169,7 @@ Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats",
 )
 ```
 
-<img src="Forest_Plot_Intelligence_Income.jpg" width="675px" />
+<img src="IntroMiamiR_files/figure-gfm/Forest_Plot_Intelligence_Income.jpg" width="675px" />
 
 The MiamiR package also allows for the use of odds ratios (OR) as well,
 by modifying the Test_Statistic argument in the Forest_Plot() function.
@@ -205,7 +205,7 @@ Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDeme
 )
 ```
 
-<img src="Dementia.jpg" width="675px" />
+<img src="IntroMiamiR_files/figure-gfm/Dementia.jpg" width="675px" />
 
 The MiamiR package also allows for the same figures to be produced but
 for covariate effects from the raw outputs of lm() or glm() models in
@@ -280,7 +280,7 @@ Forest_Plot_Model_LM <- Forest_Plot(Data_Sets = c("ModelSumLM", "ModelSumLM"),
 )
 ```
 
-<img src="Forest_Plot_LM.jpg" width="675px" />
+<img src="IntroMiamiR_files/figure-gfm/Forest_Plot_LM.jpg" width="675px" />
 
 The MiamiR package also formats model plots based off of OR test
 statistics as well. Let’s plot the glm, again via modifying the
@@ -311,4 +311,4 @@ Forest_Plot_Model_GLM <- Forest_Plot(Data_Sets = c("ModelSumGLM", "ModelSumGLM")
 )
 ```
 
-<img src="Forest_Plot_GLM.jpg" width="675px" />
+<img src="IntroMiamiR_files/figure-gfm/Forest_Plot_GLM.jpg" width="675px" />

@@ -138,7 +138,7 @@ Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats",
 ```{r echo=FALSE, fig.fullwidth=TRUE,  out.width = "675px"}
 # Include the saved image in the document
 knitr::include_graphics(
-  "Forest_Plot_Intelligence_Income.jpg")  # Set to match saved height
+  "IntroMiamiR_files/figure-gfm/Forest_Plot_Intelligence_Income.jpg")  # Set to match saved height
 
 
 
@@ -184,7 +184,7 @@ Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDeme
 
 
 # Include the saved image in the document
-knitr::include_graphics("Dementia.jpg")  # Set to match saved height
+knitr::include_graphics("IntroMiamiR_files/figure-gfm/Dementia.jpg")  # Set to match saved height
 
 
 ```
@@ -237,7 +237,7 @@ Forest_Plot_Model_LM <- Forest_Plot(Data_Sets = c("ModelSumLM", "ModelSumLM"),
 
 
 # Include the saved image in the document
-knitr::include_graphics("Forest_Plot_LM.jpg")  # Set to match saved height
+knitr::include_graphics("IntroMiamiR_files/figure-gfm/Forest_Plot_LM.jpg")  # Set to match saved height
 
 
 ```
@@ -276,7 +276,9 @@ Forest_Plot_Model_GLM <- Forest_Plot(Data_Sets = c("ModelSumGLM", "ModelSumGLM")
 
 
 # Include the saved image in the document
-knitr::include_graphics("Forest_Plot_GLM.jpg")  # Set to match saved height
+knitr::include_graphics("IntroMiamiR_files/figure-gfm/Forest_Plot_GLM.jpg")  # Set to match saved height
+
+
 
 
 ```
