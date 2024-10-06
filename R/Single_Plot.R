@@ -128,8 +128,11 @@ Single_Plot <- function(Data = Intelligence_Sum_Stats,
   }
 
 
-  allowed_names_pos <- c("POS", "pos", "Pos", "Position", "position", "POSITION", "genpos", "GENPOS",
+
+  allowed_names_pos <- c("POS", "pos", "Pos", "BP", "BPos", "bpos", "BPOS", "bPos",
+                         "Position", "position", "POSITION", "genpos", "GENPOS",
                          "Genpos")
+
 
   for (allowed_name in allowed_names_pos) {
     if (allowed_name %in% colnames(Data)) {

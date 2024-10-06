@@ -718,7 +718,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   # Combine the two grobs using rbind
   combined_grob <- rbind(gA, gB, size = "first")
 
-return(combined_grob)
+
 
 
 
@@ -733,7 +733,7 @@ return(combined_grob)
          height = Height, units = "in", dpi = Quality)
 
 
-
+  return(combined_grob) # has to be at end
 }
 
 

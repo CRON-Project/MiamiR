@@ -1,25 +1,31 @@
 .onAttach <- function(libname, pkgname) {
   manhattan_plot_diagram <- "
-    ┌───────────────────────────────────────────────────┐
-    │                                                   │
-    │                      MiamiR                       │
-    │                                                   │
-    │       █          █                                │
-    │       █          █        █                       │
-    │       █   █      █        █                       │
-    │   █   █   █      █    █   █                  █    │
-    │   █   █   █      █    █   █    █             █    │
-    │   █   █   █      █    █   █    █   █         █    │
-    │ █ █ █ █ █ █      █ █  █ █ █ █  █   █   █     █    │
-    │ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ │
-    │ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ │
-    └───────────────────────────────────────────────────┘
+
+    +-------------------------------------+
+    |                MiamiR               |
+    |                                     |
+    |                                     |
+    |   *           *                     |
+    |   *           *         *           |
+    |   *    *      *         *           |
+    | * *    *      *    *    *     *     |
+    | * *    *      *    *    *     *     |
+    | * *    *      *    *    *     *     |
+    | * * * * * * * * * * * * * * * * * * |
+    | * * * * * * * * * * * * * * * * * * |
+    | * * * * * * * * * * * * * * * * * * |
+    +-------------------------------------+
+
   "
 
   packageStartupMessage(manhattan_plot_diagram)
-  packageStartupMessage("Thank you for using MiamiR! Citation not required, but greatly appreciated :)")
-  packageStartupMessage("Visit Github for requests, feedback, and info, and the www.theCRONproject.com for more data visualisation examples.")
-}
+  packageStartupMessage("Thank you for using MiamiR!")
+  packageStartupMessage("Citation not required, but greatly appreciated :)")
+  packageStartupMessage("Visit Github (https://github.com/CRON-Project/MiamiR) for requests, feedback, and info.")
+  packageStartupMessage("Visit www.theCRONproject.com for more data visualisation examples.")
+  packageStartupMessage("\n")
+
+    }
 
 
 #Need non-CRAN ggmanh first

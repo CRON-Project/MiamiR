@@ -3,25 +3,29 @@ Title: Create annotated Miami and Manhattan Plots from summary statistics
 Version: 0.0.0.9000
 Authors@R: 
     person("Callum R", "O'Neill", , "spet5590@ox.ac.uk", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+           comment = c(ORCID = "0000-0003-1903-6348"))
+Description: The MiamiR package currently enables flexible and complex Manhattan, Miami and Forest Plotting in addition to SNP annotation and model processing.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
+    BiocManager,
     biomaRt,
     dplyr,
+    forcats,
+    ggh4x,
     ggmanh,
     ggplot2,
     ggtext,
+    grid,
     magrittr,
-    tidyr
+    scales
 biocViews: Visualization, Software
 Depends: 
     R (>= 2.10)
 LazyData: true
+LazyDataCompression: xz
 Suggests: 
     knitr,
     rmarkdown

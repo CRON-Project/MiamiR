@@ -31,9 +31,9 @@ Annotate_Data <- function(Data = Intelligence_Sum_Stats,
 {
 
 
-  allowed_names_chromosomes <- c("A0", "A2", "REF", "a0", "a2", "ref", "Reference", "reference", "allele0", "allele2", "ALLELE0", "ALLELE2")
+  allowed_names_reference_allele <- c("A0", "A2", "REF", "a0", "a2", "Non_effect_Allele", "ref", "Reference", "reference", "allele0", "allele2", "ALLELE0", "ALLELE2")
 
-  for (allowed_name in allowed_names_chromosomes) {
+  for (allowed_name in allowed_names_reference_allele) {
     if (allowed_name %in% colnames(Data)) {
       usable_ref_allele <- colnames(Data)[which(colnames(Data) == allowed_name)]
       break
@@ -47,9 +47,9 @@ Annotate_Data <- function(Data = Intelligence_Sum_Stats,
 
 
 
-  allowed_names_chromosomes <- c("A1", "REF", "a1", "ref", "Reference", "reference", "allele1", "ALLELE1")
+  allowed_names_effect_allele <- c("A1", "ALT", "a1", "alt", "Alternate", "Effect_Allele", "alternate", "allele1", "ALLELE1")
 
-  for (allowed_name in allowed_names_chromosomes) {
+  for (allowed_name in allowed_names_effect_allele) {
     if (allowed_name %in% colnames(Data)) {
       usable_effect_allele <- colnames(Data)[which(colnames(Data) == allowed_name)]
       break
