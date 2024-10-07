@@ -282,6 +282,8 @@ Forest_Plot_Model_LM <- Forest_Plot(Data_Sets = c("ModelSumLM", "ModelSumLM"),
 )
 ```
 
+<img src="Forest_Plot_LM.jpg" width="675px" />
+
 The MiamiR package also formats model plots based off of OR test
 statistics as well. Let’s plot the glm, again via modifying the
 Test_Statistic argument in the Forest_Plot function.
