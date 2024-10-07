@@ -27,6 +27,56 @@ Here's how to annotate the coordinates of your data with RSIDs for the index SNP
 We will be using the Intelligence_Sum_Stats data frame which is part of the MiamiR package
 and utilising the Annotate_Data() function to do this - it will return a modified data frame called Labelled_Data
 
+
+```{r, results="hide", warning = FALSE, message = FALSE}
+
+#setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
+
+
+Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats", "Intelligence_Sum_Stats"),
+                        Names = c("Income", "IQ"),
+                        Model_Reference = FALSE,
+                        Line_Space = 1.5,
+                        Border_Space_Right = 40,
+                        Border_Space_Left = 20,
+                        Test_Statistic = "BETA", #could be OR
+                        Display_Test_Stat_Se_Column = TRUE,
+                        Display_P_Value_Column = TRUE,
+                        X_Axis_Separation = 0.01,
+                        Pre_Calculated_CIs = FALSE,
+                        X_Axis_Text_Resolution = 2,
+                        Legend_Title = "Study",
+                        Left_Title = "SNP",
+                        P_Value_Title = "p-value",
+                        Test_Stat_Se_Title = "BETA (SE)",
+                        Match_Allele_Direction = TRUE,
+                        Match_Allele_Study = "Household_Income_Sum_Stats",
+                        Selected_SNPs = c("rs74832835",  "rs1157671",   "rs1790177",
+                                          "rs9508063",   "rs225682",  "rs56201315" ),
+             File_Name = "Forest_Plot_Intelligence_Income", Width =10, Height = 6, Quality = 900,
+                        File_Type = "jpg"
+)
+
+```
+
+
+```{r, results="hide", warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+
+
+print(Forest_Plot_SNPs_BETA)
+
+```
+
+
+```{r}
+# Include the saved image in the document
+knitr::include_graphics(
+  "IntroMiamiR_files/figure-gfm/Forest_Plot_Intelligence_Income.jpg")  # Set to match saved height
+
+
+
+```
+
 ```{r, results="hide", warning = FALSE, message = FALSE}
 Labelled_Data <- Annotate_Data(Data = Intelligence_Sum_Stats,
                         Chromosome_Column = "CHROM",
@@ -132,10 +182,19 @@ Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats",
              File_Name = "Forest_Plot_Intelligence_Income", Width =10, Height = 6, Quality = 900,
                         File_Type = "jpg"
 )
+
 ```
 
 
-```{r echo=FALSE, fig.fullwidth=TRUE,  out.width = "675px"}
+```{r, results="hide", warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+
+
+print(Forest_Plot_SNPs_BETA)
+
+```
+
+
+```{r}
 # Include the saved image in the document
 knitr::include_graphics(
   "IntroMiamiR_files/figure-gfm/Forest_Plot_Intelligence_Income.jpg")  # Set to match saved height

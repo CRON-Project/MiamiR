@@ -39,6 +39,52 @@ the MiamiR package and utilising the Annotate_Data() function to do
 this - it will return a modified data frame called Labelled_Data
 
 ``` r
+
+#setwd("C:/Users/callumon/Miami_Package_R/MiamiR/docs")
+
+
+Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats", "Intelligence_Sum_Stats"),
+                        Names = c("Income", "IQ"),
+                        Model_Reference = FALSE,
+                        Line_Space = 1.5,
+                        Border_Space_Right = 40,
+                        Border_Space_Left = 20,
+                        Test_Statistic = "BETA", #could be OR
+                        Display_Test_Stat_Se_Column = TRUE,
+                        Display_P_Value_Column = TRUE,
+                        X_Axis_Separation = 0.01,
+                        Pre_Calculated_CIs = FALSE,
+                        X_Axis_Text_Resolution = 2,
+                        Legend_Title = "Study",
+                        Left_Title = "SNP",
+                        P_Value_Title = "p-value",
+                        Test_Stat_Se_Title = "BETA (SE)",
+                        Match_Allele_Direction = TRUE,
+                        Match_Allele_Study = "Household_Income_Sum_Stats",
+                        Selected_SNPs = c("rs74832835",  "rs1157671",   "rs1790177",
+                                          "rs9508063",   "rs225682",  "rs56201315" ),
+             File_Name = "Forest_Plot_Intelligence_Income", Width =10, Height = 6, Quality = 900,
+                        File_Type = "jpg"
+)
+```
+
+``` r
+
+
+print(Forest_Plot_SNPs_BETA)
+```
+
+<img src="IntroMiamiR_files/figure-gfm/unnamed-chunk-3-1.png" width="100%" />
+
+``` r
+# Include the saved image in the document
+knitr::include_graphics(
+  "IntroMiamiR_files/figure-gfm/Forest_Plot_Intelligence_Income.jpg")  # Set to match saved height
+```
+
+<img src="IntroMiamiR_files/figure-gfm/Forest_Plot_Intelligence_Income.jpg" width="9000" />
+
+``` r
 Labelled_Data <- Annotate_Data(Data = Intelligence_Sum_Stats,
                         Chromosome_Column = "CHROM",
                         Position_Column = "GENPOS", SNP_ID_Column = "ID",
@@ -88,7 +134,7 @@ Manhattan_Plot <- Single_Plot(Data = Labelled_Data,
 print(Manhattan_Plot)
 ```
 
-<img src="IntroMiamiR_files/figure-gfm/unnamed-chunk-5-1.png" width="100%" />
+<img src="IntroMiamiR_files/figure-gfm/unnamed-chunk-8-1.png" width="100%" />
 
 Here’s how to create a Miami plot of a pair of summary statistics using
 the Miami_Plot() function - it will return a plotting object and a saved
@@ -128,7 +174,7 @@ grid::grid.newpage()
 grid::grid.draw(Miami_Plot)
 ```
 
-<img src="IntroMiamiR_files/figure-gfm/unnamed-chunk-7-1.png" width="100%" />
+<img src="IntroMiamiR_files/figure-gfm/unnamed-chunk-10-1.png" width="100%" />
 
 The MiamiR package can also be used to inspect key SNPs in single or
 multiple sets of GWAS summary statistics by using the Forest_Plot()
@@ -169,7 +215,21 @@ Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats",
 )
 ```
 
-<img src="IntroMiamiR_files/figure-gfm/Forest_Plot_Intelligence_Income.jpg" width="675px" />
+``` r
+
+
+print(Forest_Plot_SNPs_BETA)
+```
+
+<img src="IntroMiamiR_files/figure-gfm/unnamed-chunk-12-1.png" width="100%" />
+
+``` r
+# Include the saved image in the document
+knitr::include_graphics(
+  "IntroMiamiR_files/figure-gfm/Forest_Plot_Intelligence_Income.jpg")  # Set to match saved height
+```
+
+<img src="IntroMiamiR_files/figure-gfm/Forest_Plot_Intelligence_Income.jpg" width="9000" />
 
 The MiamiR package also allows for the use of odds ratios (OR) as well,
 by modifying the Test_Statistic argument in the Forest_Plot() function.
