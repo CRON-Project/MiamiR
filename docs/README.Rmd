@@ -67,15 +67,6 @@ Manhattan_Plot <- Single_Plot(Data = Labelled_Data,
 print(Manhattan_Plot)
 ```
 
-```{r echo=FALSE, fig.fullwidth=TRUE,  out.width = "675px"}
-
-
-# Include the saved image in the document
-knitr::include_graphics("Manhattan_Plot.jpg")  # Set to match saved height
-
-```
-
-
 Here's how to create a Miami plot of a pair of summary statistics using the Miami_Plot() function - it will return a plotting object and a saved .jpg file.
 
 We will be using the Intelligence_Sum_Stats and Household_Income_Sum_Stats data frames which are part of the MiamiR package.
@@ -111,17 +102,11 @@ grid::grid.draw(Miami_Plot)
 
 ```
 
-```{r echo=FALSE, fig.fullwidth=TRUE,  out.width = "675px"}
-
-# Include the saved image in the document
-knitr::include_graphics("Miami_Plot.jpg")  # Set to match saved height
-
-
-```
 
 The MiamiR package can also be used to inspect key SNPs in single or multiple sets of GWAS summary statistics by using the Forest_Plot() function.
 
 Here's how to create a Forest Plot centred around BETA values of key SNPs from our previously described pair of summary statistics using the Miami_Plot() function - it will return a plotting object and a saved .jpg file.
+
 
 ```{r, results="hide", warning = FALSE, message = FALSE}
 
@@ -252,16 +237,6 @@ Forest_Plot_Model_LM <- Forest_Plot(Data_Sets = c("ModelSumLM", "ModelSumLM"),
                                      File_Type = "jpg"
 )
 
-```
-
-```{r, results="hide", warning = FALSE, message = FALSE}
-
-
-# Include the saved image in the document
-#knitr::include_graphics("Forest_Plot_LM.jpg")  # Set to match saved height
-
-
-print(Forest_Plot_Model_LM)
 ```
 
 The MiamiR package also formats model plots based off of OR test statistics as well. Let's plot the glm, again via modifying the Test_Statistic argument in the Forest_Plot function.
