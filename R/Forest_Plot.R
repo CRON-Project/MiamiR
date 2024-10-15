@@ -889,7 +889,7 @@ if(Match_Allele_Direction == T)
     dplyr::mutate(
       RS = ifelse(
         grepl("Ref:", Left_Plot_Value),  # Check if 'Ref:' appears anywhere in 'Left_Plot_Value'
-        sub("-", "-A", RS),              # Insert 'A' after the first hyphen in 'RS'
+        sub("-", "-11A", RS),              # Insert 'A' after the first hyphen in 'RS'
         RS                               # Leave 'RS' unchanged otherwise
       )
     )
