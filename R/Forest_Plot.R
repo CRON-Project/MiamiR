@@ -961,16 +961,16 @@ if(Match_Allele_Direction == T)
   }
 
 
-  if(Test_Statistic == "OR")
-  {
-    # Use log10 scaling to adjust left and right limits more symmetrically
-    # Add a small proportion based on the log values to create space
-    mincalcL <- log10(midmaxneg) - (0.01 * log10(midmaxneg)) * (1 + (Line_Space/100))
-    mincalcLFull <- mincalcL / (1 + (Border_Space_Left/100))
-
-    mincalcR <- log10(midmaxpos) + (0.01 * log10(midmaxneg)) * (1 + (Line_Space/100))
-    mincalcRFull <- mincalcR * (1 + (Border_Space_Right/100))
-  }
+  # if(Test_Statistic == "OR")
+  # {
+  #   # Use log10 scaling to adjust left and right limits more symmetrically
+  #   # Add a small proportion based on the log values to create space
+  #   mincalcL <- log10(midmaxneg) - (0.01 * log10(midmaxneg)) * (1 + (Line_Space/100))
+  #   mincalcLFull <- mincalcL / (1 + (Border_Space_Left/100))
+  #
+  #   mincalcR <- log10(midmaxpos) + (0.01 * log10(midmaxneg)) * (1 + (Line_Space/100))
+  #   mincalcRFull <- mincalcR * (1 + (Border_Space_Right/100))
+  # }
 
 
   midmaxneg1dp <- round(midmaxneg, 2)
