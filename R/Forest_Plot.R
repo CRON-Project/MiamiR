@@ -1359,7 +1359,7 @@ if(Match_Allele_Direction == T)
     # Adjust the space padding based on the length of the exponent part
     res$P_BETA_SE <- ifelse(
       nchar(gsub(".*e[\\+\\-]([0-9]+)", "\\1", res_plot$P)) == 3,  # Check if the exponent has 3 digits
-      paste0(res_plot$P, "        ", res_plot$BETA2),  # 9 spaces for three-digit exponents
+      paste0(res_plot$P, "      ", res_plot$BETA2),  # 9 spaces for three-digit exponents
       paste0(res_plot$P, "         ", res_plot$BETA2)  # 10 spaces for shorter exponents
     )
   } else {
