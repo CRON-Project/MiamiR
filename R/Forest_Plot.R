@@ -1141,6 +1141,7 @@ if(Match_Allele_Direction == T)
   res$Plot_Value[res$RS == "-a-aaarModel"] <- res$Overall_Row_Number[res$RS == "-a-aaarModel"]
 
 
+  print(res)
 
   p <-
     res |>
