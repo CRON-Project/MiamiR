@@ -51,9 +51,9 @@ print("Data Extracted")
 
 ModelSum$group <- sapply(ModelSum$Covariate, function(cov) {
   # Check for which covariate name is present in the Covariate string
-#  matched_group <- covariates[sapply(covariates, function(group) grepl(group, cov))]
+  matched_group <- covariates[sapply(covariates, function(group) grepl(group, cov))]
  #bug fix for similar names like PC1 and PC10
-   matched_group <- covariates[sapply(covariates, function(group) grepl(paste0("^", group, "$"), cov))]
+#   matched_group <- covariates[sapply(covariates, function(group) grepl(paste0("^", group, "$"), cov))]
 
   # If a match is found, return the group, otherwise return NA
   if (length(matched_group) > 0) {
