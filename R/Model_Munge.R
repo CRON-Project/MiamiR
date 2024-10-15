@@ -15,12 +15,15 @@ Model_Munge <- function(Model_Object = Model, Model_Type = "glm")
 
 {
 
-print("Processing glm")
+print("Processing model")
 
 
 Model <- get(Model_Object)
 
 print("Object Found")
+
+
+print(Model)
 
 covariates <- attr(terms(Model), "term.labels")
 ModelSum <- summary(Model)

@@ -74,7 +74,7 @@
 #'
 
 Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Household_Income_Sum_Stats,
-                       Random_Selection = 10000, Draft_Plot = F,
+                       Random_Selection = 10000, Draft_Plot = FALSE,
                        Top_Chromosome_Column = "CHROM",
                        Top_Position_Column = "GENPOS", Top_SNP_ID_Column = "ID",
                        Top_PValue_Column = "P",
@@ -92,7 +92,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
                        Top_Sig_Threshold = 5e-8, Bottom_Sig_Threshold = 5e-8,
                        Top_Sig_Line_Width = 0.5, Bottom_Sig_Line_Width = 0.5,
                        Point_Size = 2.5,
-                       Top_Label_Index = T, Bottom_Label_Index = T,
+                       Top_Label_Index = TRUE, Bottom_Label_Index = TRUE,
                        Label_Size = 6, Label_Angle = 30,
                        Top_Label_Colour = "black",   Bottom_Label_Colour = "black",
                        Top_Colour_Of_Index = "red",
@@ -101,10 +101,10 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
                        Bottom_Chromosome_Labels = c(2,6,12,14,16,20),
                        Bottom_Chromosome_Index = c(2,6,12,14,16,20),
                        Bottom_Colour_Of_Index = "red",
-                       Top_Colour_Index = T,  Bottom_Colour_Index = T,
-                       Top_Condense_Scale = T, Bottom_Condense_Scale = T,
+                       Top_Colour_Index = TRUE,  Bottom_Colour_Index = TRUE,
+                       Top_Condense_Scale = TRUE, Bottom_Condense_Scale = TRUE,
                        Top_Break_Point = 1e-10, Bottom_Break_Point = 1e-10,
-                       File_Name = "Miami_Plot", Width = 30, Height = 15, Quality = 900,
+                       File_Name = "Miami_Plot", Width = 30, Height = 15, Quality = 600,
                        File_Type = "jpg"
 )
 
@@ -393,6 +393,11 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   unique_in_top <- Top_Data %>%
     dplyr::filter(!(combined_key %in% Bottom_Data$combined_key))
 
+  print(nrow(unique_in_bottom))
+  print(nrow(unique_in_top))
+
+
+
   # Display results
 
   cat("Rows in Bottom_Data but not in Top_Data:\n")
@@ -401,6 +406,9 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   cat("Rows in Top_Data but not in Bottom_Data:\n")
   print("Adjusting Scales")
 
+  if(nrow(unique_in_bottom) != 0)
+
+  {
 
   new_rows <- unique_in_bottom %>%
     dplyr::select(GENPOS, CHROM)
@@ -417,12 +425,22 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   new_data[[Top_Chromosome_Column]] <- new_data$CHROM
   new_data[[Top_PValue_Column]] <- new_data$P
 
+  print("Error after this")
 
+  print(Top_Data)
+  print(new_data)
+
+  #In case dfs identical skip this step as nothing to adjust for.
 
   Top_Data <-  dplyr::bind_rows(Top_Data, new_data)
 
+  }
 
   print("Top Config")
+
+  if(nrow(unique_in_top) != 0)
+
+  {
 
   new_rows <- unique_in_top %>%
     dplyr::select(GENPOS, CHROM)
@@ -440,14 +458,28 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   new_data[[Bottom_PValue_Column]] <- new_data$P
 
 
+
   Bottom_Data <-  dplyr::bind_rows(Bottom_Data, new_data)
 
+  }
 
 
   print("Bottom Config")
 
 
+
   print("Plotting Top Framework")
+
+  print(Top_Data)
+
+  print(Top_Title)
+  print(Top_Chromosome_Column)
+  print(Top_Position_Column)
+  print(Top_PValue_Column)
+  print(Top_Condense_Scale)
+  print(Top_Break_Point)
+  print(Point_Size)
+
 
   a <- ggmanh::manhattan_plot(x = Top_Data, preserve.position = T, plot.title = Top_Title,
                               chr.colname = Top_Chromosome_Column, pos.colname = Top_Position_Column, label.colname = NULL,

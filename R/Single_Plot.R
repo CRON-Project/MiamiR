@@ -51,7 +51,7 @@
 
 Single_Plot <- function(Data = Intelligence_Sum_Stats,
                        Chromosome_Column = "CHROM",
-                       Random_Selection = 10000, Draft_Plot = F,
+                       Random_Selection = 10000, Draft_Plot = FALSE,
                        Position_Column = "GENPOS", SNP_ID_Column = "ID",
                        PValue_Column = "P", Chromosome_Labels = c(2,6,12,14,16,20),
                        Chromosome_Index = c(2,6,12,14,16,20),
@@ -66,14 +66,14 @@ Single_Plot <- function(Data = Intelligence_Sum_Stats,
                        Sig_Threshold = 5e-8,
                        Sig_Line_Width = 0.5,
                        Point_Size = 2.5,
-                       Label_Index = T,
+                       Label_Index = TRUE,
                        Label_Size = 6, Label_Angle = 30,
                        Label_Colour = "black",
                        Colour_Of_Index = "red",
-                       Colour_Index = T,
-                       Condense_Scale = T,
+                       Colour_Index = TRUE,
+                       Condense_Scale = TRUE,
                        Break_Point = 1e-10,
-                       File_Name = "Manhattan_Plot", Width = 30, Height = 15, Quality = 900,
+                       File_Name = "Manhattan_Plot", Width = 30, Height = 15, Quality = 600,
                        File_Type = "jpg"
 )
 
@@ -207,7 +207,14 @@ Single_Plot <- function(Data = Intelligence_Sum_Stats,
 
   #Basic Plot
 
+  print(Chromosome_Colours)
+  print(Chromosome_Index)
+  print(Chromosome_Labels)
+
   print("Plotting Top Framework")
+
+  print(is.numeric(Break_Point))
+
 
   a <- ggmanh::manhattan_plot(x = Data, preserve.position = T, plot.title = Title,
                       chr.colname = Chromosome_Column, pos.colname = Position_Column, label.colname = NULL,
@@ -330,8 +337,10 @@ Single_Plot <- function(Data = Intelligence_Sum_Stats,
 
   print("Saving Single Manhattan Plot")
 
-  ggplot2::ggsave(Overall_Name, plot = Plot_Outcome, width = Width,
-         height = Height, units = "in", dpi = Quality)
+
+
+   ggplot2::ggsave(Overall_Name, plot = Plot_Outcome, width = Width,
+          height = Height, units = "in", dpi = Quality)
 
 
 

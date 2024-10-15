@@ -152,45 +152,45 @@
 
 
 Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
-                        Names = c("Vals 1", "Vals 2"),
+                        Names = c("Model 1", "Model 2"),
                         Data_Set_Colours = c("blue", "darkgreen"),
                         Chromosome_Columns = c(),
-                        Model_Reference = T,
+                        Model_Reference = TRUE,
                         Line_Space = 1,
-                        Border_Space_Left = 1,
-                        Border_Space_Right = 1,
+                        Border_Space_Left = 2.75,
+                        Border_Space_Right = 4.5,
                         Test_Statistic = "OR",
-                        Display_Test_Stat_Se_Column = F,
-                        Display_Test_Stat_CI_Column = F,
-                        Display_P_Value_Column = F,
+                        Display_Test_Stat_Se_Column = FALSE,
+                        Display_Test_Stat_CI_Column = TRUE,
+                        Display_P_Value_Column = TRUE,
                         Shapes = c("square", "diamond"),
                         Null_Line_Colour = "red",
                         Null_Line_Type = "dashed",
                         X_Axis_Title = "BETA",
                         X_Axis_Title_Size = 20,
-                        X_Axis_Label = F,
-                        X_Axis_Separation = 0.5,
+                        X_Axis_Label = FALSE,
+                        X_Axis_Separation = 0.05,
                         Strip_Colour = "lightblue",
-                        Strips = T,
-                        X_Axis_Text_Resolution = 1,
-                        Pre_Calculated_CIs = F,
+                        Strips = TRUE,
+                        X_Axis_Text_Resolution = 2,
+                        Pre_Calculated_CIs = FALSE,
                         Legend_Title_Size = 15,
                         Legend_Text_Size = 12.5,
                         Legend_Title = "Study",
                         Left_Title = "SNP",
                         P_Value_Title = "p-value",
-                        Test_Stat_Se_Title = "BETA (SE)",
+                        Test_Stat_Se_Title = "OR (CI)",
                         OR_Columns = c(),
                         Position_Columns = c() , SNP_ID_Columns = c(),
                         Beta_Columns = c(), Standard_Error_Columns = c(),
                         PValue_Columns = c(),
-                        Match_Allele_Direction = F,
+                        Match_Allele_Direction = FALSE,
                         Match_Allele_Study = "",
                         Selected_SNPs = c(),
                         Selected_Covariates = c(),
                         Reference_Alleles = c(),  Effect_Alleles = c(),
                         Upper_CI_Columns = c(), Lower_CI_Columns = c(),
-                        File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
+                        File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 600,
                         File_Type = "jpg"
                         )
 
@@ -199,9 +199,22 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
 
   Combined_Processed_Data <- data.frame()
 
+ # print(Data_Sets)
+
   for (i in seq_along(Data_Sets)) {
+
+    print(Data_Sets)
+
+    # dataset_name <- Data_Sets[i]
+    # Data <- dataset_name
+
     dataset_name <- Data_Sets[i]  # Get the dataset name
+
+    print(dataset_name)
+
     Data <- get(dataset_name)  # Load the dataset using get()
+
+    print(Data)
 
     corresponding_name <- Names[i]  # Get the corresponding name
     corresponding_shape <- Shapes[i]  # Get the corresponding shape
@@ -577,6 +590,7 @@ if(Test_Statistic == "BETA")
   print(Selected_SNPs)
 
 
+  print(Data)
 
   Data <- Data[Data$ID %in% Selected_SNPs,]
 
@@ -601,6 +615,8 @@ if(Test_Statistic == "BETA")
 
 
 #sill fine if for OR as renaming BETA
+
+  print(Data)
 
   if(Model_Reference == F)
   {
