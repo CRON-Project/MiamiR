@@ -48,6 +48,7 @@
 #' @param Quality Quality of saved plot (dpi); defaults to 900
 #' @param File_Type File type of saved plot; defaults to "jpg"
 #' @param X_Axis_Text_Resolution Number of decimal places to display on X axis text; defaults to 1
+#' @param Legend_On Do you want to display the legend - TRUE/FALSE; defaults to TRUE
 #'
 #' @return Image of Single Forest Plot is saved to the current directory and ggplot object is saved
 #' @export
@@ -174,6 +175,7 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
                         Strips = TRUE,
                         X_Axis_Text_Resolution = 2,
                         Pre_Calculated_CIs = FALSE,
+                        Legend_On = TRUE,
                         Legend_Title_Size = 15,
                         Legend_Text_Size = 12.5,
                         Legend_Title = "Study",
@@ -1184,17 +1186,36 @@ if(Match_Allele_Direction == T)
 
 
 
+#
+#     if(Test_Statistic == "BETA")
+#     {
+#       p <- p + ggplot2::scale_x_continuous(limits = c(mincalcLFull, mincalcRFull), breaks=seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation), labels = scales::number_format(accuracy = 10^- X_Axis_Text_Resolution) )
+#     }else{
+#
+#       p <- p +  ggplot2::scale_x_continuous(limits = c(mincalcLFull, mincalcRFull), breaks=seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation), trans = "log10",  labels = scales::number_format(accuracy = 10^- X_Axis_Text_Resolution) )
+#
+#
+#     }
 
-    if(Test_Statistic == "BETA")
-    {
-      p <- p + ggplot2::scale_x_continuous(limits = c(mincalcLFull, mincalcRFull), breaks=seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation), labels = scales::number_format(accuracy = 10^- X_Axis_Text_Resolution) )
-    }else{
 
-      p <- p +  ggplot2::scale_x_continuous(limits = c(mincalcLFull, mincalcRFull), breaks=seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation), trans = "log10",  labels = scales::number_format(accuracy = 10^- X_Axis_Text_Resolution) )
-
-
-    }
-
+  if(Test_Statistic == "BETA") {
+    # Ensure that 0 is always in the breaks for BETA
+    breaks <- c(0, seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation))
+    p <- p + ggplot2::scale_x_continuous(
+      limits = c(mincalcLFull, mincalcRFull),
+      breaks = breaks,
+      labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
+    )
+  } else {
+    # Ensure that 1 is always in the breaks for OR (log10)
+    breaks <- c(1, seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation))
+    p <- p + ggplot2::scale_x_continuous(
+      limits = c(mincalcLFull, mincalcRFull),
+      breaks = breaks,
+      trans = "log10",
+      labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
+    )
+  }
 
 
 
@@ -1626,11 +1647,14 @@ labels <- setNames(Names, Names)
   )
 
 
+  if(Legend_On == TRUE)
+
+  {
 
     p <- p + ggplot2::guides(color = ggplot2::guide_legend(title = Legend_Title, override.aes = list(shape = 15)))
 
 
-
+}
 
 
 
