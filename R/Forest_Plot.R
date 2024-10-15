@@ -1345,14 +1345,27 @@ if(Match_Allele_Direction == T)
 
 
 
-  if(Display_P_Value_Column == T)
-  {
 
-  res$P_BETA_SE <- paste0(res_plot$P, "         ", res_plot$BETA2)
-  }else
-  {
-    res$P_BETA_SE <- paste0(res_plot$BETA2)
+  # if(Display_P_Value_Column == T)
+  # {
+  #
+  # res$P_BETA_SE <- paste0(res_plot$P, "         ", res_plot$BETA2)
+  # }else
+  # {
+  #   res$P_BETA_SE <- paste0(res_plot$BETA2)
+  # }
+
+  if(Display_P_Value_Column == T) {
+    # Adjust the space padding based on the length of the exponent part
+    res$P_BETA_SE <- ifelse(
+      nchar(gsub(".*e[\\+\\-]([0-9]+)", "\\1", res_plot$P)) == 3,  # Check if the exponent has 3 digits
+      paste0(res_plot$P, "        ", res_plot$BETA2),  # 9 spaces for three-digit exponents
+      paste0(res_plot$P, "         ", res_plot$BETA2)  # 10 spaces for shorter exponents
+    )
+  } else {
+    res$P_BETA_SE <- res_plot$BETA2
   }
+
 
   p <- p +   ggplot2::guides(y.sec = ggh4x::guide_axis_manual(
     breaks = res$Overall_Row_Number  , labels = res$P_BETA_SE))
