@@ -944,18 +944,26 @@ if(Match_Allele_Direction == T)
   if(Test_Statistic == "BETA")
   {
     #left SNPs names
-    mincalcL <- midmaxneg + (0.01 * midmaxneg) * (1 + (Line_Space/100))
+
+    mincalcL <- midmaxneg + (0.001 * midmaxneg) * (1 + (Line_Space/10))
+
     mincalcLFull <- mincalcL * 1 * (1 + (Border_Space_Left/100))
-    mincalcR <- midmaxpos + (0.01 * midmaxneg * -1) *  (1 + (Line_Space/100))
+
+    mincalcR <- midmaxpos + (0.001 * midmaxneg * -1) *  (1 + (Line_Space/10))
+
     mincalcRFull <- mincalcR * 1 * (1 + (Border_Space_Right/100))
 
   }else{
 
     #maybe add exact =/- here adjusted for log10
 
-    mincalcL <- midmaxneg - (0.01 * midmaxneg) * (1 + (Line_Space/100))
+
+    mincalcL <- midmaxneg - ( (0.001 * midmaxneg) * (1 + (Line_Space/10)) )
+
     mincalcLFull <- mincalcL / 1 / (1 + (Border_Space_Left/100))
-    mincalcR <- midmaxpos + (0.01 * midmaxneg)  *  (1 + (Line_Space/100))
+
+    mincalcR <- midmaxpos + (0.001 * midmaxneg)  *  (1 + (Line_Space/10))
+
     mincalcRFull <- mincalcR * 1 * (1 + (Border_Space_Right/100))
 
 
@@ -1234,7 +1242,6 @@ if(Match_Allele_Direction == T)
   }
 
 
-print(p)
 
 
 
@@ -1870,7 +1877,7 @@ labels <- setNames(Names, Names)
 
 
 
-#ggplot2::ggsave(name, plot = p_mid2, width = Width, height = Height, units = "in", dpi = Quality)
+ggplot2::ggsave(name, plot = p_mid2, width = Width, height = Height, units = "in", dpi = Quality)
 
 
   return(p_mid2)
