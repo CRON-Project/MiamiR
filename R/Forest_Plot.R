@@ -49,6 +49,7 @@
 #' @param File_Type File type of saved plot; defaults to "jpg"
 #' @param X_Axis_Text_Resolution Number of decimal places to display on X axis text; defaults to 1
 #' @param Legend_On Do you want to display the legend - TRUE/FALSE; defaults to TRUE
+#' @param X_Axis_Text_Size Size of the X axis text labels; defaults to 15
 #'
 #' @return Image of Single Forest Plot is saved to the current directory and ggplot object is saved
 #' @export
@@ -157,6 +158,7 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
                         Data_Set_Colours = c("blue", "darkgreen"),
                         Chromosome_Columns = c(),
                         Model_Reference = TRUE,
+                        X_Axis_Text_Size = 15,
                         Line_Space = 1,
                         Border_Space_Left = 2.75,
                         Border_Space_Right = 4.5,
@@ -1758,7 +1760,7 @@ labels <- setNames(Names, Names)
     ggplot2::theme(#axis.line.x = ggplot2::element_blank(),
           legend.text = ggplot2::element_text(size = Legend_Text_Size),
           legend.title = ggplot2::element_text(size = Legend_Title_Size),
-          axis.text.x = ggplot2::element_text(size = 15),
+          axis.text.x = ggplot2::element_text(size = X_Axis_Text_Size),
           axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 15), vjust = -2, size = X_Axis_Title_Size ))#,
   #      axis.ticks.y= element_blank(),
   #      axis.text.y= element_blank(),
