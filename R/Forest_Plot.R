@@ -1228,7 +1228,13 @@ if(Match_Allele_Direction == T)
 
 
 
+  if(Legend_On == FALSE)
+  {
+    p <- p +  ggplot2::theme(legend.position = "none")
+  }
 
+
+print(p)
 
 
 
@@ -1547,6 +1553,8 @@ if(Match_Allele_Direction == T)
 
 
 
+
+
   for (block in 1:blocks) {
 
     # Calculate ymax
@@ -1629,14 +1637,14 @@ if(Match_Allele_Direction == T)
 
 
 
-
-
 #STUDY col is the clean one!
 values <- setNames(Data_Set_Colours, Names)
 labels <- setNames(Names, Names)
 
 
+if(Legend_On == TRUE)
 
+{
 
 
   p <- p + ggplot2::scale_color_manual(
@@ -1647,15 +1655,12 @@ labels <- setNames(Names, Names)
   )
 
 
-  if(Legend_On == TRUE)
 
-  {
 
     p <- p + ggplot2::guides(color = ggplot2::guide_legend(title = Legend_Title, override.aes = list(shape = 15)))
 
 
 }
-
 
 
 
@@ -1711,17 +1716,31 @@ labels <- setNames(Names, Names)
 
 
 
-  p_mid <- p +
-    ggplot2::theme(axis.line.y = ggplot2::element_blank(),
-          axis.ticks.y= ggplot2::element_blank(),
-          legend.position = "bottom",
-          legend.box = "horizontal",
-      #    axis.text.y.left= ggplot2::element_text(size = 5),
-  axis.title.y = ggplot2::element_blank())
-  #      axis.title.y= element_blank())
 
 
+  if(Legend_On == FALSE)
+  {
+    p_mid <- p +
+      ggplot2::theme(axis.line.y = ggplot2::element_blank(),
+                     axis.ticks.y= ggplot2::element_blank(),
+                     legend.position = "none",
+                     #    axis.text.y.left= ggplot2::element_text(size = 5),
+                     axis.title.y = ggplot2::element_blank())
+    #      axis.title.y= element_blank())
 
+  }else{
+
+    p_mid <- p +
+      ggplot2::theme(axis.line.y = ggplot2::element_blank(),
+                     axis.ticks.y= ggplot2::element_blank(),
+                     legend.position = "bottom",
+                     legend.box = "horizontal",
+                     #    axis.text.y.left= ggplot2::element_text(size = 5),
+                     axis.title.y = ggplot2::element_blank())
+    #      axis.title.y= element_blank())
+
+
+  }
 
 
   p_mid <- p_mid + ggplot2::geom_hline(yintercept = (end), linetype = "solid", color = "black")+# + geom_hline(yintercept = 0, linetype = "solid", color = "black")
@@ -1749,6 +1768,9 @@ labels <- setNames(Names, Names)
 
 
  # print(p_mid)
+
+
+
 
 
 
