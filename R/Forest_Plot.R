@@ -958,13 +958,14 @@ if(Match_Allele_Direction == T)
   }else{
 
     #maybe add exact =/- here adjusted for log10
+    mincalcR <- midmaxpos * (1 + (0.001 * abs(midmaxneg) * (1 + (Line_Space / 10))))
+    mincalcL <- midmaxneg * (1 - (0.001 * abs(midmaxneg) * (1 + (Line_Space / 10))))
 
-
-    mincalcL <- midmaxneg - ( (0.001 * midmaxneg) * (1 + (Line_Space/10)) )
+#     mincalcL <- midmaxneg - ( (0.001 * midmaxneg) * (1 + (Line_Space/10)) )
 
     mincalcLFull <- mincalcL / 1 / (1 + (Border_Space_Left/100))
 
-    mincalcR <- midmaxpos + (0.001 * midmaxneg)  *  (1 + (Line_Space/10))
+#    mincalcR <- midmaxpos + (0.001 * midmaxneg)  *  (1 + (Line_Space/10))
 
     mincalcRFull <- mincalcR * 1 * (1 + (Border_Space_Right/100))
 
