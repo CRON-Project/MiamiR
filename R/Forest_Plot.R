@@ -1208,17 +1208,51 @@ if(Match_Allele_Direction == T)
 #     }
 
 
+  # if(Test_Statistic == "BETA") {
+  #   # Ensure that 0 is always in the breaks for BETA
+  #   breaks <- c(0, seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation))
+  #   p <- p + ggplot2::scale_x_continuous(
+  #     limits = c(mincalcLFull, mincalcRFull),
+  #     breaks = breaks,
+  #     labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
+  #   )
+  # } else {
+  #   # Ensure that 1 is always in the breaks for OR (log10)
+  #   breaks <- c(1, seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation))
+  #   p <- p + ggplot2::scale_x_continuous(
+  #     limits = c(mincalcLFull, mincalcRFull),
+  #     breaks = breaks,
+  #     trans = "log10",
+  #     labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
+  #   )
+  # }
+
+
+
+
+
+
   if(Test_Statistic == "BETA") {
-    # Ensure that 0 is always in the breaks for BETA
-    breaks <- c(0, seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation))
+    # Ensure that 0 is always in the breaks for BETA, but avoid too many labels near 0
+    breaks <- seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation)
+
+    # Exclude breaks very close to 0, only include 0
+    breaks <- breaks[abs(breaks) > 0.1]  # Adjust threshold if necessary
+    breaks <- c(0, breaks)  # Ensure 0 is still included
+
     p <- p + ggplot2::scale_x_continuous(
       limits = c(mincalcLFull, mincalcRFull),
       breaks = breaks,
       labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
     )
   } else {
-    # Ensure that 1 is always in the breaks for OR (log10)
-    breaks <- c(1, seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation))
+    # Ensure that 1 is always in the breaks for OR (log10), but avoid too many labels close to 1
+    breaks <- seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation)
+
+    # Exclude breaks very close to 1, only include 1
+    breaks <- breaks[abs(breaks - 1) > 0.1]  # Adjust threshold if necessary
+    breaks <- c(1, breaks)  # Ensure 1 is still included
+
     p <- p + ggplot2::scale_x_continuous(
       limits = c(mincalcLFull, mincalcRFull),
       breaks = breaks,
@@ -1226,8 +1260,6 @@ if(Match_Allele_Direction == T)
       labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
     )
   }
-
-
 
 
 

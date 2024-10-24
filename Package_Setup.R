@@ -79,6 +79,7 @@ Forest_Plot_Model_GLM <- Forest_Plot(Data_Sets = c("ModelSumGLM", "ModelSumGLM")
                         Display_P_Value_Column = TRUE,
                         X_Axis_Separation = 0.02,
                         Pre_Calculated_CIs = FALSE,
+                        Legend_On = TRUE,
                         Legend_Title = "Model",
                         Left_Title = "Covariate",
                         P_Value_Title = "p-value",

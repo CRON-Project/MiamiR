@@ -144,8 +144,8 @@
                    h4("Bottom Data Preview:"),
                    tableOutput("bottomDataPreview"),  # Data preview for Bottom_Data
 
-                   h4("Rendered Miami Plot:"),
-                   plotOutput("renderedPlot2")  # Directly render the ggplot object for Miami_Plot
+                   h4("Rendered Miami Plot:") ,
+                  plotOutput("renderedPlot2")  # Directly render the ggplot object for Miami_Plot
                  )
                )
       ),
