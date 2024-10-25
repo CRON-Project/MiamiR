@@ -116,11 +116,14 @@ Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats",
 
 
 
-Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDementia_Sum_Stats"),
-                                     Names = c("Dementia (1)", "Dementia (2)"),
+Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDementia_Sum_Stats", "LbDementia_Sum_Stats", "LbDementia_Sum_Stats"),
+                                     Names = c("Dementia (1)", "Dementia (2)", "Dementia (3)", "Dementia (4)"),
+                                     Shapes = c("square", "square", "square", "square"),
+                                     Data_Set_Colours = c("blue", "blue", "blue","blue"),
                                      Model_Reference = FALSE,
-                                     Line_Space = 100.1,
+                                     Line_Space = 1000.1,
                                      Border_Space_Left = 7,
+                                     Null_Buffer = 0.1,
                                      Border_Space_Right = 30,
                                      Test_Statistic = "OR",
                                      Display_P_Value_Column = TRUE,

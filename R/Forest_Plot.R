@@ -50,6 +50,7 @@
 #' @param X_Axis_Text_Resolution Number of decimal places to display on X axis text; defaults to 1
 #' @param Legend_On Do you want to display the legend - TRUE/FALSE; defaults to TRUE
 #' @param X_Axis_Text_Size Size of the X axis text labels; defaults to 15
+#' @param Null_Buffer Units of space to avoid X axis text labels around the nul point; defaults to 0.1
 #'
 #' @return Image of Single Forest Plot is saved to the current directory and ggplot object is saved
 #' @export
@@ -170,6 +171,7 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
                         Null_Line_Colour = "red",
                         Null_Line_Type = "dashed",
                         X_Axis_Title = "BETA",
+                        Null_Buffer = 0.1,
                         X_Axis_Title_Size = 20,
                         X_Axis_Label = FALSE,
                         X_Axis_Separation = 0.05,
@@ -1099,32 +1101,70 @@ if(Match_Allele_Direction == T)
 
 
 
+      # # Initialize the Plot_Value column with NA
+      # res2$Plot_Value <- NA
+      #
+      # # Loop through the dataframe
+      # i <- 1
+      # while (i <= nrow(res2)) {
+      #   # Skip rows with NA in row_number
+      #   if (is.na(res2$row_number[i])) {
+      #     i <- i + 1
+      #     next
+      #   }
+      #
+      #   # Check if the current and next row have the same ID and both have non-NA row_number
+      #   if (i < nrow(res2) && res2$ID[i] == res2$ID[i + 1] && !is.na(res2$row_number[i + 1])) {
+      #     # If two consecutive rows have the same ID, take the median of their row_number
+      #     median_value <- median(c(res2$row_number[i], res2$row_number[i + 1]))
+      #     res2$Plot_Value[i] <- median_value
+      #     res2$Plot_Value[i + 1] <- median_value
+      #     # Skip the next row since it's already handled
+      #     i <- i + 2
+      #   } else {
+      #     # If the row has no consecutive match or next row is NA, set Plot_Value equal to row_number
+      #     res2$Plot_Value[i] <- res2$row_number[i]
+      #     i <- i + 1
+      #   }
+      # }
+      #
+      #
+
+
       # Initialize the Plot_Value column with NA
       res2$Plot_Value <- NA
 
       # Loop through the dataframe
       i <- 1
       while (i <= nrow(res2)) {
+
         # Skip rows with NA in row_number
         if (is.na(res2$row_number[i])) {
           i <- i + 1
           next
         }
 
-        # Check if the current and next row have the same ID and both have non-NA row_number
-        if (i < nrow(res2) && res2$ID[i] == res2$ID[i + 1] && !is.na(res2$row_number[i + 1])) {
-          # If two consecutive rows have the same ID, take the median of their row_number
-          median_value <- median(c(res2$row_number[i], res2$row_number[i + 1]))
-          res2$Plot_Value[i] <- median_value
-          res2$Plot_Value[i + 1] <- median_value
-          # Skip the next row since it's already handled
-          i <- i + 2
-        } else {
-          # If the row has no consecutive match or next row is NA, set Plot_Value equal to row_number
-          res2$Plot_Value[i] <- res2$row_number[i]
+        # Initialize a list to collect indices of consecutive rows with the same ID
+        consecutive_indices <- c(i)
+
+        # Check for consecutive rows with the same ID
+        while (i < nrow(res2) && res2$ID[i] == res2$ID[i + 1] && !is.na(res2$row_number[i + 1])) {
+          consecutive_indices <- c(consecutive_indices, i + 1)
           i <- i + 1
         }
+
+        # Calculate the median of row_number for consecutive rows
+        median_value <- median(res2$row_number[consecutive_indices])
+
+        # Assign the median value to Plot_Value for each consecutive row
+        res2$Plot_Value[consecutive_indices] <- median_value
+
+        # Move to the next row after the current sequence
+        i <- i + 1
       }
+
+      # Preview the updated dataframe
+      head(res2)
 
       # View the updated dataframe
      # print(res2)
@@ -1197,6 +1237,7 @@ if(Match_Allele_Direction == T)
 
 
 
+
 #
 #     if(Test_Statistic == "BETA")
 #     {
@@ -1238,7 +1279,7 @@ if(Match_Allele_Direction == T)
     breaks <- seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation)
 
     # Exclude breaks very close to 0, only include 0
-    breaks <- breaks[abs(breaks) > 0.1]  # Adjust threshold if necessary
+    breaks <- breaks[abs(breaks) > Null_Buffer]  # Adjust threshold if necessary
     breaks <- c(0, breaks)  # Ensure 0 is still included
 
     p <- p + ggplot2::scale_x_continuous(
@@ -1251,7 +1292,7 @@ if(Match_Allele_Direction == T)
     breaks <- seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation)
 
     # Exclude breaks very close to 1, only include 1
-    breaks <- breaks[abs(breaks - 1) > 0.1]  # Adjust threshold if necessary
+    breaks <- breaks[abs(breaks - 1) > Null_Buffer]  # Adjust threshold if necessary
     breaks <- c(1, breaks)  # Ensure 1 is still included
 
     p <- p + ggplot2::scale_x_continuous(
