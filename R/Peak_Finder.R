@@ -24,8 +24,9 @@
 #'
 
 #'Peak_Finder_Outcome <- Peak_Finder(Data_Sets = Locations,
-#'                                 Peak_Separation = 1000000,
+#'                                 Peak_Separation = 2000000,
 #'                                 File_Name = "Peaks",
+#'                                 Spec_CHROM = 1,
 #'                                 File_Type = "txt")
 #'
 #'
@@ -49,6 +50,7 @@ Peak_Finder <- function(Data_Sets = c("HillWD_31844048_household_Income.txt", "S
                         Position_Columns = c() , SNP_ID_Columns = c(),
                         Beta_Columns = c(), Standard_Error_Columns = c(),
                         PValue_Columns = c(),
+                        Spec_CHROM = NULL,
                         Peak_Separation = 1000000,
                         File_Name = "Peaks",
                         File_Type = "txt"
@@ -59,65 +61,129 @@ Peak_Finder <- function(Data_Sets = c("HillWD_31844048_household_Income.txt", "S
 
 {
 
-# Check if Data_Sets contains file paths
-if (all(file.exists(Data_Sets))) {
-  message("Loading datasets from file paths...")
 
-  dataset_names <- c()  # Initialize empty vector to store dataset names
+  # Check if Data_Sets contains file paths
+  if (all(file.exists(Data_Sets))) {
+    message("Loading datasets from file paths...")
 
-  for (path in Data_Sets) {
-    # Extract filename without extension
-    dataset_name <- tools::file_path_sans_ext(basename(path))
+    dataset_names <- c()  # Store dataset names
 
-    message("Processing file: ", path)
-    message("Extracted dataset name: ", dataset_name)
+    for (path in Data_Sets) {
+      # Extract filename without extension
+      dataset_name <- tools::file_path_sans_ext(basename(path))
 
-    # Read the data
-    df <- if (grepl("\\.csv$", path, ignore.case = TRUE)) {
-      read.csv(path, stringsAsFactors = FALSE)
-    } else if (grepl("\\.rds$", path, ignore.case = TRUE)) {
-      readRDS(path)
-    } else if (grepl("\\.(txt|tab|tsv)$", path, ignore.case = TRUE)) {
-      read.table(path, sep = "\t", header = TRUE, stringsAsFactors = FALSE)
-    } else {
-      stop("Unsupported file format. Supported formats: CSV, RDS, TXT, TAB, TSV.")
+      message("Processing file: ", path)
+      message("Extracted dataset name: ", dataset_name)
+
+      # Detect if the file is compressed
+      is_compressed <- grepl("\\.gz$", path, ignore.case = TRUE)
+
+      # Read only the first few rows to detect column names
+      header_df <- tryCatch({
+        if (is_compressed) {
+          data.table::fread(cmd = paste0("zcat ", path, " | head -n 5"))
+        } else {
+          data.table::fread(path, nrows = 5)
+        }
+      }, error = function(e) {
+        message(paste("Skipping file due to error:", path, "\n", e))
+        next  # Skip to next file instead of stopping
+      })
+
+      # **Ensure column names are standardized**
+      colnames(header_df) <- trimws(colnames(header_df))  # Remove spaces
+
+      # Detect chromosome column dynamically
+      allowed_names_chromosomes <- c("Chromosome", "chromosome", "chrom", "chr", "CHROM", "CHR", "Chr", "Chrom")
+
+      chrom_col <- NULL  # Initialize as NULL
+
+      for (allowed_name in allowed_names_chromosomes) {
+        if (allowed_name %in% colnames(header_df)) {
+          chrom_col <- allowed_name  # Ensure exact match
+          message(paste("✅ Detected chromosome column:", chrom_col))
+          break
+        }
+      }
+
+      # If no Chromosome column is found, continue without filtering
+      if (is.null(chrom_col)) {
+        message(paste("⚠️ No chromosome column found in", dataset_name, "- loading full dataset."))
+      }
+
+      # **Optimized Direct Filtering While Loading**
+      df <- tryCatch({
+        if (is_compressed) {
+          message("📂 Detected compressed file, using `fread(cmd = 'grep')` to filter CHROM == 1.")
+          temp_df <- data.table::fread(cmd = paste0("zcat ", path, " | grep '^1\\s'"), sep = "\t")
+        } else {
+          message("🚀 Using `fread()` to load only CHROM == 1.")
+          temp_df <- vroom::vroom(path)  # Read everything first (unavoidable)
+
+          print(temp_df)
+          print(chrom_col)
+
+          # **Apply filtering right after reading**
+          if (!is.null(chrom_col)) {
+           # temp_df <- temp_df[temp_df$Chr == 1,]
+            if(is.null(Spec_CHROM))
+            {
+              print("Whole file desired")
+            }else{
+            temp_df <- temp_df[temp_df[[chrom_col]] == Spec_CHROM, ]
+            }
+          }
+        }
+
+        if (nrow(temp_df) == 0) {
+          message(paste("⚠️ No rows found with", chrom_col, "== 1 in", dataset_name, "- skipping dataset."))
+        }
+
+        temp_df  # Return filtered dataset
+
+      }, error = function(e) {
+        message(paste("Skipping file due to error:", path, "\n", e))
+        next  # Skip to next file instead of stopping
+      })
+
+      # Store dataset in environment
+      assign(dataset_name, df, envir = .GlobalEnv)
+      message(paste("✅ Dataset", dataset_name, "loaded into environment."))
+
+      # Print the first few rows of the dataset
+      message(paste("🔍 Preview of", dataset_name, ":"))
+      print(head(df))  # Show first few rows of the dataset
+
+      # Append dataset name to vector
+      dataset_names <- c(dataset_names, dataset_name)
     }
 
-    # Store dataset in environment
-    assign(dataset_name, df, envir = .GlobalEnv)
-    message(paste("Dataset", dataset_name, "loaded into environment."))
+    # Update Data_Sets with dataset names only
+    Data_Sets <- dataset_names
 
-    # Append dataset name to vector
-    dataset_names <- c(dataset_names, dataset_name)
+  } else {
+    message("Using datasets from the R environment...")
+    Data_Sets <- lapply(Data_Sets, function(name) {
+      if (!is.character(name)) stop("Dataset name must be a character string.")
+
+      if (exists(name, envir = .GlobalEnv)) {
+        return(name)  # Keep dataset name in Data_Sets
+      } else {
+        stop(paste("Dataset", name, "not found in environment."))
+      }
+    })
+
+    # Convert list to character vector
+    Data_Sets <- unlist(Data_Sets)
   }
 
-  # Update Data_Sets with dataset names only
-  Data_Sets <- dataset_names
+  message("📌 Final Data_Sets list: ", paste(Data_Sets, collapse = ", "))
 
-} else {
-  message("Using datasets from the R environment...")
-  Data_Sets <- lapply(Data_Sets, function(name) {
-    if (!is.character(name)) stop("Dataset name must be a character string.")
-
-    if (exists(name, envir = .GlobalEnv)) {
-      return(name)  # Keep dataset name in Data_Sets
-    } else {
-      stop(paste("Dataset", name, "not found in environment."))
-    }
-  })
-
-  # Convert list to character vector
-  Data_Sets <- unlist(Data_Sets)
-}
-
-message("Final Data_Sets list: ", paste(Data_Sets, collapse = ", "))
-
-# Return Data_Sets with correct names
-# return(Data_Sets)
+  # Return Data_Sets with correct names
+#  return(Data_Sets)
 
 
-
-
+  #z
 
 
 if (!is.null((Data_Sets))) {
@@ -128,7 +194,7 @@ if (!is.null((Data_Sets))) {
   Names <- paste("Dataset", seq_along(Data_Sets))  # Fallback to generic names
 }
 
-print(Names)
+#print(Names)
 
 
 
@@ -139,7 +205,7 @@ print(Names)
 
   for (i in seq_along(Data_Sets)) {
 
-    print(Data_Sets)
+ #   print(Data_Sets)
 
 
 
@@ -148,11 +214,11 @@ print(Names)
 
     dataset_name <- Data_Sets[i]  # Get the dataset name
 
-    print(dataset_name)
+  #  print(dataset_name)
 
     Data <- get(dataset_name)  # Load the dataset using get()
 
-    print(Data)
+#    print(Data)
 
     corresponding_name <- Names[i]  # Get the corresponding name
 
@@ -417,7 +483,7 @@ print(Names)
 
   #sill fine if for OR as renaming BETA
 
-  print(Data)
+ # print(Data)
 
     Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, SE, P, STUDY)
 
@@ -430,13 +496,13 @@ print(Names)
 
 
   print("Combined")
-  print(Combined_Processed_Data)
+#  print(Combined_Processed_Data)
 
 }
 
 
-  print(sum(is.na(Combined_Processed_Data$GENPOS)))
-  print(table(Combined_Processed_Data$CHROM))
+#  print(sum(is.na(Combined_Processed_Data$GENPOS)))
+#  print(table(Combined_Processed_Data$CHROM))
   #out of loop now
 
   find_min_p_with_distance <- function(data) {
@@ -486,7 +552,7 @@ print(Names)
 
 
   print("Study specific peaks per CHROM")
-  print(result)
+#  print(result)
 
 
 
@@ -495,8 +561,8 @@ print(Names)
   # Extract unique COORD_Norm and COORD_Alt from the result
   unique_coords <- unique(c(result$COORD_Norm, result$COORD_Alt))
 
-  print("Unique coords:")
-  print(unique_coords)
+#  print("Unique coords:")
+#  print(unique_coords)
 
 
 
@@ -505,7 +571,7 @@ print(Names)
     dplyr::filter(COORD_Norm %in% unique_coords | COORD_Alt %in% unique_coords)
 
   # Print the matching rows
-  print(matching_rows)
+#  print(matching_rows)
 
 
 
@@ -533,7 +599,7 @@ print(Names)
     ) %>%
     dplyr::ungroup()
 
-  print(matching_rows)
+ # print(matching_rows)
 
 #   return(matching_rows)
 # zzz
@@ -546,7 +612,7 @@ print(Names)
    # dplyr::filter(!(STUDY %in% result$STUDY))
 
   # Print matching rows for other studies
-  print(matching_rows)
+#  print(matching_rows)
 
 
   # print(nrow(result))
@@ -583,13 +649,13 @@ print(Names)
   for (study_name in names(split_dfs)) {
 
 
-    print(study_name)
+  #  print(study_name)
 
     # Get the dataframe for the current study
     study_df <- split_dfs[[study_name]]
 
 
-    print(study_df)
+  #  print(study_df)
 
     # Drop columns `COORD_Alt`, `ID`, and `STUDY`
     study_df <- study_df %>%
@@ -599,7 +665,8 @@ print(Names)
     colnames(study_df)[colnames(study_df) == "COORD_Uni"] <- "ID"
 
     # Generate a filename with the study name
-    filename <- paste0(study_name, "_", File_Name, ".", File_Type)
+    filename <- paste0(Spec_CHROM, "_", study_name, "_", File_Name, ".", File_Type)
+    print("SAVING...")
     print(filename)  # Optional: to see the generated filename
 
  #   setwd("C:/Users/callumon/Miami_Package_R/MiamiR/data")
