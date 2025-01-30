@@ -115,6 +115,54 @@ Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats",
 )
 
 
+Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats", "Intelligence_Sum_Stats"),
+                                     Names = c("Income", "IQ"),
+                                     Model_Reference = FALSE,
+                                     Line_Space = 1.5,
+                                     Border_Space_Right = 40,
+                                     Border_Space_Left = 20,
+                                     Test_Statistic = "BETA", #could be OR
+                                     Display_Test_Stat_Se_Column = TRUE,
+                                     Display_P_Value_Column = TRUE,
+                                     X_Axis_Separation = 0.01,
+                                     Pre_Calculated_CIs = FALSE,
+                                     X_Axis_Text_Resolution = 2,
+                                     Legend_Title = "Study",
+                                     Left_Title = "SNP",
+                                     P_Value_Title = "p-value",
+                                     Test_Stat_Se_Title = "BETA (SE)",
+                                     Match_Allele_Direction = TRUE,
+                                     Match_Allele_Study = "Household_Income_Sum_Stats",
+                                     Selected_SNPs = c("rs74832835",  "rs1157671",   "rs1790177",
+                                                       "rs9508063",   "rs225682",  "rs56201315" ),
+                                     File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
+                                     File_Type = "jpg"
+)
+
+
+Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("UKB_Full", "COVIG_Full"),
+                                     Names = c("Income", "IQ"),
+                                     Model_Reference = FALSE,
+                                     Line_Space = 1.5,
+                                     Border_Space_Right = 40,
+                                     Border_Space_Left = 20,
+                                     Test_Statistic = "BETA", #could be OR
+                                     Display_Test_Stat_Se_Column = TRUE,
+                                     Display_P_Value_Column = TRUE,
+                                     X_Axis_Separation = 0.01,
+                                     Pre_Calculated_CIs = FALSE,
+                                     X_Axis_Text_Resolution = 2,
+                                     Legend_Title = "Study",
+                                     Left_Title = "SNP",
+                                     P_Value_Title = "p-value",
+                                     Test_Stat_Se_Title = "BETA (SE)",
+                                     Match_Allele_Direction = TRUE,
+                                     Match_Allele_Study = "UKB_Full",
+                                     Selected_SNPs = c("rs68033958"),
+                                     File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
+                                     File_Type = "jpg"
+)
+
 
 Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDementia_Sum_Stats", "LbDementia_Sum_Stats", "LbDementia_Sum_Stats"),
                                      Names = c("Dementia (1)", "Dementia (2)", "Dementia (3)", "Dementia (4)"),

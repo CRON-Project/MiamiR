@@ -22,7 +22,8 @@ Imports:
     ggtext,
     grid,
     magrittr,
-    scales
+    scales,
+    stringi
 biocViews: Visualization, Software
 Depends: 
     R (>= 2.10)
@@ -32,3 +33,6 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+SystemRequirements: Rscript
+Scripts: MiamiR_Forest_Plot = inst/bin/MiamiR_Forest_Plot
+

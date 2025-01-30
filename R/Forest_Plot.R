@@ -32,13 +32,13 @@
 #' @param Position_Columns These are a list of manual position column names for the data sets used in the order specified; defaults to c("base_pair_location", "base_pair_location")
 #' @param SNP_ID_Columns These are a list of manual SNP ID column names for the data sets used in the order specified; defaults to c("variant_id","variant_id")
 #' @param Beta_Columns These are a list of manual BETA column names for the data sets used in the order specified; defaults to  c("beta", "beta")
-#' @param Standard_Error_Columns These are a list of manual SE column names for the data sets used in the order specified; defaults to c("SE","SE"),
+#' @param Standard_Error_Columns These are a list of manual SE column names for the data sets used in the order specified; defaults to c("SE","SE")
 #' @param PValue_Columns These are a list of manual P column names for the data sets used in the order specified; defaults to c("P","P")
 #' @param Match_Allele_Direction Do you want to match the allele directions to avoid flips (T/F); defaults to T
-#' @param Match_Allele_Study If the above is T, which data sets should be the reference point for effect allele direction; defaults to "LbDementia_Sum_Stats"
+#' @param Match_Allele_Study If the above is T, which data sets should be the reference point for effect allele direction; defaults to "LbDementia_Sum_Stats"; THIS SHOULD BE THE NAME YOU ASSIGN
 #' @param Selected_SNPs A list of SNPs to be shown in the forest plot, automatically selected for from the summary statistics data set; defaults to c("rs2616526", "rs7974838", "rs59867714", "rs9571588", "rs79007041")
 #' @param Selected_Covariates A list of covariates to be shown in the forest plot, automatically selected for from the munged model data set; defaults to c()
-#' @param Reference_Alleles These are a list of manual reference allele column names for the data sets used in the order specified; defaults to c("other_allele","other_allel")
+#' @param Reference_Alleles These are a list of manual reference allele column names for the data sets used in the order specified; defaults to c("other_allele","other_allele")
 #' @param Effect_Alleles These are a list of manual effect allele column names for the data sets used in the order specified; defaults to c("effect_allele","effect_allele")
 #' @param Upper_CI_Columns These are a list of manual CI UL column names for the data sets used in the order specified; defaults to c("UL","UL")
 #' @param Lower_CI_Columns These are a list of manual CI LL column names for the data sets used in the order specified; defaults to c("LL","LL")
@@ -123,6 +123,16 @@
 #'
 #'
 #'
+#'
+
+#'Forest_Plot_SNPs_BETA_Peak_Finder <- Forest_Plot(Data_Sets = c("Income_Peaks", "Intelligence_Peaks"),
+#'                                                 X_Axis_Separation = 0.05,
+#'                                                 File_Name = "Forest_Plot", Width =10, Height = 9, Quality = 900,
+#'                                                 File_Type = "jpg"
+#')
+#'
+#'
+#'
 #' Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDementia_Sum_Stats"),
 #'                                    Names = c("Dementia (1)", "Dementia (2)"),
 #'                                    Model_Reference = FALSE,
@@ -154,27 +164,30 @@
 
 
 
+
 Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
-                        Names = c("Model 1", "Model 2"),
-                        Data_Set_Colours = c("blue", "darkgreen"),
+                        Names = NULL,
+                        Data_Set_Colours = viridis::viridis(length(Data_Sets)),
                         Chromosome_Columns = c(),
-                        Model_Reference = TRUE,
-                        X_Axis_Text_Size = 15,
-                        Line_Space = 1,
-                        Border_Space_Left = 2.75,
-                        Border_Space_Right = 4.5,
-                        Test_Statistic = "OR",
-                        Display_Test_Stat_Se_Column = FALSE,
-                        Display_Test_Stat_CI_Column = TRUE,
+                        Left_Spaces = 2,
+                        Right_Spaces = 2,
+                        P_Stat_Spaces = 3,
+                        Model_Reference = FALSE,
+                        X_Axis_Text_Size = 10,
+                        Line_Space = 0.01,
+                        Test_Statistic = NULL,
+                        Display_Test_Stat_Se_Column = TRUE,
+                        Display_Test_Stat_CI_Column = FALSE,
                         Display_P_Value_Column = TRUE,
-                        Shapes = c("square", "diamond"),
+                        Shapes = NULL,
                         Null_Line_Colour = "red",
                         Null_Line_Type = "dashed",
-                        X_Axis_Title = "BETA",
-                        Null_Buffer = 0.1,
-                        X_Axis_Title_Size = 20,
-                        X_Axis_Label = FALSE,
-                        X_Axis_Separation = 0.05,
+                        X_Axis_Title = NULL,
+                        Null_Buffer = 0.0,
+                        X_Axis_Title_Size = 15,
+                        SNP_Stat_Text_Size = 12,
+                        X_Axis_Label = TRUE,
+                        X_Axis_Separation = NULL,
                         Strip_Colour = "lightblue",
                         Strips = TRUE,
                         X_Axis_Text_Resolution = 2,
@@ -185,13 +198,13 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
                         Legend_Title = "Study",
                         Left_Title = "SNP",
                         P_Value_Title = "p-value",
-                        Test_Stat_Se_Title = "OR (CI)",
+                        Test_Stat_Se_Title = "BETA (SE)",
                         OR_Columns = c(),
                         Position_Columns = c() , SNP_ID_Columns = c(),
                         Beta_Columns = c(), Standard_Error_Columns = c(),
                         PValue_Columns = c(),
-                        Match_Allele_Direction = FALSE,
-                        Match_Allele_Study = "",
+                        Match_Allele_Direction = TRUE,
+                        Match_Allele_Study = NULL,
                         Selected_SNPs = c(),
                         Selected_Covariates = c(),
                         Reference_Alleles = c(),  Effect_Alleles = c(),
@@ -202,6 +215,104 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
 
   {
 
+  #Needs to go first as iterated through and takes names of dfs by default otherwise dataset 1,2 etc...
+
+  print(Data_Sets)
+
+  if (!is.null((Data_Sets))) {
+    print("Using Data Set Names")
+    Names <- (Data_Sets)  # Use names of the Data_Sets vector
+  } else {
+    print("Auto-naming")
+    Names <- paste("Dataset", seq_along(Data_Sets))  # Fallback to generic names
+  }
+
+  print(Names)
+
+
+#  print("fail here")
+
+ # Left_Spaces <- strrep(" ", Left_Spaces) - #due to html white out later
+
+ # print(Left_Spaces)
+
+
+
+ # Left_Spaces <- strrep("Z", 10)
+
+
+
+
+  #Goes below above as need to match based on STUDY assigned from Name
+  if (is.null(Match_Allele_Study)) {
+
+    Match_Allele_Study <- Names[1]
+    print(paste0("Matching allele directions automatically to ", Match_Allele_Study) )
+
+  }
+
+  if (is.null(Shapes)) {
+    Shapes <- rep("square", length(Data_Sets))  # Assign "square" to all
+  }
+
+  if (is.null((Test_Statistic))) {
+
+    print("No Test Stat Allocated")
+
+  # Randomly get one dataset from Data_Sets before the loop
+  dataset_name <- sample(Data_Sets, 1)
+  Data <- get(dataset_name)
+
+  # Initialize variables
+  Beta_Column <- NULL
+  OR_Column <- NULL
+  Test_Statistic <- NULL
+
+  # Check for BETA columns first
+  allowed_names_betas <- c("BETA", "Beta", "beta", "B", "stdBeta")
+  for (allowed_name in allowed_names_betas) {
+    if (allowed_name %in% colnames(Data)) {
+      print(paste0("Detected BETA values: Using ", allowed_name, " as the Test_Statistic column option (automatic)"))
+      Beta_Column <- allowed_name
+      Test_Statistic <- "BETA"  # Assign Test_Statistic as BETA
+      break
+    }
+  }
+
+  # If no beta column is found, check for OR columns
+  if (is.null(Beta_Column)) {
+    allowed_names_ors <- c("OR", "or", "Or", "Odds", "Odd Ratio", "odds_ratio")
+    for (allowed_name in allowed_names_ors) {
+      if (allowed_name %in% colnames(Data)) {
+        print(paste0("Detected OR values: Using ", allowed_name, " as the Test_Statistic column option (automatic)"))
+        OR_Column <- allowed_name
+        Test_Statistic <- "OR"  # Assign Test_Statistic as OR
+        break
+      }
+    }
+  }
+
+
+
+  }
+
+
+  if (is.null((X_Axis_Title))) {
+
+    X_Axis_Title <- Test_Statistic
+
+ #   print(X_Axis_Title)
+
+  }
+
+
+
+
+
+  # Initialize variables back to nothing
+  Beta_Column <- NULL
+  OR_Column <- NULL
+#  Test_Statistic <- NULL
 
   Combined_Processed_Data <- data.frame()
 
@@ -209,18 +320,20 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
 
   for (i in seq_along(Data_Sets)) {
 
-    print(Data_Sets)
+ #   print(Data_Sets)
 
     # dataset_name <- Data_Sets[i]
     # Data <- dataset_name
 
     dataset_name <- Data_Sets[i]  # Get the dataset name
 
-    print(dataset_name)
+#    print(dataset_name)
 
     Data <- get(dataset_name)  # Load the dataset using get()
 
-    print(Data)
+#    print(Data)
+
+
 
     corresponding_name <- Names[i]  # Get the corresponding name
     corresponding_shape <- Shapes[i]  # Get the corresponding shape
@@ -234,6 +347,9 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
     }
     PValue_Column <- PValue_Columns[i]
     Standard_Error_Column <- Standard_Error_Columns[i]
+
+ #   print(Test_Statistic)
+
     if(Test_Statistic == "BETA")
     {
     Beta_Column <- Beta_Columns[i]
@@ -596,10 +712,14 @@ if(Test_Statistic == "BETA")
   print(Selected_SNPs)
 
 
-  print(Data)
+#  print(Data)
 
+  #if you want all of them, like in peak finder plot
+  if (length(Selected_SNPs) == 0) {
+    Data <- Data
+  } else {
   Data <- Data[Data$ID %in% Selected_SNPs,]
-
+  }
 
   }
   if(Model_Reference == T)
@@ -622,7 +742,7 @@ if(Test_Statistic == "BETA")
 
 #sill fine if for OR as renaming BETA
 
-  print(Data)
+ # print(Data)
 
   if(Model_Reference == F)
   {
@@ -711,6 +831,61 @@ if(Model_Reference == T)
 
 }
 
+#  print(Combined_Processed_Data)
+
+
+  # Extract all unique IDs and STUDY values
+  unique_ids <- unique(Combined_Processed_Data$ID)
+  unique_studies <- unique(Combined_Processed_Data$STUDY)
+
+  # Create a full combination of all unique IDs and STUDY values
+  full_combination <- expand.grid(ID = unique_ids, STUDY = unique_studies)
+
+  # Identify missing combinations (rows not in the original dataset)
+  missing_rows <- full_combination %>%
+    dplyr::anti_join(Combined_Processed_Data, by = c("ID", "STUDY"))
+
+  # Add the missing rows with BETA, SE, and P set to 0
+  missing_rows <- missing_rows %>%
+    dplyr::mutate(
+      BETA = 0,
+      SE = 0,
+      P = 1
+    )
+
+
+#  print(missing_rows)
+
+  missing_rows <- missing_rows %>%
+    dplyr::mutate(
+      ALLELE0 = sub("^[^:]+:[^:]+:([^:]+):.*$", "\\1", ID),
+      ALLELE1 = sub("^[^:]+:[^:]+:[^:]+:([^:]+)$", "\\1", ID), # Part after 3rd colon
+      CHROM = stringr::str_extract(ID, "(?<=chr)[^:]+"),                # Extract part after 'chr' and before ':'
+      GENPOS = stringr::str_extract(ID, "(?<=:)[^:]+(?=:)"),
+      Left_Plot_Value = ID,
+      Shape = "cross"
+
+      # Extract part after 1st colon and before 2nd
+    )
+
+
+  #print(missing_rows)
+
+#zzz
+  missing_rows$CHROM <- as.numeric(missing_rows$CHROM)
+
+  missing_rows$GENPOS <- as.numeric(missing_rows$GENPOS)
+
+
+  # Combine the original dataset with the missing rows
+  Combined_Processed_Data <-  dplyr::bind_rows(Combined_Processed_Data, missing_rows)
+
+  # View the updated dataframe
+ # print(Combined_Processed_Data)
+
+
+ #  zzz
+
 
 
   if(Model_Reference == F)
@@ -729,14 +904,28 @@ if(Match_Allele_Direction == T)
   Combined_Processed_Data$ALLELE1 <- toupper(Combined_Processed_Data$ALLELE1)
 
 
+#  print("Data before BETA flips")
+#  print(Combined_Processed_Data)
+
+
   # Loop through the data frame and check for matching IDs with swapped alleles
   for (i in 1:nrow(Combined_Processed_Data)) {
+
+ #   print(Combined_Processed_Data$STUDY[i] == Match_Allele_Study)
     # Ensure the row with the 'Intelligence_Sum_Stats' in STUDY is the master row
     if (Combined_Processed_Data$STUDY[i] == Match_Allele_Study) {
 
       for (j in 1:nrow(Combined_Processed_Data)) {
         # Skip the master row (Intelligence_Sum_Stats)
         if (i != j && Combined_Processed_Data$STUDY[j] != Match_Allele_Study) {
+
+     #     print("Hi")
+    #      print(i)
+     #     print(j)
+
+
+         # print("HEEW")
+    #      print(Combined_Processed_Data$ID[i])
 
           # Check if IDs are the same, and alleles are swapped
           if (Combined_Processed_Data$ID[i] == Combined_Processed_Data$ID[j] &&
@@ -752,6 +941,12 @@ if(Match_Allele_Direction == T)
   }
 
   }
+
+
+
+
+#  print(Combined_Processed_Data)
+
 
 
   if(Test_Statistic == "OR")
@@ -859,6 +1054,9 @@ if(Match_Allele_Direction == T)
   res$UL <- as.numeric(res$UL)
   res$LL <- as.numeric(res$LL)
 
+
+
+
   #change this and legends later
 
   # Create a vector of letters to use as prefixes
@@ -901,7 +1099,7 @@ if(Match_Allele_Direction == T)
     )
 
 
-  print(res)
+#  print(res)
 
 
 
@@ -912,6 +1110,10 @@ if(Match_Allele_Direction == T)
 
     maxcalc <-  max(res$UL, na.rm = T) * 1
     mincalc <-  min(res$LL, na.rm = T) * 1
+
+  #  print(maxcalc)
+  #  print(mincalc)
+
   }else{
 
 
@@ -951,11 +1153,11 @@ if(Match_Allele_Direction == T)
 
     mincalcL <- midmaxneg + (0.001 * midmaxneg) * (1 + (Line_Space/10))
 
-    mincalcLFull <- mincalcL * 1 * (1 + (Border_Space_Left/100))
+    mincalcLFull <- mincalcL * 1 * (1 + (Left_Spaces/100))
 
     mincalcR <- midmaxpos + (0.001 * midmaxneg * -1) *  (1 + (Line_Space/10))
 
-    mincalcRFull <- mincalcR * 1 * (1 + (Border_Space_Right/100))
+    mincalcRFull <- mincalcR * 1 * (1 + (Right_Spaces/100))
 
   }else{
 
@@ -965,11 +1167,11 @@ if(Match_Allele_Direction == T)
 
 #     mincalcL <- midmaxneg - ( (0.001 * midmaxneg) * (1 + (Line_Space/10)) )
 
-    mincalcLFull <- mincalcL / 1 / (1 + (Border_Space_Left/100))
+    mincalcLFull <- mincalcL / 1 / (1 + (Left_Spaces/100))
 
 #    mincalcR <- midmaxpos + (0.001 * midmaxneg)  *  (1 + (Line_Space/10))
 
-    mincalcRFull <- mincalcR * 1 * (1 + (Border_Space_Right/100))
+    mincalcRFull <- mincalcR * 1 * (1 + (Right_Spaces/100))
 
 
 
@@ -988,18 +1190,22 @@ if(Match_Allele_Direction == T)
   # }
 
 
-  midmaxneg1dp <- round(midmaxneg, 2)
+  midmaxneg1dp <- round(midmaxneg, 10)
   midmaxneg1dp <- min(res$LL, na.rm = T)
 
  # midmaxneg1dp <- round(midmaxneg1dp, 2)
-  midmaxneg1dp <- ceiling(midmaxneg1dp * 100) / 100
+  midmaxneg1dp <- floor(midmaxneg1dp * 100) / 100
   #round up/right to always give left space
 
-  midmaxpos1dp <-  round(midmaxpos, 2)
+  midmaxpos1dp <-  round(midmaxpos, 10)
   midmaxpos1dp <- max(res$UL, na.rm = T)
+
+#  print(midmaxpos1dp)
+
+
 #  midmaxpos1dp <-  round(midmaxpos1dp, 2)
   #then down
-  midmaxpos1dp <- floor(midmaxpos1dp * 100) / 100
+  midmaxpos1dp <- ceiling(midmaxpos1dp * 100) / 100
 
 
 
@@ -1219,20 +1425,358 @@ if(Match_Allele_Direction == T)
   res$Plot_Value[res$RS == "-a-aaarModel"] <- res$Overall_Row_Number[res$RS == "-a-aaarModel"]
 
 
-  print(res)
+ # print(res)
 
-  p <-
-    res |>
-    ggplot2::ggplot(ggplot2::aes(y = Overall_Row_Number)) +  # Use Plot_Value for y axis
+
+
+
+
+
+  # res$Left_Plot_Value <- ifelse(res$Left_Plot_Value == "SNP",
+  #                               res$Left_Plot_Value,
+  #                               paste0(res$Left_Plot_Value, "   "))
+  #
+  # # Measure the visual width of each string in res$Left_Plot_Value
+  # string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
+  #
+  # # Find the maximum visual width
+  # max_width <- max(string_widths, na.rm = TRUE)
+  #
+  # print(max_width)
+  #
+  #
+  #
+  # # Measure the width of a single underscore
+  # underscore_width <- grid::convertWidth(grid::stringWidth("_"), unitTo = "npc", valueOnly = TRUE)
+  #
+  # # Calculate the number of underscores needed to match the maximum width
+  # num_underscores <- ceiling(max_width / underscore_width)
+  #
+  # # Create the padded underscore string
+  # padded_value <- paste(rep("_", num_underscores), collapse = "")
+  #
+  #
+  #
+  #
+  # print(padded_value)
+
+  # Replace "SNP" with the visually matched underscore string
+#  res$Left_Plot_Value[res$Left_Plot_Value == "SNP"] <- padded_value
+
+
+ # print(Left_Spaces)
+  Left_Spaces <- strrep("Z", Left_Spaces)  # Reassign as a repeated "Z" string
+#  print(Left_Spaces)
+
+
+  # Ensure strings except "SNP" have spaces added
+  res$Left_Plot_Value <- ifelse(res$Left_Plot_Value == "fake",
+                                res$Left_Plot_Value,
+                                paste0(res$Left_Plot_Value, Left_Spaces))
+
+
+#print(res$Left_Plot_Value)
+
+
+#print(res$Left_Plot_Value)
+
+
+
+  # Measure the visual width of each string in res$Left_Plot_Value
+  string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
+
+
+
+  # Find the maximum visual width
+  max_width <- max(string_widths, na.rm = TRUE)
+
+
+
+
+
+  #print(max_width)
+
+  # Measure the width of a single underscore
+  underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
+
+#  print(underscore_width)
+
+
+
+
+
+  # Calculate the exact number of underscores needed to match the maximum width
+  exact_num_underscores <- max_width / underscore_width
+
+  numbar <- ceiling(exact_num_underscores * (SNP_Stat_Text_Size / 8))
+
+ # print(numbar)
+
+
+
+  # Create the visually matched underscore string by trimming the exact width
+  underscores <- paste(rep("---", floor(exact_num_underscores)), collapse = "") # Start with more underscores
+  final_padded_value <- substr(underscores, 1, round(exact_num_underscores))    # Trim to match the exact length
+
+#  print(final_padded_value)
+
+
+ # print(res)
+
+
+
+
+
+#
+#   # Replace "SNP" with the visually matched underscore string
+#   res$Left_Plot_Value[res$RS == "---a"] <- final_padded_value
+#   res$Plot_Value <- ifelse(
+#     res$RS == "---a",              # Condition to check
+#     res$Overall_Row_Number ,        # Value to assign when condition is TRUE
+#     res$Plot_Value                # Retain the original value otherwise
+#   )
+
+#  res$Left_Plot_Value[res$RS == "---a"] <- final_padded_value
+#  res$Overall_Row_Number[res$RS == "---a"] <- 43  # Set Overall_Row_Number to 45
+
+  # Assign Plot_Value for "---a" as -1 of the corresponding neighboring value
+  res$Plot_Value <- ifelse(
+    res$RS == "---a",
+    res$Plot_Value[res$RS == "-a-aaarModel"] - 1, # Subtract 1 from the Plot_Value of the neighboring RS
+    res$Plot_Value # Retain the original value otherwise
+  )
+
+  # Assign Plot_Value for "-aaa-rs99999999" as +1 of the corresponding neighboring value
+  res$Plot_Value <- ifelse(
+    res$RS == "-aaa-rs99999999",
+    res$Plot_Value[res$RS == "-a-aaarModel"] + 1, # Add 1 to the Plot_Value of the neighboring RS
+    res$Plot_Value # Retain the original value otherwise
+  )
+
+
+
+
+ # bold_line_string <- paste(rep("\u2501", 2), collapse = "")
+#  print(bold_line_string)
+
+
+
+#  res$Left_Plot_Value[res$RS == "---a"] <- bold_line_string
+
+#  res$Left_Plot_Value[res$RS == "-aaa-rs99999999"] <- bold_line_string
+
+  labmatch <-  paste(rep("\u2501", numbar), collapse = "")
+#  labmatch <-  paste("SNP", Left_Spaces)
+
+  res$Left_Plot_Value <- ifelse(
+    res$RS == "---a",
+    paste(rep("\u2501", numbar), collapse = ""),  # Repeat \u2501 'num_repeats' times
+    res$Left_Plot_Value
+  )
+
+
+  res$Left_Plot_Value <- ifelse(
+    res$RS == "-aaa-rs99999999",
+    paste(rep("\u2501", numbar), collapse = ""),  # Repeat \u2501 'num_repeats' times
+    res$Left_Plot_Value
+  )
+
+  max_row_num <- max(res$Overall_Row_Number, na.rm = TRUE)
+#  print(max_row_num)
+
+
+
+
+  # Define the necessary columns and their values
+  new_row <- data.frame(
+    Overall_Row_Number = 0,            # y-axis value for the new row
+    Left_Plot_Value = "Custom Label",  # Label for y = 0
+    Plot_Value = 0,
+    RS = "Custom Label" # Plot value for alignment
+  )
+
+  # Identify the columns missing in the new row and add them as NA
+  missing_cols <- setdiff(names(res), names(new_row))
+  for (col in missing_cols) {
+    new_row[[col]] <- NA
+  }
+
+  # Ensure column order matches the original dataframe
+  new_row <- new_row[names(res)]
+
+  # Append the new row to the dataframe
+  res <- rbind(new_row, res)
+
+
+  res$Left_Plot_Value <- ifelse(
+    res$Left_Plot_Value == "Custom Label",
+    paste(rep("\u2501", numbar), collapse = ""),  # Repeat \u2501 'num_repeats' times
+    res$Left_Plot_Value
+  )
+
+
+  # res$Left_Plot_Value[res$Left_Plot_Value == "SNP"] <- "____"
+#
+ #  p <-
+ #    res |>
+ #    ggplot2::ggplot(ggplot2::aes( y = Overall_Row_Number)) +  # Use Plot_Value for y axis
+ #    ggplot2::theme_classic() +
+ #
+ # # Keep the y-axis as integers but customize the labels to float
+ #    ggplot2::scale_y_continuous(
+ #      breaks = seq(0, max_row_num, by = 0.5),  # Integer breaks from 0 to the number of rows
+ #     labels =  function(x) ifelse(x %in% res$Plot_Value, res$Left_Plot_Value[match(x, res$Plot_Value)], ""),  # Only label at Plot_Value positions
+ #      limits = c(1,( max_row_num)) ,  # Set y-axis limits from 0 to the number of rows
+ #      expand = ggplot2::expansion(add = c(1, 0.04)) # No extra padding
+ #    ) + ggplot2::theme(
+ #    axis.text.y = ggplot2::element_text(family = "Courier", size = 8, color = "black") # Replace "Arial Unicode MS" with an available font
+ #  )
+
+
+  p <- res |>
+    ggplot2::ggplot(ggplot2::aes(y = Overall_Row_Number)) +  # Use Plot_Value for y-axis
     ggplot2::theme_classic() +
 
-    # Keep the y-axis as integers but customize the labels to float
+    # Keep the y-axis as integers but customize the labels with HTML for U2501
     ggplot2::scale_y_continuous(
-      breaks = seq(0, nrow(res), by = 0.5),  # Integer breaks from 0 to the number of rows
-      labels = function(x) ifelse(x %in% res$Plot_Value, res$Left_Plot_Value[match(x, res$Plot_Value)], ""),  # Only label at Plot_Value positions
-      limits = c(1,( nrow(res))),  # Set y-axis limits from 0 to the number of rows
-      expand = ggplot2::expansion(add = c(1, 0.03))  # No extra padding
+      breaks = seq(0, max_row_num, by = 0.5),  # Integer breaks from 0 to the number of rows
+      labels = function(x) {
+        labels <- ifelse(
+          x %in% res$Plot_Value,
+          res$Left_Plot_Value[match(x, res$Plot_Value)],
+          ""
+        )
+
+
+       # formatted_labels <- gsub("Z", "<span style='color:white;'>Z</span>", labels)
+        formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
+      #  formatted_labels <- gsub("Z", "<span style='opacity:0;'>Z</span>", labels)
+      #  formatted_labels <- gsub("Z", "<span style='visibility:hidden;'>Z</span>", labels)
+      #  formatted_labels <- gsub("Z", "<span style='color: rgba(0,0,0,0);'>Z</span>", labels)
+
+
+        # Apply HTML styling for U2501
+        ifelse(
+          grepl("\u2501", formatted_labels),  # Check if label contains U2501 character
+          paste0("<span style='font-size:8pt; color:black'>", formatted_labels, "</span>"),
+          paste0("<span style='font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")   # Default 12pt for all others
+        )
+      },
+      limits = c(1, max_row_num),  # Set y-axis limits from 0 to the number of rows
+      expand = ggplot2::expansion(add = c(1, 0.04)),  # No extra padding
+     ) +
+    ggplot2::theme(
+      axis.text.y = ggtext::element_markdown(
+        family = "Courier",
+        margin = ggplot2::margin(r = 0),  # No space between labels and axis
+        vjust  = 0.58  # Adjust vertical alignment to center labels on the tick
+      ) ,
+      ,
+     axis.ticks.y = ggplot2::element_blank(),  # Remove y-axis tick marks
+      axis.ticks.length.y = ggplot2::unit(0, "cm")  # Ensure tick length is 0
     )
+
+
+
+
+
+  # longest_label <- max(nchar(res$Left_Plot_Value), na.rm = TRUE)
+  #
+  # # Longest label
+  # #longest_label <- "Your longest label here"  # Replace with the longest label
+  # longest_label_width <- grid::convertWidth(
+  #   grid::stringWidth(longest_label, gp = grid::gpar(fontfamily = "Courier", fontsize = 16)),
+  #   unitTo = "mm",
+  #   valueOnly = TRUE
+  # )
+  #
+  # # Single U2501 character rendered at 8pt
+  # u2501_width <- grid::convertWidth(
+  #   grid::stringWidth("\u2501", gp = grid::gpar(fontfamily = "Courier", fontsize = 8)),
+  #   unitTo = "mm",
+  #   valueOnly = TRUE
+  # )
+  #
+  # # Calculate how many U2501 characters fit
+  # u2501_fit <- floor(longest_label_width / u2501_width)
+  #
+  # u2501_fit
+
+
+
+  # p <- res |>
+  #   ggplot(aes(y = Overall_Row_Number)) +
+  #   theme_classic() +
+  #
+  #   # Customize y-axis labels with HTML styling, avoiding NA values and handling U2501 character
+  #   scale_y_continuous(
+  #     breaks = res$Plot_Value,  # Only show labels at Plot_Value positions
+  #     labels = function(x) {
+  #       labels <- res$Left_Plot_Value[match(x, res$Plot_Value)]
+  #
+  #       # Remove NA labels (replace with empty string)
+  #       labels[is.na(labels)] <- ""
+  #
+  #       # Apply different font sizes based on U2501 presence
+  #       ifelse(
+  #         grepl("\u2501", labels),  # Check if label contains U2501 character
+  #         paste0("<span style='font-size:8pt; color:black'>", labels, "</span>"),
+  #         paste0("<span style='font-size:12pt; color:black'>", labels, "</span>")  # Default 20pt for all others
+  #       )
+  #     },
+  #     limits = c(1, max(res$Overall_Row_Number)),
+  #     expand = expansion(add = c(1, 0.04))
+  #   ) +
+  #   theme(
+  #     axis.text.y = element_markdown(
+  #       margin = margin(r = 0)  # No space between labels and axis
+  #     ),
+  #     axis.ticks.y = element_blank(),           # Remove tick marks
+  #     axis.ticks.length = unit(0, "cm")         # Ensure no tick length
+  #   )
+  # Ensure the ggtext package is installed
+
+# pz <- p
+
+# ggplot2::ggsave("TESTING.jpg", plot = pz, width = Width, height = Height, units = "in", dpi = Quality)
+
+# print("hel")
+# print(u2501_fit)
+
+
+
+
+ # print(p)
+
+ # print(res$Left_Plot_Value)
+
+
+#  print(labmatch)
+
+
+
+#  print(res$RS)
+
+
+#  print("failed below here")
+
+  #Modify the plot
+  # p <- p +
+  #   ggplot2::theme(
+  #     axis.ticks.y = ggplot2::element_blank(),                          # Remove tick marks
+  #     axis.ticks.length = grid::unit(0, "cm"),                         # Ensure no tick length
+  #     axis.text.y = ggplot2::element_text(
+  #       margin = ggplot2::margin(r = 0)#,  # No space between labels and axis
+  #      # hjust = 1  #,
+  #     #  vjust = 0.8 # Align text to the right to touch the axis
+  #     )
+  #   )
+
+ # print(p)
+
+
+
+  #print(p)
 
 
 
@@ -1273,50 +1817,66 @@ if(Match_Allele_Direction == T)
 
 
 
-
-  if(Test_Statistic == "BETA") {
-    # Ensure that 0 is always in the breaks for BETA, but avoid too many labels near 0
-    breaks <- seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation)
-
-    # Exclude breaks very close to 0, only include 0
-    breaks <- breaks[abs(breaks) > Null_Buffer]  # Adjust threshold if necessary
-    breaks <- c(0, breaks)  # Ensure 0 is still included
-
-    p <- p + ggplot2::scale_x_continuous(
-      limits = c(mincalcLFull, mincalcRFull),
-      breaks = breaks,
-      labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
-    )
-  } else {
-    # Ensure that 1 is always in the breaks for OR (log10), but avoid too many labels close to 1
-    breaks <- seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation)
-
-    # Exclude breaks very close to 1, only include 1
-    breaks <- breaks[abs(breaks - 1) > Null_Buffer]  # Adjust threshold if necessary
-    breaks <- c(1, breaks)  # Ensure 1 is still included
-
-    p <- p + ggplot2::scale_x_continuous(
-      limits = c(mincalcLFull, mincalcRFull),
-      breaks = breaks,
-      trans = "log10",
-      labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
-    )
-  }
+#
+#   if(Test_Statistic == "BETA") {
+#     # Ensure that 0 is always in the breaks for BETA, but avoid too many labels near 0
+#     breaks <- seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation)
+#
+#     # Exclude breaks very close to 0, only include 0
+#     breaks <- breaks[abs(breaks) > Null_Buffer]  # Adjust threshold if necessary
+#     breaks <- c(0, breaks)  # Ensure 0 is still included
+#
+#     p <- p + ggplot2::scale_x_continuous(
+#       limits = c(mincalcLFull, mincalcRFull),
+#       breaks = breaks,
+#       labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
+#     )
+#  # }
 
 
 
-  p <- p +
-
-    ggplot2::geom_point(ggplot2::aes(x=BETA, color = STUDY), shape=res$Shape, size=3) +
-    ggplot2::geom_linerange(ggplot2::aes(xmin=LL, xmax=UL))
+#print()
 
 
 
-  if(Legend_On == FALSE)
-  {
-    p <- p +  ggplot2::theme(legend.position = "none")
-  }
+#  ggplot2::ggsave("TESTING.jpg", plot = p, width = Width, height = Height, units = "in", dpi = Quality)
 
+
+
+#  print(res$Left_Plot_Value)
+
+
+  # Dynamically adjust limits based on y-axis label size
+  # Measure the maximum width of y-axis labels
+  max_label_width <- max(grid::stringWidth(res$Left_Plot_Value))  # Replace `res$SNP` with your y-axis label column
+ # print(max_label_width)
+ # zzz
+  # Convert the label width into axis scale units
+  label_width_in_units <- as.numeric(grid::convertWidth(max_label_width, "npc", valueOnly = TRUE))
+
+  # Adjust proportionally to the current axis range
+  x_axis_range <- abs(mincalcR - mincalcL)
+  adjustment_factor <- label_width_in_units * x_axis_range  # Scale the label width to the axis range
+
+  # Adjust the left and right limits based on the scaled label width
+  adjusted_min_limit <- mincalcL - adjustment_factor
+  adjusted_max_limit <- mincalcR + adjustment_factor
+#
+#   print(adjusted_min_limit)
+#   print(adjusted_max_limit)
+
+
+
+  # # Update the plot with adjusted x-axis limits
+  # p <- p + ggplot2::scale_x_continuous(
+  #   limits = c(adjusted_min_limit, adjusted_max_limit),  # Dynamically adjusted x-axis limits
+  #   breaks = displayed_breaks,                          # Reuse filtered breaks
+  #   labels = displayed_labels                           # Reuse filtered labels
+  # )
+  #
+
+
+###
 
 
 
@@ -1455,6 +2015,14 @@ if(Match_Allele_Direction == T)
 
 
 
+ # print(res_plot)
+
+
+
+  #formatting
+
+
+
 
   # if(Display_P_Value_Column == T)
   # {
@@ -1465,33 +2033,473 @@ if(Match_Allele_Direction == T)
   #   res$P_BETA_SE <- paste0(res_plot$BETA2)
   # }
 
+  P_Stat_Spaces <- strrep("Z", P_Stat_Spaces)
+
+  P_Stat_Spaces_Adj <- paste0(P_Stat_Spaces, "ZZZ") #add extra 3 for this
+
+
+  P_Stat_Spaces_Title <- paste0(P_Stat_Spaces, "..")
+
+
+  RS_condition <- grepl("-a-aaarModel", res$RS)
 
   if(Display_P_Value_Column == T) {
     # Adjust the space padding based on the length of the exponent part
     res$P_BETA_SE <- ifelse(
       nchar(gsub(".*e[\\+\\-]([0-9]+)", "\\1", res_plot$P)) == 3,  # Check if the exponent has 3 digits
-      paste0(res_plot$P, "      ", "\u2009",  "\u200a", res_plot$BETA2),  # 9 spaces for three-digit exponents
-      paste0(res_plot$P, "         ", res_plot$BETA2)  # 10 spaces for shorter exponents
+      paste0(res_plot$P, P_Stat_Spaces, "\u2009",  "\u200a", res_plot$BETA2),  # 9 spaces for three-digit exponents
+      paste0(res_plot$P, P_Stat_Spaces, res_plot$BETA2)  # 10 spaces for shorter exponents
     )
-  } else {
+
+
+    res$P_BETA_SE <- ifelse(
+      RS_condition,
+      paste0(res_plot$P, P_Stat_Spaces_Title, res_plot$BETA2),
+      res$P_BETA_SE  # Keep unchanged if RS does not match
+    )
+
+
+     } else {
     res$P_BETA_SE <- res_plot$BETA2
   }
 
 
-  p <- p +   ggplot2::guides(y.sec = ggh4x::guide_axis_manual(
-    breaks = res$Overall_Row_Number  , labels = res$P_BETA_SE))
+#  print(res)
+
+#"      "
+#"      "
+
+  #****
 
 
 
-  #need to mod before moving
-  p <- p+ ggplot2::theme(
-    # Remove original y-axis text (left side)
-    axis.ticks.y.left = ggplot2::element_blank(),
-    axis.ticks.y.right = ggplot2::element_blank(),
-    axis.text.y.left   = ggplot2::element_text(size = 12),
-    axis.text.y.right   = ggplot2::element_text(size = 12)
-    # Remove original y-axis ticks (left side)
-  )   # Remove original y-axis line (left side)
+  Right_Spaces <- strrep("Z", Right_Spaces)
+
+
+
+  res$P_BETA_SE <- ifelse(res$P_BETA_SE == "fake",
+                                res$P_BETA_SE,
+                                paste0(Right_Spaces, res$P_BETA_SE))
+
+  # Measure the visual width of each string in res$Left_Plot_Value
+  string_widths <- grid::convertWidth(grid::stringWidth(res$P_BETA_SE), unitTo = "npc", valueOnly = TRUE)
+
+  # Find the maximum visual width
+  max_width <- max(string_widths, na.rm = TRUE)
+
+ # print(max_width)
+
+  # Measure the width of a single underscore
+  underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
+
+ # print(underscore_width)
+
+
+
+
+  # Calculate the exact number of underscores needed to match the maximum width
+  exact_num_underscores <- max_width / underscore_width
+
+#  numbar <- ceiling(exact_num_underscores)
+
+  numbar <- floor(exact_num_underscores * (SNP_Stat_Text_Size / 8))
+
+ # print(numbar)
+
+
+
+  # Create the visually matched underscore string by trimming the exact width
+  underscores <- paste(rep("---", floor(exact_num_underscores)), collapse = "") # Start with more underscores
+  final_padded_value <- substr(underscores, 1, round(exact_num_underscores))    # Trim to match the exact length
+
+ # print(final_padded_value)
+
+
+ # print(res)
+
+
+
+
+
+  #
+  #   # Replace "SNP" with the visually matched underscore string
+  #   res$Left_Plot_Value[res$RS == "---a"] <- final_padded_value
+  #   res$Plot_Value <- ifelse(
+  #     res$RS == "---a",              # Condition to check
+  #     res$Overall_Row_Number ,        # Value to assign when condition is TRUE
+  #     res$Plot_Value                # Retain the original value otherwise
+  #   )
+
+  #  res$Left_Plot_Value[res$RS == "---a"] <- final_padded_value
+  #  res$Overall_Row_Number[res$RS == "---a"] <- 43  # Set Overall_Row_Number to 45
+
+  # Assign Plot_Value for "---a" as -1 of the corresponding neighboring value
+
+  #
+  #  res$Plot_Value <- ifelse(
+  #   res$RS == "---a",
+  #   res$Plot_Value[res$RS == "-a-aaarModel"] - 1, # Subtract 1 from the Plot_Value of the neighboring RS
+  #   res$Plot_Value # Retain the original value otherwise
+  # )
+  #
+  # # Assign Plot_Value for "-aaa-rs99999999" as +1 of the corresponding neighboring value
+  # res$Plot_Value <- ifelse(
+  #   res$RS == "-aaa-rs99999999",
+  #   res$Plot_Value[res$RS == "-a-aaarModel"] + 1, # Add 1 to the Plot_Value of the neighboring RS
+  #   res$Plot_Value # Retain the original value otherwise
+  # )
+  #
+
+
+
+  # bold_line_string <- paste(rep("\u2501", 2), collapse = "")
+  #  print(bold_line_string)
+
+
+
+  #  res$Left_Plot_Value[res$RS == "---a"] <- bold_line_string
+
+  #  res$Left_Plot_Value[res$RS == "-aaa-rs99999999"] <- bold_line_string
+
+
+  res$P_BETA_SE <- ifelse(
+    res$RS == "---a",
+    paste(rep("\u2501", numbar), collapse = ""),  # Repeat \u2501 'num_repeats' times
+    res$P_BETA_SE
+  )
+
+
+  res$P_BETA_SE <- ifelse(
+    res$RS == "-aaa-rs99999999",
+    paste(rep("\u2501", numbar), collapse = ""),  # Repeat \u2501 'num_repeats' times
+    res$P_BETA_SE
+  )
+
+  max_row_num <- max(res$Overall_Row_Number, na.rm = TRUE)
+ # print(max_row_num)
+
+
+
+
+
+  res$P_BETA_SE <- ifelse(
+    res$RS == "Custom Label",
+    paste(rep("\u2501", numbar), collapse = ""),  # Repeat \u2501 'num_repeats' times
+    res$P_BETA_SE
+  )
+
+
+
+
+  # res$P_BETA_SE <- ifelse(
+  #   res$RS == "Custom Label",
+  #   paste0("<span style='font-size:50pt;'>TESTING</span>"),
+  #   res$P_BETA_SE
+  # )
+
+
+
+ # print(res$P_BETA_SE)
+
+#  ****
+
+
+
+
+
+
+
+
+
+
+#
+#
+  # p <- p +   ggplot2::guides(y.sec = ggh4x::guide_axis_manual(
+  #   breaks = res$Overall_Row_Number  , labels = res$P_BETA_SE))
+  #
+  #
+  # print(p)
+#
+#
+# #This is where size occurs
+#
+#
+#   #need to mod before moving
+#   p <- p+ ggplot2::theme(
+#     # Remove original y-axis text (left side)
+#     axis.ticks.y.left = ggplot2::element_blank(),
+#     axis.ticks.y.right = ggplot2::element_blank(),
+#     axis.text.y.left   = ggplot2::element_text(size = SNP_Stat_Text_Size),
+#    axis.text.y.right   = ggplot2::element_text(size = SNP_Stat_Text_Size)
+# # axis.text.y.right = ggtext::element_markdown(size = SNP_Stat_Text_Size)
+#     # Remove original y-axis ticks (left side)
+#   )   # Remove original y-axis line (left side)
+#
+#
+#
+#
+#
+#
+#
+#   print("adjusting right")
+#
+#   p <- p +
+#     ggplot2::theme(
+#       axis.ticks.y.right = ggplot2::element_blank(),                          # Remove tick marks
+#       axis.ticks.length.right = grid::unit(0, "cm"),                         # Ensure no tick length
+#       axis.text.y.right = ggplot2::element_text(
+#         margin = ggplot2::margin(r = 0) #,  # No space between labels and axis
+#       #  hjust = 1  #,
+#         #  vjust = 0.8 # Align text to the right to touch the axis
+#       )
+#     )
+#
+
+
+
+#
+  # p <- p +
+  #   ggplot2::theme(
+  #     # Remove right-side tick marks
+  #     axis.ticks.y.right = ggplot2::element_blank(),
+  #     axis.ticks.length.right = grid::unit(0, "cm"),
+  #
+  #     # Apply formatted y-axis text on the right
+  #     axis.text.y.right = ggtext::element_markdown(
+  #       margin = ggplot2::margin(r = 0),  # No space between labels and axis
+  #       size = SNP_Stat_Text_Size,
+  #       vjust = 0.58
+  #     )
+  #   ) +
+  #
+  #   # Apply formatted labels based on U2501 character for right-side axis
+  #   ggplot2::guides(y.sec = ggh4x::guide_axis_manual(
+  #     breaks = res$Overall_Row_Number,
+  #     labels = function(x) {
+  #       labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
+  #
+  #       # Remove NA labels
+  #       labels[is.na(labels)] <- ""
+  #
+  #       formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
+  #
+  #       # Apply different font sizes based on U2501 presence
+  #       ifelse(
+  #         grepl("\u2501", formatted_labels),  # Check if label contains U2501 character
+  #         paste0("<span style='font-size:8pt; color:black'>", formatted_labels, "</span>"),
+  #         paste0("<span style='font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")   # Default 12pt for all others
+  #       )
+  #     }
+  #   ))
+
+
+#
+# p <- p + ggplot2::scale_y_continuous(
+#   sec.axis = ggplot2::sec_axis(
+#     ~.,
+#     breaks = res$Overall_Row_Number,
+#     labels = function(x) {
+#       labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
+#       labels[is.na(labels)] <- ""
+#       formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
+#       formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
+#
+#       ifelse(
+#         grepl("\u2501", formatted_labels),
+#         paste0("<span style='font-size:8pt; color:black'>", formatted_labels, "</span>"),
+#         paste0("<span style='font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+#       )
+#     }
+#   )
+# )
+
+
+# print( res$P_BETA_SE)
+
+
+
+
+p <- res |>
+  ggplot2::ggplot(ggplot2::aes(y = Overall_Row_Number)) +  # Use Plot_Value for y-axis
+  ggplot2::theme_classic() +
+
+  # Single scale_y_continuous handling both left and right axes
+  ggplot2::scale_y_continuous(
+    breaks = seq(0, max_row_num, by = 0.5),  # Integer breaks from 0 to max rows
+    labels = function(x) {
+      labels <- ifelse(
+        x %in% res$Plot_Value,
+        res$Left_Plot_Value[match(x, res$Plot_Value)],
+        ""
+      )
+
+      formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
+
+      ifelse(
+        grepl("\u2501", formatted_labels),
+        paste0("<span style='font-size:8pt; color:black'>", formatted_labels, "</span>"),
+        paste0("<span style='font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+      )
+    },
+    limits = c(1, max_row_num),  # Y-axis limits from 1 to max rows
+    expand = ggplot2::expansion(add = c(1, 0.04)),  # No extra padding
+
+    sec.axis = ggplot2::sec_axis(
+      trans = ~.,  # Keep transformation the same
+      breaks = res$Overall_Row_Number,
+      labels = function(x) {
+        labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
+        labels[is.na(labels)] <- ""
+        formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
+        formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
+
+        ifelse(
+          grepl("\u2501", formatted_labels),
+          paste0("<span style='font-size:8pt; color:black'>", formatted_labels, "</span>"),
+          paste0("<span style='font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+        )
+      }
+    )
+  ) +
+
+  ggplot2::theme(
+    axis.text.y = ggtext::element_markdown(
+      family = "Courier",
+      margin = ggplot2::margin(r = 0),  # No space between labels and axis
+      vjust  = 0.58  # Adjust vertical alignment to center labels on the tick
+    ),
+    axis.text.y.right = ggplot2::element_text(
+      margin = ggplot2::margin(l = 0, r = 0),  # Removes gap to the right of secondary y-axis
+      hjust = 0  # Ensures right-alignment
+    ),
+   axis.ticks.y = ggplot2::element_blank(),  # Remove y-axis tick marks
+   axis.ticks.length.y = ggplot2::unit(0, "cm")  # Ensure tick length is 0
+  )
+
+
+
+
+p <- p +
+
+  ggplot2::geom_point(ggplot2::aes(x=BETA, color = STUDY), shape=res$Shape, size=3) +
+  ggplot2::geom_linerange(ggplot2::aes(xmin=LL, xmax=UL))
+
+
+
+
+#print(p)
+
+
+
+#  pz <- p
+
+if(Legend_On == FALSE)
+{
+  p <- p +  ggplot2::theme(legend.position = "none")
+}
+
+
+
+#
+# p <- p +  ggplot2::guides(y.sec = ggh4x::guide_axis_manual(
+#     breaks = res$Overall_Row_Number,
+#     labels = function(x) {
+#       labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
+#
+#       # Remove NA labels
+#       labels[is.na(labels)] <- ""
+#
+#       formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels) #invis
+#       formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>Z</span>", formatted_labels)
+#
+#       # Apply different font sizes based on U2501 presence
+#       ifelse(
+#         grepl("\u2501", formatted_labels),  # Check if label contains U2501 character
+#         paste0("<span style='font-size:8pt; color:black'>", formatted_labels, "</span>"),
+#         paste0("<span style='font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")   # Default 12pt for all others
+#       )
+#     }
+#   )) +
+
+    # ggplot2::theme(
+    #   # Remove right-side tick marks
+    #   axis.ticks.y.right = ggplot2::element_blank(),
+    #   axis.ticks.length.right = grid::unit(0, "cm"),
+    #
+    #   # Apply formatted y-axis text on the right
+    #   axis.text.y.right = ggtext::element_markdown(
+    #     margin = ggplot2::margin(r = 0),  # No space between labels and axis
+    #     size = SNP_Stat_Text_Size,
+    #     vjust = 0.62,
+    #     lineheight = 0.8,
+    #     family = "Courier"
+    #   )
+    # )
+    #
+
+
+#auto adjust
+if (is.null(X_Axis_Separation)) {
+  range_width <- max(abs(mincalc), abs(maxcalc))  # Get the max range
+  X_Axis_Separation <- 10^floor(log10(range_width) - 1)  # Auto-calculate step size
+}
+
+if (Test_Statistic == "BETA") {
+  # Calculate the maximum absolute range
+  max_range <- max(abs(mincalc), abs(maxcalc))  # Ensure symmetry around 0
+  max_range <- ceiling(max_range / X_Axis_Separation) * X_Axis_Separation  # Round to nearest separation
+
+  # Generate symmetrical breaks around 0
+  breaks <- seq(-max_range, max_range, X_Axis_Separation)
+
+  # Apply Null_Buffer: Remove breaks close to 0, but ensure 0 is included
+  breaks <- breaks[abs(breaks) > Null_Buffer]
+  breaks <- sort(c(0, breaks))  # Ensure 0 is included and sorted symmetrically
+
+  # Filter out breaks and labels beyond midmaxneg1dp and midmaxpos1dp
+  displayed_breaks <- breaks[breaks >= mincalc & breaks <= maxcalc]
+  displayed_labels <- ifelse(
+    breaks >= mincalc & breaks <= maxcalc,
+    scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)(breaks),
+    ""  # Hide labels beyond the range
+  )
+
+  # Ensure `breaks` and `labels` are of the same length
+  displayed_labels <- displayed_labels[breaks %in% displayed_breaks]
+
+  # Set axis with symmetrical breaks and filtered labels and ticks
+  p <- p + ggplot2::scale_x_continuous(
+    limits = c(mincalc, maxcalc),  # Symmetrical axis limits - enough for strips to fit just under
+    breaks = displayed_breaks,          # Filtered breaks for ticks
+    labels = displayed_labels,
+    expand = ggplot2::expansion(mult = c(Line_Space, Line_Space)) # Filtered labels
+  ) +
+    ggplot2::theme(
+      axis.ticks.x = ggplot2::element_line(size = 0.5)  # Regular tick size
+    )
+}
+
+
+else {
+  # Ensure that 1 is always in the breaks for OR (log10), but avoid too many labels close to 1
+  breaks <- seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation)
+
+  # Exclude breaks very close to 1, only include 1
+  breaks <- breaks[abs(breaks - 1) > Null_Buffer]  # Adjust threshold if necessary
+  breaks <- c(1, breaks)  # Ensure 1 is still included
+
+  p <- p + ggplot2::scale_x_continuous(
+    limits = c(mincalcLFull, mincalcRFull),
+    breaks = breaks,
+    trans = "log10",
+    labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
+  )
+}
+
+
+
+
+#ggplot2::ggsave("TESTING.jpg", plot = p, width = Width, height = Height, units = "in", dpi = Quality)
 
 
 
@@ -1524,6 +2532,10 @@ if(Match_Allele_Direction == T)
 
 
   }
+
+
+
+
 
   if(Test_Statistic == "OR")
   {
@@ -1572,10 +2584,47 @@ if(Match_Allele_Direction == T)
 
 
   }
+
+
+
+ # ggplot2::ggsave("Test.jpg", plot = p, width = Width, height = Height, units = "in", dpi = Quality)
+
+#  print(p)
+
+
+
+
+
+
   # Example usage:
-  p <- shift_axis_x(p, mincalcL)
+#  p <- shift_axis_x(p, mincalcL)
 
 
+#  p <- p +
+#    ggplot2::geom_hline(
+#      yintercept = 2,
+#      color = "red",     # Change the color of the line as needed
+#      linetype = "dashed" # Optional: Use a dashed line
+#    )+
+#    ggplot2::coord_cartesian(clip = "off") # Ensure the line fills the full plot area
+
+#  print(p)
+
+
+  # Print the updated plot
+#  print(p)
+
+
+#  ggplot2::ggsave("Test.jpg", plot = p, width = Width, height = Height, units = "in", dpi = Quality)
+
+
+
+
+
+#print(mincalcL)
+#print(p)
+
+#zzz
 
 
 
@@ -1605,6 +2654,8 @@ if(Match_Allele_Direction == T)
 
   }
 
+
+
   if(Test_Statistic == "OR")
   {
 
@@ -1631,7 +2682,7 @@ if(Match_Allele_Direction == T)
 
   }
   # Example usage:
-  p <- shift_axis_y_right(p, mincalcR)
+#  p <- shift_axis_y_right(p, mincalcR)
 
 
 
@@ -1694,15 +2745,27 @@ if(Match_Allele_Direction == T)
     {
 
 
+  #    print("Adding Strips")
+
+
+
 
     # Add annotation for the rectangle
     if(block %% 2 ==0)
     {
 
 
+  #    print("running stirps")
+
+
+
       p <- p + ggplot2::annotate("rect", xmin = midmaxneg, xmax = midmaxpos, ymin = ymin, ymax = ymax,
                         alpha = .1, fill = Strip_Colour)
 
+
+
+      # print(ymin)
+      # print(ymax)
 
     }
 
@@ -1710,6 +2773,10 @@ if(Match_Allele_Direction == T)
 
     ymin <- ymax
   }
+
+
+
+#  pz <- p
 
 
 
@@ -1776,7 +2843,7 @@ labels <- setNames(Names, Names)
 
 
       ggplot2::labs(x=X_Axis_Title, y="YL")
-    p
+
   }else{
     p <- p +
 
@@ -1805,7 +2872,7 @@ labels <- setNames(Names, Names)
   if(Legend_On == FALSE)
   {
     p_mid <- p +
-      ggplot2::theme(axis.line.y = ggplot2::element_blank(),
+      ggplot2::theme(#axis.line.y = ggplot2::element_blank(),
                      axis.ticks.y= ggplot2::element_blank(),
                      legend.position = "none",
                      #    axis.text.y.left= ggplot2::element_text(size = 5),
@@ -1815,7 +2882,7 @@ labels <- setNames(Names, Names)
   }else{
 
     p_mid <- p +
-      ggplot2::theme(axis.line.y = ggplot2::element_blank(),
+      ggplot2::theme(#axis.line.y = ggplot2::element_blank(),
                      axis.ticks.y= ggplot2::element_blank(),
                      legend.position = "bottom",
                      legend.box = "horizontal",
@@ -1827,7 +2894,7 @@ labels <- setNames(Names, Names)
   }
 
 
-  p_mid <- p_mid + ggplot2::geom_hline(yintercept = (end), linetype = "solid", color = "black")+# + geom_hline(yintercept = 0, linetype = "solid", color = "black")
+  p_mid <- p_mid +   ggplot2::geom_hline(yintercept = (end), linetype = "solid", color = "black")+# + geom_hline(yintercept = 0, linetype = "solid", color = "black")
  #   ggplot2::geom_hline(yintercept = 1, linetype = "solid", color = "black")+
     ggplot2::geom_hline(yintercept = end+2, linetype = "solid", color = "black")+
     #+ geom_segment(aes(x = -Inf, xend = Inf, y = 36, yend = 36), color = "black", linetype = "solid")
@@ -1835,7 +2902,7 @@ labels <- setNames(Names, Names)
           legend.text = ggplot2::element_text(size = Legend_Text_Size),
           legend.title = ggplot2::element_text(size = Legend_Title_Size),
           axis.text.x = ggplot2::element_text(size = X_Axis_Text_Size),
-          axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 15), vjust = -2, size = X_Axis_Title_Size ))#,
+          axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 15), vjust = -3, size = X_Axis_Title_Size ))#,
   #      axis.ticks.y= element_blank(),
   #      axis.text.y= element_blank(),
   #      axis.title.y= element_blank())
@@ -1851,10 +2918,13 @@ labels <- setNames(Names, Names)
  ) # adds more
 
 
- # print(p_mid)
+#  print(p_mid)
 
 
 
+
+#print(end)
+#print(end + 2)
 
 
 
@@ -1951,12 +3021,18 @@ labels <- setNames(Names, Names)
 
 
 
+#  print(p_mid2)
 
+
+
+#  png("test_plot.png", type = "cairo")
+#  print(p_mid2)
+#  dev.off()
 
 ggplot2::ggsave(name, plot = p_mid2, width = Width, height = Height, units = "in", dpi = Quality)
 
 
-  return(p_mid2)
+
 }
 
 
