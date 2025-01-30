@@ -215,9 +215,69 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
 
   {
 
-  #Needs to go first as iterated through and takes names of dfs by default otherwise dataset 1,2 etc...
 
-  print(Data_Sets)
+  # Check if Data_Sets contains file paths
+  if (all(file.exists(Data_Sets))) {
+    message("Loading datasets from file paths...")
+
+    dataset_names <- c()  # Initialize empty vector to store dataset names
+
+    for (path in Data_Sets) {
+      # Extract filename without extension
+      dataset_name <- tools::file_path_sans_ext(basename(path))
+
+      message("Processing file: ", path)
+      message("Extracted dataset name: ", dataset_name)
+
+      # Read the data
+      df <- if (grepl("\\.csv$", path, ignore.case = TRUE)) {
+        read.csv(path, stringsAsFactors = FALSE)
+      } else if (grepl("\\.rds$", path, ignore.case = TRUE)) {
+        readRDS(path)
+      } else if (grepl("\\.(txt|tab|tsv)$", path, ignore.case = TRUE)) {
+        read.table(path, sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+      } else {
+        stop("Unsupported file format. Supported formats: CSV, RDS, TXT, TAB, TSV.")
+      }
+
+      # Store dataset in environment
+      assign(dataset_name, df, envir = .GlobalEnv)
+      message(paste("Dataset", dataset_name, "loaded into environment."))
+
+      # Append dataset name to vector
+      dataset_names <- c(dataset_names, dataset_name)
+    }
+
+    # Update Data_Sets with dataset names only
+    Data_Sets <- dataset_names
+
+  } else {
+    message("Using datasets from the R environment...")
+    Data_Sets <- lapply(Data_Sets, function(name) {
+      if (!is.character(name)) stop("Dataset name must be a character string.")
+
+      if (exists(name, envir = .GlobalEnv)) {
+        return(name)  # Keep dataset name in Data_Sets
+      } else {
+        stop(paste("Dataset", name, "not found in environment."))
+      }
+    })
+
+    # Convert list to character vector
+    Data_Sets <- unlist(Data_Sets)
+  }
+
+  message("Final Data_Sets list: ", paste(Data_Sets, collapse = ", "))
+
+  # Return Data_Sets with correct names
+ # return(Data_Sets)
+
+
+
+
+
+
+
 
   if (!is.null((Data_Sets))) {
     print("Using Data Set Names")
@@ -261,6 +321,9 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
 
   # Randomly get one dataset from Data_Sets before the loop
   dataset_name <- sample(Data_Sets, 1)
+
+#  print(dataset_name)
+
   Data <- get(dataset_name)
 
   # Initialize variables

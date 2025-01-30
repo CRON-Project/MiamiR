@@ -22,6 +22,13 @@
 #' @examples
 #'
 #'
+
+#'Peak_Finder_Outcome <- Peak_Finder(Data_Sets = Locations,
+#'                                 Peak_Separation = 1000000,
+#'                                 File_Name = "Peaks",
+#'                                 File_Type = "txt")
+#'
+#'
 #'
 #'
 
@@ -35,7 +42,7 @@
 
 
 Peak_Finder <- function(Data_Sets = c("HillWD_31844048_household_Income.txt", "SavageJansen_2018_intelligence_metaanalysis"),
-                        Names = c("Income", "Intelligence"),
+                        Names = NULL,
                         Chromosome_Columns = c(),
                         Reference_Alleles = c(),
                         Effect_Alleles = c(),
@@ -47,7 +54,83 @@ Peak_Finder <- function(Data_Sets = c("HillWD_31844048_household_Income.txt", "S
                         File_Type = "txt"
 )
 
+
+
+
 {
+
+# Check if Data_Sets contains file paths
+if (all(file.exists(Data_Sets))) {
+  message("Loading datasets from file paths...")
+
+  dataset_names <- c()  # Initialize empty vector to store dataset names
+
+  for (path in Data_Sets) {
+    # Extract filename without extension
+    dataset_name <- tools::file_path_sans_ext(basename(path))
+
+    message("Processing file: ", path)
+    message("Extracted dataset name: ", dataset_name)
+
+    # Read the data
+    df <- if (grepl("\\.csv$", path, ignore.case = TRUE)) {
+      read.csv(path, stringsAsFactors = FALSE)
+    } else if (grepl("\\.rds$", path, ignore.case = TRUE)) {
+      readRDS(path)
+    } else if (grepl("\\.(txt|tab|tsv)$", path, ignore.case = TRUE)) {
+      read.table(path, sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+    } else {
+      stop("Unsupported file format. Supported formats: CSV, RDS, TXT, TAB, TSV.")
+    }
+
+    # Store dataset in environment
+    assign(dataset_name, df, envir = .GlobalEnv)
+    message(paste("Dataset", dataset_name, "loaded into environment."))
+
+    # Append dataset name to vector
+    dataset_names <- c(dataset_names, dataset_name)
+  }
+
+  # Update Data_Sets with dataset names only
+  Data_Sets <- dataset_names
+
+} else {
+  message("Using datasets from the R environment...")
+  Data_Sets <- lapply(Data_Sets, function(name) {
+    if (!is.character(name)) stop("Dataset name must be a character string.")
+
+    if (exists(name, envir = .GlobalEnv)) {
+      return(name)  # Keep dataset name in Data_Sets
+    } else {
+      stop(paste("Dataset", name, "not found in environment."))
+    }
+  })
+
+  # Convert list to character vector
+  Data_Sets <- unlist(Data_Sets)
+}
+
+message("Final Data_Sets list: ", paste(Data_Sets, collapse = ", "))
+
+# Return Data_Sets with correct names
+# return(Data_Sets)
+
+
+
+
+
+
+if (!is.null((Data_Sets))) {
+  print("Using Data Set Names")
+  Names <- (Data_Sets)  # Use names of the Data_Sets vector
+} else {
+  print("Auto-naming")
+  Names <- paste("Dataset", seq_along(Data_Sets))  # Fallback to generic names
+}
+
+print(Names)
+
+
 
 
   Combined_Processed_Data <- data.frame()
