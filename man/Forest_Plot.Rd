@@ -6,28 +6,33 @@
 \usage{
 Forest_Plot(
   Data_Sets = c("ModelSum", "ModelSum"),
-  Names = c("Vals 1", "Vals 2"),
-  Data_Set_Colours = c("blue", "darkgreen"),
+  Names = NULL,
+  Data_Set_Colours = viridis::viridis(length(Data_Sets)),
   Chromosome_Columns = c(),
-  Model_Reference = T,
-  Line_Space = 1,
-  Border_Space_Left = 1,
-  Border_Space_Right = 1,
-  Test_Statistic = "OR",
-  Display_Test_Stat_Se_Column = F,
-  Display_Test_Stat_CI_Column = F,
-  Display_P_Value_Column = F,
-  Shapes = c("square", "diamond"),
+  Left_Spaces = 2,
+  Right_Spaces = 2,
+  P_Stat_Spaces = 3,
+  Model_Reference = FALSE,
+  X_Axis_Text_Size = 10,
+  Line_Space = 0.01,
+  Test_Statistic = NULL,
+  Display_Test_Stat_Se_Column = TRUE,
+  Display_Test_Stat_CI_Column = FALSE,
+  Display_P_Value_Column = TRUE,
+  Shapes = NULL,
   Null_Line_Colour = "red",
   Null_Line_Type = "dashed",
-  X_Axis_Title = "BETA",
-  X_Axis_Title_Size = 20,
-  X_Axis_Label = F,
-  X_Axis_Separation = 0.5,
+  X_Axis_Title = NULL,
+  Null_Buffer = 0,
+  X_Axis_Title_Size = 15,
+  SNP_Stat_Text_Size = 12,
+  X_Axis_Label = TRUE,
+  X_Axis_Separation = NULL,
   Strip_Colour = "lightblue",
-  Strips = T,
-  X_Axis_Text_Resolution = 1,
-  Pre_Calculated_CIs = F,
+  Strips = TRUE,
+  X_Axis_Text_Resolution = 2,
+  Pre_Calculated_CIs = FALSE,
+  Legend_On = TRUE,
   Legend_Title_Size = 15,
   Legend_Text_Size = 12.5,
   Legend_Title = "Study",
@@ -40,8 +45,8 @@ Forest_Plot(
   Beta_Columns = c(),
   Standard_Error_Columns = c(),
   PValue_Columns = c(),
-  Match_Allele_Direction = F,
-  Match_Allele_Study = "",
+  Match_Allele_Direction = TRUE,
+  Match_Allele_Study = NULL,
   Selected_SNPs = c(),
   Selected_Covariates = c(),
   Reference_Alleles = c(),
@@ -51,7 +56,7 @@ Forest_Plot(
   File_Name = "Forest_Plot",
   Width = 10,
   Height = 6,
-  Quality = 900,
+  Quality = 600,
   File_Type = "jpg"
 )
 }
@@ -66,11 +71,9 @@ Forest_Plot(
 
 \item{Model_Reference}{Do you want to use statistics from an R regression model (T/F); defaults to T}
 
+\item{X_Axis_Text_Size}{Size of the X axis text labels; defaults to 15}
+
 \item{Line_Space}{A continuous value specifying the boundary between the plot margin and the left and right lines; defaults to 1}
-
-\item{Border_Space_Left}{A continuous value specifying the boundary between the left hand side plot labels and the left margin; defaults to 1}
-
-\item{Border_Space_Right}{A continuous value specifying the boundary between the right hand side plot labels and the right margin; defaults to 1}
 
 \item{Test_Statistic}{The type of values being plotted (OR or BETA); defaults to "OR"}
 
@@ -88,6 +91,8 @@ Forest_Plot(
 
 \item{X_Axis_Title}{X axis title; defaults to "BETA"}
 
+\item{Null_Buffer}{Units of space to avoid X axis text labels around the nul point; defaults to 0.1}
+
 \item{X_Axis_Title_Size}{X axis title; defaults to 20}
 
 \item{X_Axis_Label}{Do you want an X Axis Label (T/F); defaults to F}
@@ -101,6 +106,8 @@ Forest_Plot(
 \item{X_Axis_Text_Resolution}{Number of decimal places to display on X axis text; defaults to 1}
 
 \item{Pre_Calculated_CIs}{Have you pre-calculated UL and LL for CIs (T/F); defaults to F}
+
+\item{Legend_On}{Do you want to display the legend - TRUE/FALSE; defaults to TRUE}
 
 \item{Legend_Title_Size}{Legend title size; defaults to 15}
 
@@ -122,19 +129,19 @@ Forest_Plot(
 
 \item{Beta_Columns}{These are a list of manual BETA column names for the data sets used in the order specified; defaults to  c("beta", "beta")}
 
-\item{Standard_Error_Columns}{These are a list of manual SE column names for the data sets used in the order specified; defaults to c("SE","SE"),}
+\item{Standard_Error_Columns}{These are a list of manual SE column names for the data sets used in the order specified; defaults to c("SE","SE")}
 
 \item{PValue_Columns}{These are a list of manual P column names for the data sets used in the order specified; defaults to c("P","P")}
 
 \item{Match_Allele_Direction}{Do you want to match the allele directions to avoid flips (T/F); defaults to T}
 
-\item{Match_Allele_Study}{If the above is T, which data sets should be the reference point for effect allele direction; defaults to "LbDementia_Sum_Stats"}
+\item{Match_Allele_Study}{If the above is T, which data sets should be the reference point for effect allele direction; defaults to "LbDementia_Sum_Stats"; THIS SHOULD BE THE NAME YOU ASSIGN}
 
 \item{Selected_SNPs}{A list of SNPs to be shown in the forest plot, automatically selected for from the summary statistics data set; defaults to c("rs2616526", "rs7974838", "rs59867714", "rs9571588", "rs79007041")}
 
 \item{Selected_Covariates}{A list of covariates to be shown in the forest plot, automatically selected for from the munged model data set; defaults to c()}
 
-\item{Reference_Alleles}{These are a list of manual reference allele column names for the data sets used in the order specified; defaults to c("other_allele","other_allel")}
+\item{Reference_Alleles}{These are a list of manual reference allele column names for the data sets used in the order specified; defaults to c("other_allele","other_allele")}
 
 \item{Effect_Alleles}{These are a list of manual effect allele column names for the data sets used in the order specified; defaults to c("effect_allele","effect_allele")}
 
@@ -151,6 +158,10 @@ Forest_Plot(
 \item{Quality}{Quality of saved plot (dpi); defaults to 900}
 
 \item{File_Type}{File type of saved plot; defaults to "jpg"}
+
+\item{Border_Space_Left}{A continuous value specifying the boundary between the left hand side plot labels and the left margin; defaults to 1}
+
+\item{Border_Space_Right}{A continuous value specifying the boundary between the right hand side plot labels and the right margin; defaults to 1}
 }
 \value{
 Image of Single Forest Plot is saved to the current directory and ggplot object is saved
@@ -223,6 +234,15 @@ Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats",
                                                        "rs9508063",   "rs225682",  "rs56201315" ),
                                      File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
                                      File_Type = "jpg"
+)
+
+
+
+
+Forest_Plot_SNPs_BETA_Peak_Finder <- Forest_Plot(Data_Sets = c("Income_Peaks", "Intelligence_Peaks"),
+                                                X_Axis_Separation = 0.05,
+                                                File_Name = "Forest_Plot", Width =10, Height = 9, Quality = 900,
+                                                File_Type = "jpg"
 )
 
 

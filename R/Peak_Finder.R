@@ -16,7 +16,7 @@
 #' @param File_Name File name to save data as; defaults to "Peaks"
 #' @param File_Type File type of saved data; defaults to "txt"
 #'
-#' @return
+#' @return SNPs split by study saved
 #' @export
 #'
 #' @examples
