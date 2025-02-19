@@ -5,12 +5,13 @@
 \title{Title Create forest plots of test statistics of regression model covariates and GWAS summary statistics for SNPs of interest}
 \usage{
 Forest_Plot(
-  Data_Sets = c("ModelSum", "ModelSum"),
+  Data_Sets = c(),
   Names = NULL,
   Data_Set_Colours = viridis::viridis(length(Data_Sets)),
   Chromosome_Columns = c(),
   Left_Spaces = 2,
   Right_Spaces = 2,
+  Missings = F,
   P_Stat_Spaces = 3,
   Model_Reference = FALSE,
   X_Axis_Text_Size = 10,
@@ -28,7 +29,7 @@ Forest_Plot(
   SNP_Stat_Text_Size = 12,
   X_Axis_Label = TRUE,
   X_Axis_Separation = NULL,
-  Strip_Colour = "lightblue",
+  Strip_Colour = "black",
   Strips = TRUE,
   X_Axis_Text_Resolution = 2,
   Pre_Calculated_CIs = FALSE,
@@ -158,10 +159,6 @@ Forest_Plot(
 \item{Quality}{Quality of saved plot (dpi); defaults to 900}
 
 \item{File_Type}{File type of saved plot; defaults to "jpg"}
-
-\item{Border_Space_Left}{A continuous value specifying the boundary between the left hand side plot labels and the left margin; defaults to 1}
-
-\item{Border_Space_Right}{A continuous value specifying the boundary between the right hand side plot labels and the right margin; defaults to 1}
 }
 \value{
 Image of Single Forest Plot is saved to the current directory and ggplot object is saved
@@ -170,106 +167,14 @@ Image of Single Forest Plot is saved to the current directory and ggplot object 
 Title Create forest plots of test statistics of regression model covariates and GWAS summary statistics for SNPs of interest
 }
 \examples{
-Forest_Plot_Model_LM <- Forest_Plot(Data_Sets = c("ModelSumLM", "ModelSumLM"),
-             Names = c("BMI LM (1)", "BMI LM (2)"),
-             Model_Reference = TRUE,
-             Test_Statistic = "BETA", #could be OR
-             Display_P_Value_Column = TRUE,
-             Display_Test_Stat_Se_Column = TRUE,
-             X_Axis_Separation = 0.8,
-             Border_Space_Left = 30,
-             Border_Space_Right = 75,
-             Strips = TRUE,
-             Pre_Calculated_CIs = FALSE,
-             Legend_Title = "Model",
-             Left_Title = "Covariate",
-             Test_Stat_Se_Title = "BETA (SE)",
-             File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
-             File_Type = "jpg"
-             )
 
 
 
-
-Forest_Plot_Model_GLM <- Forest_Plot(Data_Sets = c("ModelSumGLM", "ModelSumGLM"),
-                                     Names = c("Dementia GLM (1)", "Dementia GLM (2)"),
-                                     Model_Reference = TRUE,
-                                     Test_Statistic = "OR",
-                                     X_Axis_Text_Resolution = 2,
-                                     Border_Space_Left = 2.8,
-                                     Border_Space_Right = 4.7,
-                                     Display_Test_Stat_CI_Column = TRUE,
-                                     Display_P_Value_Column = TRUE,
-                                     X_Axis_Separation = 0.02,
-                                     Pre_Calculated_CIs = FALSE,
-                                     Legend_Title = "Model",
-                                     Left_Title = "Covariate",
-                                     P_Value_Title = "p-value",
-                                     Test_Stat_Se_Title = "OR (CI)",
-                                     File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
-                                     File_Type = "jpg"
-)
-
-
-
-Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats", "Intelligence_Sum_Stats"),
-                                     Names = c("Income", "IQ"),
-                                     Model_Reference = FALSE,
-                                     Line_Space = 1.5,
-                                     Border_Space_Right = 40,
-                                     Border_Space_Left = 20,
-                                     Test_Statistic = "BETA", #could be OR
-                                     Display_Test_Stat_Se_Column = TRUE,
-                                     Display_P_Value_Column = TRUE,
-                                     X_Axis_Separation = 0.01,
-                                     Pre_Calculated_CIs = FALSE,
-                                     X_Axis_Text_Resolution = 2,
-                                     Legend_Title = "Study",
-                                     Left_Title = "SNP",
-                                     P_Value_Title = "p-value",
-                                     Test_Stat_Se_Title = "BETA (SE)",
-                                     Match_Allele_Direction = TRUE,
-                                     Match_Allele_Study = "Household_Income_Sum_Stats",
-                                     Selected_SNPs = c("rs74832835",  "rs1157671",   "rs1790177",
-                                                       "rs9508063",   "rs225682",  "rs56201315" ),
-                                     File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
-                                     File_Type = "jpg"
-)
-
-
-
-
-Forest_Plot_SNPs_BETA_Peak_Finder <- Forest_Plot(Data_Sets = c("Income_Peaks", "Intelligence_Peaks"),
+Forest_Plot_SNPs_BETA_Peak_Finder <- Forest_Plot(Data_Sets = c("Intelligence_Peaks"),
                                                 X_Axis_Separation = 0.05,
                                                 File_Name = "Forest_Plot", Width =10, Height = 9, Quality = 900,
-                                                File_Type = "jpg"
-)
+                                                File_Type = "jpg")
 
-
-
-Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDementia_Sum_Stats"),
-                                   Names = c("Dementia (1)", "Dementia (2)"),
-                                   Model_Reference = FALSE,
-                                   Line_Space = 1.1,
-                                   Border_Space_Left = 7,
-                                   Border_Space_Right = 30,
-                                   Test_Statistic = "OR",
-                                   Display_P_Value_Column = TRUE,
-                                   Display_Test_Stat_CI_Column = TRUE,
-                                   X_Axis_Separation = 0.2,
-                                   Pre_Calculated_CIs = FALSE,
-                                   Legend_Title = "Study",
-                                   Left_Title = "SNP",
-                                   P_Value_Title = "p-value",
-                                   Test_Stat_Se_Title = "OR (CI)",
-                                   Match_Allele_Direction = TRUE,
-                                   Match_Allele_Study = "LbDementia_Sum_Stats",
-                                   Selected_SNPs = c("rs59867714","rs7913723","rs79007041",
-                                                     "rs34624328", "rs492457",
-                                                     "rs7974838"  ),
-                                   File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
-                                   File_Type = "jpg"
-)
 
 
 

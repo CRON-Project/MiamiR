@@ -99,7 +99,7 @@ ModelSum$Reference <- mapply(function(covariate_group, covariate) {
 
 print("Processed Data:")
 
-print(ModelSum)
+#print(ModelSum)
 
 return(ModelSum)
 

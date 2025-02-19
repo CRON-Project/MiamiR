@@ -2,7 +2,7 @@
 % Please edit documentation in R/Peak_Finder.R
 \name{Peak_Finder}
 \alias{Peak_Finder}
-\title{Title}
+\title{Title Ascertain independent GWAS hits and their corresponding information across multiple datasets}
 \usage{
 Peak_Finder(
   Data_Sets = c("HillWD_31844048_household_Income.txt",
@@ -53,12 +53,12 @@ Peak_Finder(
 SNPs split by study saved
 }
 \description{
-Title
+Title Ascertain independent GWAS hits and their corresponding information across multiple datasets
 }
 \examples{
 
 
-Peak_Finder_Outcome <- Peak_Finder(Data_Sets = Locations,
+Peak_Finder_Outcome <- Peak_Finder(Data_Sets = c("Intelligence_Peaks"),
                                 Peak_Separation = 2000000,
                                 File_Name = "Peaks",
                                 Spec_CHROM = 1,

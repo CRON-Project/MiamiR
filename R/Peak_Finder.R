@@ -1,6 +1,6 @@
 
 #INCOME AND INTELLIGENCE BOTH HG37 NEED SAME BUILD FOR SAME SNP UNLESS RSID
-#' Title
+#' Title Ascertain independent GWAS hits and their corresponding information across multiple datasets
 #'
 #' @param Data_Sets These are a list of GWAS summary statistics to be evaluated; defaults to c("LbDementia_Sum_Stats", "Intelligence_Sum_Stats")
 #' @param Names These are a list of names for the data sets to be labelled with in the output file - this also specifies the order down the page; defaults to c("Dementia", "Intelligence")
@@ -10,7 +10,7 @@
 #' @param Position_Columns These are a list of manual position column names for the data sets used in the order specified; defaults to c()
 #' @param SNP_ID_Columns These are a list of manual SNP ID column names for the data sets used in the order specified; defaults to c()
 #' @param Beta_Columns These are a list of manual BETA column names for the data sets used in the order specified; defaults to  c()
-#' @param Standard_Error_Columns  These are a list of manual SE column names for the data sets used in the order specified; defaults to c()
+#' @param Standard_Error_Columns These are a list of manual SE column names for the data sets used in the order specified; defaults to c()
 #' @param PValue_Columns These are a list of manual P column names for the data sets used in the order specified; defaults to c()
 #' @param Peak_Separation Distnance in BP necessary from a lead SNP for another region of association to begin; defaults to 100K
 #' @param File_Name File name to save data as; defaults to "Peaks"
@@ -23,7 +23,7 @@
 #'
 #'
 
-#'Peak_Finder_Outcome <- Peak_Finder(Data_Sets = Locations,
+#'Peak_Finder_Outcome <- Peak_Finder(Data_Sets = c("Intelligence_Peaks"),
 #'                                 Peak_Separation = 2000000,
 #'                                 File_Name = "Peaks",
 #'                                 Spec_CHROM = 1,
@@ -81,7 +81,10 @@ Peak_Finder <- function(Data_Sets = c("HillWD_31844048_household_Income.txt", "S
       # Read only the first few rows to detect column names
       header_df <- tryCatch({
         if (is_compressed) {
-          data.table::fread(cmd = paste0("zcat ", path, " | head -n 5"))
+
+          #data.table::fread(cmd = paste0("zcat ", path, " | head -n 5"))
+          read.csv(path, sep = "", nrows = 5)
+
         } else {
           data.table::fread(path, nrows = 5)
         }
@@ -115,7 +118,10 @@ Peak_Finder <- function(Data_Sets = c("HillWD_31844048_household_Income.txt", "S
       df <- tryCatch({
         if (is_compressed) {
           message("📂 Detected compressed file, using `fread(cmd = 'grep')` to filter CHROM == 1.")
-          temp_df <- data.table::fread(cmd = paste0("zcat ", path, " | grep '^1\\s'"), sep = "\t")
+        #  temp_df <- data.table::fread(cmd = paste0("zcat ", path, " | grep '^1\\s'"), sep = "\t")
+          temp_df <- read.csv(path, sep = "")
+          print("CHROM Filt...")
+          temp_df <- temp_df[temp_df[[chrom_col]] == Spec_CHROM, ]
         } else {
           message("🚀 Using `fread()` to load only CHROM == 1.")
           temp_df <- vroom::vroom(path)  # Read everything first (unavoidable)
@@ -130,6 +136,7 @@ Peak_Finder <- function(Data_Sets = c("HillWD_31844048_household_Income.txt", "S
             {
               print("Whole file desired")
             }else{
+              print("CHROM Filt...")
             temp_df <- temp_df[temp_df[[chrom_col]] == Spec_CHROM, ]
             }
           }
@@ -501,6 +508,8 @@ if (!is.null((Data_Sets))) {
 }
 
 
+  print(Combined_Processed_Data)
+
 #  print(sum(is.na(Combined_Processed_Data$GENPOS)))
 #  print(table(Combined_Processed_Data$CHROM))
   #out of loop now
@@ -536,6 +545,7 @@ if (!is.null((Data_Sets))) {
 
   ####
 
+  STUDIES_CHECK <- unique(Combined_Processed_Data$STUDY)
 
 
   result <- Combined_Processed_Data %>%
@@ -546,9 +556,16 @@ if (!is.null((Data_Sets))) {
 
 
 
+
   print("Peak Algorithm Search")
 #    return(result)
 
+  print(nrow(result))
+
+  if (nrow(result) == 0) {
+    base::print("No Significant SNPs in any study - Terminating.")
+    stop("No significant SNPs found, stopping execution.")
+  }
 
 
   print("Study specific peaks per CHROM")
@@ -571,7 +588,6 @@ if (!is.null((Data_Sets))) {
     dplyr::filter(COORD_Norm %in% unique_coords | COORD_Alt %in% unique_coords)
 
   # Print the matching rows
-#  print(matching_rows)
 
 
 
@@ -640,10 +656,70 @@ if (!is.null((Data_Sets))) {
 
   #write.table(matching_rows, filename)
 
+#  SNP_CHECK <- unique(matching_rows$COORD_Uni)
+
+#  print(matching_rows)
+ # print(matching_rows$STUDY)
+  #print(STUDIES_CHECK)
+
+
+  # Get the unique combinations of STUDY and COORD_Uni from matching_rows
+  existing_combinations <- dplyr::select(matching_rows, STUDY, COORD_Uni) %>%
+    dplyr::distinct()
+
+  # Create a dataframe of all possible combinations from STUDIES_CHECK and unique COORD_Uni values in matching_rows
+  all_combinations <- base::expand.grid(STUDY = STUDIES_CHECK,
+                                        COORD_Uni = base::unique(matching_rows$COORD_Uni),
+                                        stringsAsFactors = FALSE)
+
+  # Identify missing combinations (i.e., combinations not in existing_combinations)
+  missing_combinations <- dplyr::anti_join(all_combinations, existing_combinations, by = c("STUDY", "COORD_Uni"))
+
+  # Ensure CHROM and GENPOS type consistency
+  original_chrom_type <- base::class(matching_rows$CHROM)  # Check original CHROM type
+  original_genpos_type <- base::class(matching_rows$GENPOS)  # Check original GENPOS type
+
+  # Create blank rows for the missing combinations with extracted values
+  blank_rows <- dplyr::mutate(missing_combinations,
+                              ID = NA,
+                              ALLELE0 = base::sub("^[^:]+:[^:]+:([^:]+):.*$", "\\1", COORD_Uni),  # Extract part after 2nd colon
+                              ALLELE1 = base::sub("^[^:]+:[^:]+:[^:]+:([^:]+)$", "\\1", COORD_Uni), # Extract part after 3rd colon
+                              CHROM = stringr::str_extract(COORD_Uni, "(?<=chr)[^:]+"),  # Extract chromosome number
+                              GENPOS = stringr::str_extract(COORD_Uni, "(?<=:)[^:]+(?=:)"),  # Extract genomic position
+                              BETA = 0, SE = 0, P = 1,
+                              COORD_Norm = NA, COORD_Alt = NA)
+
+  # Convert CHROM and GENPOS types to match original dataframe
+  if (original_chrom_type == "numeric" || original_chrom_type == "integer") {
+    blank_rows$CHROM <- base::as.numeric(blank_rows$CHROM)  # Ensure numeric type for CHROM
+  }
+
+  if (original_genpos_type == "numeric" || original_genpos_type == "integer") {
+    blank_rows$GENPOS <- base::as.numeric(blank_rows$GENPOS)  # Ensure numeric type for GENPOS
+  }
+
+
+  print(matching_rows)
+  print(blank_rows) #May be 0 if no SNPs for particular CHROM
+
+  if(nrow(blank_rows) != 0)
+
+  {
+
+  # Bind the blank rows to the existing dataframe
+  matching_rows <- dplyr::bind_rows(matching_rows, blank_rows)
+
+  }
+
+  print(matching_rows)
 
 
   # Split `matching_rows` into a list of dataframes by `STUDY`
   split_dfs <- split(matching_rows, matching_rows$STUDY)
+
+
+#  print(split_dfs)
+ # z
 
   # Iterate through each study-specific dataframe and save them
   for (study_name in names(split_dfs)) {
@@ -672,6 +748,8 @@ if (!is.null((Data_Sets))) {
  #   setwd("C:/Users/callumon/Miami_Package_R/MiamiR/data")
     # Save the dataframe to the file
     write.table(study_df, filename, sep = "\t", row.names = FALSE, quote = FALSE)
+
+
   }
 
 

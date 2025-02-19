@@ -3,6 +3,7 @@
 export("%>%")
 export(Annotate_Data)
 export(Forest_Plot)
+export(METASOFT_File_Gen)
 export(Miami_Plot)
 export(Model_Munge)
 export(Peak_Finder)

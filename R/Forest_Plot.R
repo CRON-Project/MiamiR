@@ -6,8 +6,6 @@
 #' @param Chromosome_Columns These are a list of manual chromosome column names for the data sets used in the order specified; defaults to c("chromosome", "chromosome")
 #' @param Model_Reference Do you want to use statistics from an R regression model (T/F); defaults to T
 #' @param Line_Space A continuous value specifying the boundary between the plot margin and the left and right lines; defaults to 1
-#' @param Border_Space_Left A continuous value specifying the boundary between the left hand side plot labels and the left margin; defaults to 1
-#' @param Border_Space_Right A continuous value specifying the boundary between the right hand side plot labels and the right margin; defaults to 1
 #' @param Test_Statistic The type of values being plotted (OR or BETA); defaults to "OR"
 #' @param Display_Test_Stat_Se_Column Do you want to display the BETA (SE) raw values on the right hand side (T/F); defaults to F
 #' @param Display_Test_Stat_CI_Column Do you want to display the OR (CI - LL to UL) raw values on the right hand side (T/F); defaults to T
@@ -55,122 +53,28 @@
 #' @return Image of Single Forest Plot is saved to the current directory and ggplot object is saved
 #' @export
 #'
-#' @examples Forest_Plot_Model_LM <- Forest_Plot(Data_Sets = c("ModelSumLM", "ModelSumLM"),
-#'              Names = c("BMI LM (1)", "BMI LM (2)"),
-#'              Model_Reference = TRUE,
-#'              Test_Statistic = "BETA", #could be OR
-#'              Display_P_Value_Column = TRUE,
-#'              Display_Test_Stat_Se_Column = TRUE,
-#'              X_Axis_Separation = 0.8,
-#'              Border_Space_Left = 30,
-#'              Border_Space_Right = 75,
-#'              Strips = TRUE,
-#'              Pre_Calculated_CIs = FALSE,
-#'              Legend_Title = "Model",
-#'              Left_Title = "Covariate",
-#'              Test_Stat_Se_Title = "BETA (SE)",
-#'              File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
-#'              File_Type = "jpg"
-#'              )
+#' @examples
 #'
 #'
 #'
-#'
-#' Forest_Plot_Model_GLM <- Forest_Plot(Data_Sets = c("ModelSumGLM", "ModelSumGLM"),
-#'                                      Names = c("Dementia GLM (1)", "Dementia GLM (2)"),
-#'                                      Model_Reference = TRUE,
-#'                                      Test_Statistic = "OR",
-#'                                      X_Axis_Text_Resolution = 2,
-#'                                      Border_Space_Left = 2.8,
-#'                                      Border_Space_Right = 4.7,
-#'                                      Display_Test_Stat_CI_Column = TRUE,
-#'                                      Display_P_Value_Column = TRUE,
-#'                                      X_Axis_Separation = 0.02,
-#'                                      Pre_Calculated_CIs = FALSE,
-#'                                      Legend_Title = "Model",
-#'                                      Left_Title = "Covariate",
-#'                                      P_Value_Title = "p-value",
-#'                                      Test_Stat_Se_Title = "OR (CI)",
-#'                                      File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
-#'                                      File_Type = "jpg"
-#' )
-#'
-#'
-#'
-#' Forest_Plot_SNPs_BETA <- Forest_Plot(Data_Sets = c("Household_Income_Sum_Stats", "Intelligence_Sum_Stats"),
-#'                                      Names = c("Income", "IQ"),
-#'                                      Model_Reference = FALSE,
-#'                                      Line_Space = 1.5,
-#'                                      Border_Space_Right = 40,
-#'                                      Border_Space_Left = 20,
-#'                                      Test_Statistic = "BETA", #could be OR
-#'                                      Display_Test_Stat_Se_Column = TRUE,
-#'                                      Display_P_Value_Column = TRUE,
-#'                                      X_Axis_Separation = 0.01,
-#'                                      Pre_Calculated_CIs = FALSE,
-#'                                      X_Axis_Text_Resolution = 2,
-#'                                      Legend_Title = "Study",
-#'                                      Left_Title = "SNP",
-#'                                      P_Value_Title = "p-value",
-#'                                      Test_Stat_Se_Title = "BETA (SE)",
-#'                                      Match_Allele_Direction = TRUE,
-#'                                      Match_Allele_Study = "Household_Income_Sum_Stats",
-#'                                      Selected_SNPs = c("rs74832835",  "rs1157671",   "rs1790177",
-#'                                                        "rs9508063",   "rs225682",  "rs56201315" ),
-#'                                      File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
-#'                                      File_Type = "jpg"
-#' )
-#'
-#'
-#'
-#'
-
-#'Forest_Plot_SNPs_BETA_Peak_Finder <- Forest_Plot(Data_Sets = c("Income_Peaks", "Intelligence_Peaks"),
+#'Forest_Plot_SNPs_BETA_Peak_Finder <- Forest_Plot(Data_Sets = c("Intelligence_Peaks"),
 #'                                                 X_Axis_Separation = 0.05,
 #'                                                 File_Name = "Forest_Plot", Width =10, Height = 9, Quality = 900,
-#'                                                 File_Type = "jpg"
-#')
+#'                                                 File_Type = "jpg")
 #'
-#'
-#'
-#' Forest_Plot_SNPs_OR <- Forest_Plot(Data_Sets = c("LbDementia_Sum_Stats", "LbDementia_Sum_Stats"),
-#'                                    Names = c("Dementia (1)", "Dementia (2)"),
-#'                                    Model_Reference = FALSE,
-#'                                    Line_Space = 1.1,
-#'                                    Border_Space_Left = 7,
-#'                                    Border_Space_Right = 30,
-#'                                    Test_Statistic = "OR",
-#'                                    Display_P_Value_Column = TRUE,
-#'                                    Display_Test_Stat_CI_Column = TRUE,
-#'                                    X_Axis_Separation = 0.2,
-#'                                    Pre_Calculated_CIs = FALSE,
-#'                                    Legend_Title = "Study",
-#'                                    Left_Title = "SNP",
-#'                                    P_Value_Title = "p-value",
-#'                                    Test_Stat_Se_Title = "OR (CI)",
-#'                                    Match_Allele_Direction = TRUE,
-#'                                    Match_Allele_Study = "LbDementia_Sum_Stats",
-#'                                    Selected_SNPs = c("rs59867714","rs7913723","rs79007041",
-#'                                                      "rs34624328", "rs492457",
-#'                                                      "rs7974838"  ),
-#'                                    File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 900,
-#'                                    File_Type = "jpg"
-#' )
 #'
 #'
 #'
 #'
 
 
-
-
-
-Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
+Forest_Plot <- function(Data_Sets = c(),
                         Names = NULL,
                         Data_Set_Colours = viridis::viridis(length(Data_Sets)),
                         Chromosome_Columns = c(),
                         Left_Spaces = 2,
                         Right_Spaces = 2,
+                        Missings = F,
                         P_Stat_Spaces = 3,
                         Model_Reference = FALSE,
                         X_Axis_Text_Size = 10,
@@ -188,7 +92,7 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
                         SNP_Stat_Text_Size = 12,
                         X_Axis_Label = TRUE,
                         X_Axis_Separation = NULL,
-                        Strip_Colour = "lightblue",
+                        Strip_Colour = "black",
                         Strips = TRUE,
                         X_Axis_Text_Resolution = 2,
                         Pre_Calculated_CIs = FALSE,
@@ -216,6 +120,92 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
   {
 
 
+  if (is.null(Data_Sets) || length(Data_Sets) == 0) {
+    stop("Error: 'Data_Sets' is NULL or empty. Please provide valid data sets.")
+  }
+
+  bases <- basename(Data_Sets)
+  num_pattern_count <- sum(grepl("^[0-9]+_", bases)) #changes later, only this for now
+
+#  print(Data_Sets)
+#  print(num_pattern_count)
+
+
+  if (num_pattern_count > 2) {
+
+  # Extract common suffix, removing file paths and leading numbers
+  dataset_suffixes <- gsub(".*[/\\\\]\\d+_", "", Data_Sets)
+
+  print(dataset_suffixes)
+ # print(Data_Sets)
+
+  # Function to find common substrings of a minimum length
+  # Extract unique phrases between underscores and group dataset names
+  # Function to find unique phrases between underscores and merge similar groups
+  # Function to find unique phrases between underscores and merge similar groups
+  find_and_merge_strict_groups <- function(strings) {
+    groups <- list()
+
+    for (s in strings) {
+      # Extract all phrases between underscores, including start and end boundaries
+      phrases <- unlist(regmatches(s, gregexpr("(?<=_)([^_]+)(?=_)", s, perl = TRUE)))
+
+      # Add full filename as a phrase to capture whole patterns
+      phrases <- c(phrases, s)
+
+      for (phrase in phrases) {
+        if (!phrase %in% names(groups)) {
+          groups[[phrase]] <- c(s)
+        } else {
+          groups[[phrase]] <- unique(c(groups[[phrase]], s))
+        }
+      }
+    }
+
+    # Merge groups with overlapping dataset entries but only if they match strictly
+    merged_groups <- list()
+    for (name in names(groups)) {
+      merged <- FALSE
+      for (existing_name in names(merged_groups)) {
+        if (any(groups[[name]] %in% merged_groups[[existing_name]]) && grepl(paste0("\\b", existing_name, "\\b"), name)) {
+          merged_groups[[existing_name]] <- unique(c(merged_groups[[existing_name]], groups[[name]]))
+          merged <- TRUE
+          break
+        }
+      }
+      if (!merged) {
+        merged_groups[[name]] <- groups[[name]]
+      }
+    }
+
+    return(merged_groups)
+  }
+
+  # Find and merge groups with strict matching
+  strict_merged_groups <- find_and_merge_strict_groups(dataset_suffixes)
+
+  # Display the strict merged groups
+  strict_merged_groups
+
+#  print(strict_merged_groups)
+
+ # z
+
+  # Get unique suffixes and assign colors
+  unique_suffixes <- unique(dataset_suffixes)
+  colour_palette <- viridis::viridis(length(unique_suffixes))
+  suffix_to_color <- setNames(colour_palette, unique_suffixes)
+
+  # Assign colors based on suffix
+  Data_Set_Colours <- suffix_to_color[dataset_suffixes]
+
+  # Print to check assignments
+#  print(data.frame(Data_Sets, dataset_suffixes, Data_Set_Colours))
+
+  print("Colouring")
+
+
+}
   # Check if Data_Sets contains file paths
   if (all(file.exists(Data_Sets))) {
     message("Loading datasets from file paths...")
@@ -235,8 +225,12 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
       } else if (grepl("\\.rds$", path, ignore.case = TRUE)) {
         readRDS(path)
       } else if (grepl("\\.(txt|tab|tsv)$", path, ignore.case = TRUE)) {
-        read.table(path, sep = "\t", header = TRUE, stringsAsFactors = FALSE)
-      } else {
+     #   read.table(path, sep = "\t", header = TRUE, stringsAsFactors = FALSE,  colClasses = "character")
+        vroom::vroom(path, col_types = vroom::cols(
+          ALLELE0 = vroom::col_character(),
+          ALLELE1 = vroom::col_character()
+        ))
+        } else {
         stop("Unsupported file format. Supported formats: CSV, RDS, TXT, TAB, TSV.")
       }
 
@@ -277,17 +271,32 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
 
 
 
+#print(Data_Sets)
+
 
 
   if (!is.null((Data_Sets))) {
     print("Using Data Set Names")
+
+
+#    Data_Sets <- sub("^[0-9]+_", "", Data_Sets)
+
+
+  #  print(Data_Sets)
+
+
     Names <- (Data_Sets)  # Use names of the Data_Sets vector
+
+
+
+
+
   } else {
     print("Auto-naming")
     Names <- paste("Dataset", seq_along(Data_Sets))  # Fallback to generic names
   }
 
-  print(Names)
+ # print(Names)
 
 
 #  print("fail here")
@@ -309,6 +318,15 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
     Match_Allele_Study <- Names[1]
     print(paste0("Matching allele directions automatically to ", Match_Allele_Study) )
 
+    print(Match_Allele_Study)
+
+#    if (num_pattern_count > 2) {
+#
+ #     Match_Allele_Study <- sub("^[0-9]+_", "", Match_Allele_Study)
+  #    }
+
+   # print(Match_Allele_Study)
+
   }
 
   if (is.null(Shapes)) {
@@ -324,7 +342,11 @@ Forest_Plot <- function(Data_Sets = c("ModelSum", "ModelSum"),
 
 #  print(dataset_name)
 
+#  print("Here")
+
   Data <- get(dataset_name)
+
+
 
   # Initialize variables
   Beta_Column <- NULL
@@ -777,12 +799,7 @@ if(Test_Statistic == "BETA")
 
 #  print(Data)
 
-  #if you want all of them, like in peak finder plot
-  if (length(Selected_SNPs) == 0) {
-    Data <- Data
-  } else {
-  Data <- Data[Data$ID %in% Selected_SNPs,]
-  }
+
 
   }
   if(Model_Reference == T)
@@ -819,11 +836,47 @@ if(Test_Statistic == "BETA")
   }
 
 
+
+  Data$COORD_Norm <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
+  Data$COORD_Alt <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE1, ":", Data$ALLELE0)
+
+
+
+    #if you want all of them, like in peak finder plot
+  if (length(Selected_SNPs) == 0) {
+    Data <- Data
+  } else {
+  Data <-Data[Data$COORD_Norm %in% Selected_SNPs | Data$COORD_Alt %in% Selected_SNPs, ] # will select even if there is a flip
+  }
+
   Combined_Processed_Data <- rbind(Combined_Processed_Data, Data)
+
 
 
   }
 
+
+
+#  print(Combined_Processed_Data)
+
+
+
+bef <-  print(nrow(Combined_Processed_Data)) # if missings removed mod end point - that
+
+if(Missings == F)
+
+{
+
+  Combined_Processed_Data <- Combined_Processed_Data[!(Combined_Processed_Data$BETA == 0 & Combined_Processed_Data$SE == 0 & Combined_Processed_Data$P == 1), ]
+
+}
+
+aft <-   print(nrow(Combined_Processed_Data))
+
+
+
+
+ #  print(Combined_Processed_Data)
 
 
 
@@ -869,6 +922,7 @@ if(Model_Reference == T)
 
   }
 
+
   # Combine the original dataframe with the new blank rows
   Combined_Processed_Data <- dplyr::bind_rows(Combined_Processed_Data, blank_rows)
 
@@ -887,6 +941,7 @@ if(Model_Reference == T)
 
 
 
+
   Combined_Processed_Data$Left_Plot_Value <- Combined_Processed_Data$ID
 
 
@@ -896,6 +951,11 @@ if(Model_Reference == T)
 
 #  print(Combined_Processed_Data)
 
+#Peak finder says now but keep for other circum?
+
+  if(Missings == T)
+
+  {
 
   # Extract all unique IDs and STUDY values
   unique_ids <- unique(Combined_Processed_Data$ID)
@@ -939,10 +999,18 @@ if(Model_Reference == T)
 
   missing_rows$GENPOS <- as.numeric(missing_rows$GENPOS)
 
+#  print(missing_rows)
 
+#  print("fails here")
+
+#  print(nrow(missing_rows))
+
+  # if(nrow(missing_rows) >= 1) #sometimes no missing
+  # {
   # Combine the original dataset with the missing rows
   Combined_Processed_Data <-  dplyr::bind_rows(Combined_Processed_Data, missing_rows)
 
+  # }
   # View the updated dataframe
  # print(Combined_Processed_Data)
 
@@ -951,6 +1019,23 @@ if(Model_Reference == T)
 
 
 
+
+
+  Combined_Processed_Data <- dplyr::mutate(Combined_Processed_Data,
+                                           Shape = dplyr::case_when(
+                                             BETA == 0 & SE == 0 & P == 1 ~ "cross",
+                                             TRUE ~ Shape  # Keeps existing values
+                                           )
+  )
+
+ # print(Combined_Processed_Data)
+
+
+}
+
+
+#   return(Combined_Processed_Data)
+
   if(Model_Reference == F)
   {
 
@@ -958,52 +1043,248 @@ if(Match_Allele_Direction == T)
 
 {
 
+  print(paste0("Processing of matching allele directions to: ", Match_Allele_Study))
+
+
+
+
   if(Test_Statistic == "BETA")
   {
-  print("Matching study effect allele directions...")
+#   print("Matching study effect allele directions...")
+#
+#   #  print(Combined_Processed_Data$STUDY)
+#    # print(Match_Allele_Study)
+#
+#
+#   # Convert ALLELE0 and ALLELE1 to uppercase to ensure uniformity
+#   Combined_Processed_Data$ALLELE0 <- toupper(Combined_Processed_Data$ALLELE0)
+#   Combined_Processed_Data$ALLELE1 <- toupper(Combined_Processed_Data$ALLELE1)
+#
+#
+# #  print("Data before BETA flips")
+# #  print(Combined_Processed_Data)
+#
+#
+#   # Loop through the data frame and check for matching IDs with swapped alleles
+#   for (i in 1:nrow(Combined_Processed_Data)) {
+#
+#  #   print(Combined_Processed_Data$STUDY[i] == Match_Allele_Study)
+#     # Ensure the row with the 'Intelligence_Sum_Stats' in STUDY is the master row
+#     if (Combined_Processed_Data$STUDY[i] == Match_Allele_Study) {
+#
+#       for (j in 1:nrow(Combined_Processed_Data)) {
+#         # Skip the master row (Intelligence_Sum_Stats)
+#         if (i != j && Combined_Processed_Data$STUDY[j] != Match_Allele_Study) {
+#
+#      #     print("Hi")
+#     #      print(i)
+#      #     print(j)
+#
+#
+#           print(Combined_Processed_Data$ID[i])
+#           print(Combined_Processed_Data$ID[j])
+#                 print(Combined_Processed_Data$ALLELE0[i])
+#                       print(Combined_Processed_Data$ALLELE1[j])
+#                             print(Combined_Processed_Data$ALLELE1[i])
+#                                   print(Combined_Processed_Data$ALLELE0[j])
+#
+#
+#
+#          # print("HEEW")
+#     #      print(Combined_Processed_Data$ID[i])
+#
+#           # Check if IDs are the same, and alleles are swapped
+#           if (Combined_Processed_Data$ID[i] == Combined_Processed_Data$ID[j] &&
+#               Combined_Processed_Data$ALLELE0[i] == Combined_Processed_Data$ALLELE1[j] &&
+#               Combined_Processed_Data$ALLELE1[i] == Combined_Processed_Data$ALLELE0[j]) {
+#
+#
+#
+#
+#             # Multiply the BETA value of the swapped allele SNP by -1 (for non-master row)
+#             Combined_Processed_Data$BETA[j] <- Combined_Processed_Data$BETA[j] * -1
+#           }
+#         }
+#       }
+#     }
+#   }
+#
 
-  # Convert ALLELE0 and ALLELE1 to uppercase to ensure uniformity
-  Combined_Processed_Data$ALLELE0 <- toupper(Combined_Processed_Data$ALLELE0)
-  Combined_Processed_Data$ALLELE1 <- toupper(Combined_Processed_Data$ALLELE1)
+
+#    print(Combined_Processed_Data)
+
+ #   print(Combined_Processed_Data$STUDY)
+#    print(Match_Allele_Study)
 
 
-#  print("Data before BETA flips")
-#  print(Combined_Processed_Data)
 
 
-  # Loop through the data frame and check for matching IDs with swapped alleles
-  for (i in 1:nrow(Combined_Processed_Data)) {
+    if (num_pattern_count > 2) {
 
- #   print(Combined_Processed_Data$STUDY[i] == Match_Allele_Study)
-    # Ensure the row with the 'Intelligence_Sum_Stats' in STUDY is the master row
-    if (Combined_Processed_Data$STUDY[i] == Match_Allele_Study) {
+    # Remove number prefix from Match_Allele_Study for comparison
+    Match_Allele_Study_Clean <- stringr::str_remove(Match_Allele_Study, "^[0-9]+_")
 
-      for (j in 1:nrow(Combined_Processed_Data)) {
-        # Skip the master row (Intelligence_Sum_Stats)
-        if (i != j && Combined_Processed_Data$STUDY[j] != Match_Allele_Study) {
-
-     #     print("Hi")
-    #      print(i)
-     #     print(j)
-
-
-         # print("HEEW")
-    #      print(Combined_Processed_Data$ID[i])
-
-          # Check if IDs are the same, and alleles are swapped
-          if (Combined_Processed_Data$ID[i] == Combined_Processed_Data$ID[j] &&
-              Combined_Processed_Data$ALLELE0[i] == Combined_Processed_Data$ALLELE1[j] &&
-              Combined_Processed_Data$ALLELE1[i] == Combined_Processed_Data$ALLELE0[j]) {
-
-            # Multiply the BETA value of the swapped allele SNP by -1 (for non-master row)
-            Combined_Processed_Data$BETA[j] <- Combined_Processed_Data$BETA[j] * -1
-          }
-        }
-      }
+    }else{
+      Match_Allele_Study_Clean <- Match_Allele_Study
     }
-  }
 
-  }
+    # Ensure STUDY column has no leading/trailing spaces
+    Combined_Processed_Data$STUDY <- trimws(Combined_Processed_Data$STUDY)
+
+
+    if (num_pattern_count > 2) {
+
+    # Extract reference alleles, matching STUDY even if the number prefix differs
+    reference <- Combined_Processed_Data %>%
+      dplyr::mutate(STUDY_Clean = stringr::str_remove(STUDY, "^[0-9]+_")) %>%  # Remove number prefix
+      dplyr::filter(STUDY_Clean == Match_Allele_Study_Clean) %>%  # Compare cleaned names
+      dplyr::select(ID, ALLELE0, ALLELE1, COORD_Norm, COORD_Alt) %>%
+      dplyr::rename(Ref_ALLELE0 = ALLELE0, Ref_ALLELE1 = ALLELE1)
+
+    }else{
+
+      # Extract reference alleles, matching STUDY even if the number prefix differs
+      reference <- Combined_Processed_Data %>%
+        dplyr::mutate(STUDY_Clean = STUDY) %>%  # Remove number prefix
+        dplyr::filter(STUDY_Clean == Match_Allele_Study_Clean) %>%  # Compare cleaned names
+        dplyr::select(ID, ALLELE0, ALLELE1, COORD_Norm, COORD_Alt) %>%
+        dplyr::rename(Ref_ALLELE0 = ALLELE0, Ref_ALLELE1 = ALLELE1)
+
+    }
+
+
+
+
+
+#If from peak finder because of COORD_Uni they will also have ref match - think about raw later
+
+
+    reference <- reference %>%
+      dplyr::rename_with(~ paste0("REF_", .), everything())
+
+ # print(reference)
+
+
+    #print(Combined_Processed_Data)
+
+
+    print("Aligning reference alleles with data...")
+
+
+    Combined_Processed_Data2 <- Combined_Processed_Data %>%
+      dplyr::left_join(reference, by = c("COORD_Norm" = "REF_COORD_Norm"))
+
+
+    #print(sum(is.na(Combined_Processed_Data2$REF_Ref_ALLELE1)))
+    #print(sum(is.na(Combined_Processed_Data2$REF_Ref_ALLELE0)))
+
+
+    #return(Combined_Processed_Data2)
+
+    print("Finding alleles that failed to match at first attempt...")
+
+    # Step 2: Identify rows with no match in COORD_Norm
+    unmatched <- Combined_Processed_Data2 %>%
+      dplyr::filter(is.na(REF_ID)) %>%
+      dplyr::select(names(Combined_Processed_Data))  # Retain only original columns for the fallback join not joined ones too.
+
+
+
+
+
+    print("Trying to align reference to failures...")
+
+    #print(unmatched)
+
+
+    # Step 3: Perform the second join using COORD_Alt
+    fallback <- unmatched %>%
+      dplyr::left_join(reference, by = c("COORD_Norm" = "REF_COORD_Alt"))
+
+    #print(fallback)
+
+
+    print("Removing failures from initial success...and binding second attempt of failures...")
+
+    # Step 4: Combine matched rows from the first and second join
+    Combined_Processed_Data2 <- Combined_Processed_Data2 %>%
+      dplyr::filter(!is.na(REF_ID)) %>%  # Keep rows matched on COORD_Norm
+      dplyr::bind_rows(fallback)  # Add rows matched on COORD_Alt
+
+
+    Combined_Processed_Data <- Combined_Processed_Data2
+
+
+    # Combined_Processed_Data <- Combined_Processed_Data  %>%
+    #       dplyr::mutate(
+    #           # Flip BETA only if alleles are swapped
+    #           BETA = dplyr::if_else(!is.na(Ref_ALLELE0) & !is.na(Ref_ALLELE1) &
+    #                                   ALLELE0 == Ref_ALLELE1 & ALLELE1 == Ref_ALLELE0,
+    #                                 BETA * -1, BETA)
+    #         )
+
+
+    print("Reversing BETA values of alleles where REF and ALT match reference study REF & ALT but are flipped...")
+
+    Combined_Processed_Data <- Combined_Processed_Data %>%
+      dplyr::mutate(
+        BETA_Flipped = !is.na(REF_Ref_ALLELE0) & !is.na(REF_Ref_ALLELE1) &
+          ALLELE0 == REF_Ref_ALLELE1 & ALLELE1 == REF_Ref_ALLELE0,
+        BETA = dplyr::if_else(BETA_Flipped, BETA * -1, BETA),
+        No_Match = (is.na(REF_COORD_Norm) & is.na(REF_COORD_Alt))
+      )
+
+
+    print("Unified ID dervies from the reference one as alleles matched to this direction")
+
+
+    # View only the rows where BETA was flipped
+    flipped_rows <- Combined_Processed_Data %>%
+      dplyr::filter(BETA_Flipped)
+
+    print(paste0("Number of alleles flipped across any study: ", nrow(flipped_rows)))
+
+
+    #print(table(is.na(Combined_Processed_Data$REF_COORD_Norm) & is.na(Combined_Processed_Data$REF_COORD_Alt)))
+
+    #unmatched_rows <- Combined_Processed_Data %>%
+    # dplyr::filter(is.na(Combined_Processed_Data$REF_COORD_Norm) & is.na(Combined_Processed_Data$REF_COORD_Alt))
+
+
+    #print(unmatched_rows)
+
+
+
+    # View only the rows where BETA was flipped
+    unmatched_rows_2 <- Combined_Processed_Data %>%
+      dplyr::filter(No_Match)
+
+    #print(unmatched_rows_2)
+
+    print(paste0("Number of alleles which were not present either aligned or flipped from any study in the reference study: ", nrow(unmatched_rows_2)))
+
+
+
+
+
+    #Make a unified ID showing direction of effect for all based on reference picked for allels flips
+
+    print("Creating unified IDs for Flips, based on reference study direction of effect")
+
+    Combined_Processed_Data$COORD_Uni <- stringi::stri_c("chr", Combined_Processed_Data$CHROM, ":", Combined_Processed_Data$GENPOS, ":", Combined_Processed_Data$REF_Ref_ALLELE0, ":", Combined_Processed_Data$REF_Ref_ALLELE1)
+
+
+#return(Combined_Processed_Data)
+
+
+# Print final dataset
+#print(Combined_Processed_Data)
+   # print(Match_Allele_Study)
+
+
+   }
+
+#  print(Test_Statistic)
 
 
 
@@ -1046,17 +1327,50 @@ if(Match_Allele_Direction == T)
 
 }
 
-}
+  }
 
-  Combined_Processed_Data$RS <- Combined_Processed_Data$ID
+   #Want to make sure I am actually plotting what has been adjusted for ! direction wise.
+
+  Combined_Processed_Data$ID <- Combined_Processed_Data$COORD_Uni
+
+#print(Combined_Processed_Data)
+
+
+  Combined_Processed_Data$RS <- Combined_Processed_Data$COORD_Uni
+
+
+  Combined_Processed_Data$Left_Plot_Value <- Combined_Processed_Data$COORD_Uni
+
+
 
   res <- Combined_Processed_Data
+
+
+#  print(res)
+
+
+
+  #as long as a few parallels then do
+
+  num_pattern_count <- sum(grepl("^[0-9]+_", res$STUDY))
+
+  # If more than 2, remove the numeric prefix and print the message
+  if (num_pattern_count > 2) {
+    res$STUDY <- sub("^[0-9]+_", "", res$STUDY)
+    print("Detected parallel peak finder run")
+  }
+
+
+
+#  res$STUDY <- sub("^[0-9]+_", "",   res$STUDY)
+
 
 
 
   blank_row <- as.data.frame(lapply(res, function(x) NA))
 
   # Combine the blank row and the original data frame using bind_rows from dplyr
+
 
 
   res <- dplyr::bind_rows(blank_row, res)
@@ -1086,6 +1400,9 @@ if(Match_Allele_Direction == T)
     if(Test_Statistic == "BETA")
 
     {
+
+  #    print(res)
+   #   print(str(res))
 
   res$LL <- res$BETA - 1.96*(res$SE)
   res$UL <- res$BETA + 1.96*(res$SE)
@@ -1444,6 +1761,10 @@ if(Match_Allele_Direction == T)
       res <- res2
 
 
+  #    print(res$Plot_Value)
+
+
+
     if(length(unique_study) %% 2 == 0)
     {
 
@@ -1726,7 +2047,7 @@ if(Match_Allele_Direction == T)
         )
       },
       limits = c(1, max_row_num),  # Set y-axis limits from 0 to the number of rows
-      expand = ggplot2::expansion(add = c(1, 0.04)),  # No extra padding
+      expand = ggplot2::expansion(add = c(1, 0.03)),  # No extra padding
      ) +
     ggplot2::theme(
       axis.text.y = ggtext::element_markdown(
@@ -1941,10 +2262,64 @@ if(Match_Allele_Direction == T)
 
 ###
 
+ # print(res)
+
+  # Load required package
+ # library(dplyr)
+
+  # Ensure data is sorted by Overall_Row_Number
+  res <- dplyr::arrange(res, Overall_Row_Number)
+
+  # Identify min and max values for Overall_Row_Number
+  min_row <- min(res$Overall_Row_Number)  # Find the lowest value
+  max_row <- max(res$Overall_Row_Number)  # Find the maximum value
+
+  # Filter to exclude Overall_Row_Number == 0 and stop 2 before max
+  filtered_res <- dplyr::filter(res, Overall_Row_Number > min_row & Overall_Row_Number < (max_row - 2))
+
+  # Initialize variables
+  count_list <- list()  # Store counts per change
+  current_value <- filtered_res$Left_Plot_Value[1]  # Track the current Left_Plot_Value
+  count <- 0  # Count occurrences
+  group_index <- 1  # Track position in list
+
+  # Iterate through rows in the filtered dataset
+  for (i in seq_len(nrow(filtered_res))) {
+    left_value <- filtered_res$Left_Plot_Value[i]
+
+    # If Left_Plot_Value changes, store the count and reset
+    if (left_value != current_value) {
+      count_list[[paste0("Group_", group_index)]] <- count
+      group_index <- group_index + 1  # Move to next group
+      current_value <- left_value  # Update tracked value
+      count <- 1  # Reset count
+    } else {
+      count <- count + 1  # Continue counting
+    }
+  }
+
+  # Store last counted group
+  count_list[[paste0("Group_", group_index)]] <- count
+
+  # Print results
+ # print(count_list)
+
+
+
+  blocksize_list <- count_list
+
+
+#  print(blocksize_list)
+#  print(blocksize_list[[1]])
+
+  #basiaclly redundant?
+
 
 
 
   blocksize <- length(unique(res$Study))
+ # print(res$Study)
+#  print(blocksize)
   #gets how many studies/size of block shaded bit
   blocks <- length(unique(res$ID))
 
@@ -1957,6 +2332,8 @@ if(Match_Allele_Direction == T)
   blocks <- blocks -1
   #same for 1 NA study
   blocksize <- blocksize -1
+
+
 
 
   ymin <- 1
@@ -2380,6 +2757,8 @@ if(Match_Allele_Direction == T)
 # print( res$P_BETA_SE)
 
 
+#print(res)
+
 
 
 p <- res |>
@@ -2405,7 +2784,7 @@ p <- res |>
       )
     },
     limits = c(1, max_row_num),  # Y-axis limits from 1 to max rows
-    expand = ggplot2::expansion(add = c(1, 0.04)),  # No extra padding
+    expand = ggplot2::expansion(add = c(1, 0.03)),  # No extra padding
 
     sec.axis = ggplot2::sec_axis(
       trans = ~.,  # Keep transformation the same
@@ -2749,8 +3128,10 @@ else {
 
 
 
+#dont use
 
-
+if(2==1)
+{
 
   for (block in 1:blocks) {
 
@@ -2814,7 +3195,8 @@ else {
 
 
     # Add annotation for the rectangle
-    if(block %% 2 ==0)
+   if(block %% 2 ==0)
+  #    if(1 == 1)
     {
 
 
@@ -2839,20 +3221,170 @@ else {
 
 
 
+
+}
 #  pz <- p
 
 
 
 
+#print(blocksize_list)
+
+for (i in seq_along(blocksize_list)) {
+  #print(i)
+}
+
+
+#print("Hi")
+
+
+
+for (block in seq_along(blocksize_list)) {
+
+#  print(block)
+
+
+  # Calculate ymax
+
+  # if(Model_Reference == T)
+  # {
+  #
+  #   blocksize <- blocksizes[block]
+  #
+  # }
+
+#  print((blocksize_list[[block]]))
+#  print("Hi")
+
+
+  ymax <- ymin + (blocksize_list[[block]])
+
+
+
+  if(block == 1)
+  {
+    ymax <- ymax -0.5
+  }
+
+
+
+  #if you dont want beta(se) or ps on the right then limit to rect limit
+  # if(Display_Test_Stat_Se_Column == F & Display_P_Value_Column == F & Display_Test_Stat_CI_Column == F){
+  #
+  #
+  #   mincalcR <- midmaxpos
+  #   mincalcRFull <- midmaxpos
+  #
+  # }
+  #
+  # if(Display_Test_Stat_Se_Column == T & Display_P_Value_Column == F){
+  #
+  #
+  #   mincalcR <- mincalcR
+  #   mincalcRFull <- mincalcRFull
+  #
+  # }
+  #
+  # if(Display_Test_Stat_Se_Column == F & Display_Test_Stat_CI_Column == F  & Display_P_Value_Column == T){
+  #
+  #
+  #   mincalcR <- mincalcR
+  #   mincalcRFull <- mincalcRFull
+  #
+  # }
 
 
 
 
 
+
+  if(Strips == T)
+  {
+
+
+    #    print("Adding Strips")
+
+
+
+
+    # Add annotation for the rectangle
+    if(block %% 2 ==0)     #just for alternating block
+      #    if(1 == 1)
+    {
+
+
+      #    print("running stirps")
+
+
+
+      p <- p + ggplot2::annotate("rect", xmin = midmaxneg, xmax = midmaxpos, ymin = ymin, ymax = ymax,
+                                 alpha = .1, fill = Strip_Colour)
+
+
+
+      # print(ymin)
+      # print(ymax)
+
+  }
+
+  }
+
+  ymin <- ymax
+}
+
+
+
+if (num_pattern_count > 2) {
+
+
+Names <- sub("^[0-9]+_", "",   Names)
+
+
+}
+
+#Names <- sub("^[0-9]+_", "",   Names)
+
+#Names <- paste0(Names, "1")
+#Data_Set_Colours <- unlist(stringr::str_extract_all(Data_Set_Colours, "#[0-9A-Fa-f]+"))
+
+#print(Data_Set_Colours)
+#z
+#print(Names)
+
+
+
+
+#Names <- sort(Names)
+#Names <- rev(sort(Names))
 
 #STUDY col is the clean one!
 values <- setNames(Data_Set_Colours, Names)
+
+
+
 labels <- setNames(Names, Names)
+
+
+
+
+
+#print(values)
+
+
+
+#print(labels)
+
+#print(Names)
+
+
+#print(Data_Set_Colours)
+#print("Hi")
+
+
+#print(res$STUDY)
+
+
+
 
 
 
@@ -2863,6 +3395,8 @@ labels <- setNames(Names, Names)
     breaks = Names
 
   )
+
+
 
 
 
@@ -2889,6 +3423,19 @@ labels <- setNames(Names, Names)
 
 
   end <- (blocksize)*(blocks) + 1
+
+ # print(end)
+
+
+  end <- max(res$Overall_Row_Number) - 2
+
+
+ # print(res)
+  #z
+
+#  print(end)
+
+
 
   if(Model_Reference == T)
   {
@@ -3092,10 +3639,34 @@ labels <- setNames(Names, Names)
 #  print(p_mid2)
 #  dev.off()
 
-ggplot2::ggsave(name, plot = p_mid2, width = Width, height = Height, units = "in", dpi = Quality)
+  #setwd("C:/Users/callumon/Downloads/Simple/Plots")
+
+  ggplot2::ggsave(name, plot = p_mid2, width = Width, height = Height, units = "in", limitsize = F, dpi = Quality)
 
 
+  img <- jpeg::readJPEG(paste0(name))
 
+  # Create the PDF and insert the image
+  pdf_file <- paste0(name, "_Scrollable.pdf")
+  grDevices::pdf(file = pdf_file, width = Width, height = Height)
+  grid::grid.raster(img)
+  grDevices::dev.off()
+
+
+  # ggplot2::ggsave(
+  #   name,  # Ensure the file is saved as a PDF
+  #   plot = p_mid2,
+  #   width = Width,
+  #   height = Height,
+  #   units = "in",
+  #   dpi = Quality,
+  #   device = "pdf"  # Specify PDF as the output format
+  # )
+
+ # ggplot2::ggsave(paste0(name, ".pdf"), plot = p_mid2, width = Width, height = Height, units = "in", dpi = Quality, device = "pdf")
+
+
+  return(Combined_Processed_Data)
 }
 
 
