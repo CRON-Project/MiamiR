@@ -3659,8 +3659,11 @@ labels <- setNames(Names, Names)
 
   print("SAVING...")
 
+  return(p_mid2)
+
   ggplot2::ggsave(name, plot = p_mid2, width = Width, height = Height, units = "in", limitsize = F, dpi = Quality)
 
+#here
 #
 #   img <- jpeg::readJPEG(paste0(name))
 #
@@ -3670,6 +3673,8 @@ labels <- setNames(Names, Names)
 #   grid::grid.raster(img)
 #   grDevices::dev.off()
 
+
+  #to here
 
   # ggplot2::ggsave(
   #   name,  # Ensure the file is saved as a PDF
