@@ -3657,16 +3657,18 @@ labels <- setNames(Names, Names)
 
   #setwd("C:/Users/callumon/Downloads/Simple/Plots")
 
+  print("SAVING...")
+
   ggplot2::ggsave(name, plot = p_mid2, width = Width, height = Height, units = "in", limitsize = F, dpi = Quality)
 
-
-  img <- jpeg::readJPEG(paste0(name))
-
-  # Create the PDF and insert the image
-  pdf_file <- paste0(name, "_Scrollable.pdf")
-  grDevices::pdf(file = pdf_file, width = Width, height = Height)
-  grid::grid.raster(img)
-  grDevices::dev.off()
+#
+#   img <- jpeg::readJPEG(paste0(name))
+#
+#   # Create the PDF and insert the image
+#   pdf_file <- paste0(name, "_Scrollable.pdf")
+#   grDevices::pdf(file = pdf_file, width = Width, height = Height)
+#   grid::grid.raster(img)
+#   grDevices::dev.off()
 
 
   # ggplot2::ggsave(
