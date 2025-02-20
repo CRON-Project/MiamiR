@@ -837,9 +837,17 @@ if(Test_Statistic == "BETA")
 
 
 
+  if(Model_Reference == F)
+  {
+
   Data$COORD_Norm <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
   Data$COORD_Alt <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE1, ":", Data$ALLELE0)
 
+  }
+
+
+  if(Model_Reference == F)
+  {
 
 
     #if you want all of them, like in peak finder plot
@@ -847,6 +855,9 @@ if(Test_Statistic == "BETA")
     Data <- Data
   } else {
   Data <-Data[Data$COORD_Norm %in% Selected_SNPs | Data$COORD_Alt %in% Selected_SNPs, ] # will select even if there is a flip
+  }
+
+
   }
 
   Combined_Processed_Data <- rbind(Combined_Processed_Data, Data)
@@ -1331,6 +1342,11 @@ if(Match_Allele_Direction == T)
 
    #Want to make sure I am actually plotting what has been adjusted for ! direction wise.
 
+
+
+if(Model_Reference == F)
+{
+
   Combined_Processed_Data$ID <- Combined_Processed_Data$COORD_Uni
 
 #print(Combined_Processed_Data)
@@ -1341,7 +1357,7 @@ if(Match_Allele_Direction == T)
 
   Combined_Processed_Data$Left_Plot_Value <- Combined_Processed_Data$COORD_Uni
 
-
+}
 
   res <- Combined_Processed_Data
 
