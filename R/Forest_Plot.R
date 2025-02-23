@@ -1898,7 +1898,7 @@ if(Model_Reference == F)
 
 
 
-
+  print("Getting Plot Ready 2")
   #print(max_width)
 
   # Measure the width of a single underscore
@@ -1959,6 +1959,7 @@ if(Model_Reference == F)
   )
 
 
+  print("Getting Plot Ready 3")
 
 
  # bold_line_string <- paste(rep("\u2501", 2), collapse = "")
@@ -1990,6 +1991,7 @@ if(Model_Reference == F)
 #  print(max_row_num)
 
 
+  print("Getting Plot Ready 4")
 
 
   # Define the necessary columns and their values
@@ -2018,6 +2020,7 @@ if(Model_Reference == F)
     paste(rep("\u2501", numbar), collapse = ""),  # Repeat \u2501 'num_repeats' times
     res$Left_Plot_Value
   )
+
 
 
   # res$Left_Plot_Value[res$Left_Plot_Value == "SNP"] <- "____"
