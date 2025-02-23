@@ -1893,10 +1893,10 @@ if(Model_Reference == F)
 
   # Measure the visual width of each string in res$Left_Plot_Value
   #string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
-  grDevices::pdf(file = NULL)  # Open a dummy PDF device
-  string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
-  dev.off()
-
+  # grDevices::pdf(file = NULL)  # Open a dummy PDF device
+  # string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
+  # dev.off()
+  string_widths <- 20
 
 
   print("Getting Plot Ready again yes ok" )
@@ -1915,9 +1915,11 @@ if(Model_Reference == F)
 
   # Measure the width of a single underscore
  # underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
-  grDevices::pdf(file = NULL)
-  underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
-  dev.off()
+  # grDevices::pdf(file = NULL)
+  # underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
+  # dev.off()
+  underscore_width <- 20
+
 
 #  print(underscore_width)
 
@@ -2280,9 +2282,11 @@ if(Model_Reference == F)
 
 
   #label_width_in_units <- as.numeric(grid::convertWidth(max_label_width, "npc", valueOnly = TRUE))
-  grDevices::pdf(file = NULL)
-  label_width_in_units <- as.numeric(grid::convertWidth(max_label_width, "npc", valueOnly = TRUE))
-  dev.off()
+  # grDevices::pdf(file = NULL)
+  # label_width_in_units <- as.numeric(grid::convertWidth(max_label_width, "npc", valueOnly = TRUE))
+  # dev.off()
+  label_width_in_units <- 20
+
 
   # Adjust proportionally to the current axis range
   x_axis_range <- abs(mincalcR - mincalcL)
@@ -2569,9 +2573,11 @@ if(Model_Reference == F)
 
   # Measure the visual width of each string in res$Left_Plot_Value
 #  string_widths <- grid::convertWidth(grid::stringWidth(res$P_BETA_SE), unitTo = "npc", valueOnly = TRUE)
-  grDevices::pdf(file = NULL)
-  string_widths <- grid::convertWidth(grid::stringWidth(res$P_BETA_SE), unitTo = "npc", valueOnly = TRUE)
-  dev.off()
+  # grDevices::pdf(file = NULL)
+  # string_widths <- grid::convertWidth(grid::stringWidth(res$P_BETA_SE), unitTo = "npc", valueOnly = TRUE)
+  # dev.off()
+  string_widths <- 20
+
 
   # Find the maximum visual width
   max_width <- max(string_widths, na.rm = TRUE)
@@ -2581,9 +2587,11 @@ if(Model_Reference == F)
   # Measure the width of a single underscore
 
 #  underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
-  grDevices::pdf(file = NULL)
-  underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
-  dev.off()
+  # grDevices::pdf(file = NULL)
+  # underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
+  # dev.off()
+  underscore_width <- 20
+
  # print(underscore_width)
 
 
@@ -3050,9 +3058,11 @@ print("Scaling Breaks Done")
 
       axis_width <- sum(ax$width)
      # axis_width_npc <- grid::convertWidth(sum(ax$width), unitTo = "npc", valueOnly = TRUE)
-      grDevices::pdf(file = NULL)
-      axis_width_npc <- grid::convertWidth(sum(ax$width), unitTo = "npc", valueOnly = TRUE)
-      dev.off()
+      # grDevices::pdf(file = NULL)
+      # axis_width_npc <- grid::convertWidth(sum(ax$width), unitTo = "npc", valueOnly = TRUE)
+      # dev.off()
+
+      axis_width_npc <- 20
 
       # Get the original x-limits of the plot (data coordinates)
       xlims <- ggplot2::ggplot_build(p)$layout$panel_params[[1]]$x.range
