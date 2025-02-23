@@ -1895,9 +1895,13 @@ if(Model_Reference == F)
   string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
 
 
+  print("Getting Plot Ready again yes ok" )
+
 
   # Find the maximum visual width
   max_width <- max(string_widths, na.rm = TRUE)
+
+
 
 
 
