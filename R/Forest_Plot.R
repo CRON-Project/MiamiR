@@ -1882,6 +1882,8 @@ if(Model_Reference == F)
                                 paste0(res$Left_Plot_Value, Left_Spaces))
 
 
+
+  print("Getting Plot Ready again yes" )
 #print(res$Left_Plot_Value)
 
 
