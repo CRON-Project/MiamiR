@@ -2901,11 +2901,16 @@ if(Legend_On == FALSE)
     #
 
 
+print("Scaling Range")
+
+
 #auto adjust
 if (is.null(X_Axis_Separation)) {
   range_width <- max(abs(mincalc), abs(maxcalc))  # Get the max range
   X_Axis_Separation <- 10^floor(log10(range_width) - 1)  # Auto-calculate step size
 }
+
+print("Scaling Breaks")
 
 if (Test_Statistic == "BETA") {
   # Calculate the maximum absolute range
@@ -2961,6 +2966,7 @@ else {
 
 
 
+print("Scaling Breaks Done")
 
 #ggplot2::ggsave("TESTING.jpg", plot = p, width = Width, height = Height, units = "in", dpi = Quality)
 
