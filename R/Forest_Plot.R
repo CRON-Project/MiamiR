@@ -872,7 +872,7 @@ if(Test_Statistic == "BETA")
 
 
 
-bef <-  print(nrow(Combined_Processed_Data)) # if missings removed mod end point - that
+#bef <-  print(nrow(Combined_Processed_Data)) # if missings removed mod end point - that
 
 if(Missings == F)
 
@@ -882,7 +882,7 @@ if(Missings == F)
 
 }
 
-aft <-   print(nrow(Combined_Processed_Data))
+#aft <-   print(nrow(Combined_Processed_Data))
 
 
 
@@ -1338,6 +1338,8 @@ if(Match_Allele_Direction == T)
 
 }
 
+  }else{
+    print("Model References don't require allele adjustment!")
   }
 
    #Want to make sure I am actually plotting what has been adjusted for ! direction wise.
