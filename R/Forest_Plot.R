@@ -2038,6 +2038,8 @@ if(Model_Reference == F)
  #  )
 
 
+  print("Beginning Plot Object")
+
   p <- res |>
     ggplot2::ggplot(ggplot2::aes(y = Overall_Row_Number)) +  # Use Plot_Value for y-axis
     ggplot2::theme_classic() +
@@ -2335,7 +2337,7 @@ if(Model_Reference == F)
 
   #basiaclly redundant?
 
-
+  print("Beginning Blocks")
 
 
   blocksize <- length(unique(res$Study))
