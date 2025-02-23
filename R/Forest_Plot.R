@@ -1914,7 +1914,10 @@ if(Model_Reference == F)
   #print(max_width)
 
   # Measure the width of a single underscore
+ # underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
+  grDevices::pdf(file = NULL)
   underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
+  dev.off()
 
 #  print(underscore_width)
 
