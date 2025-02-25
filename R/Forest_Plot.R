@@ -2085,8 +2085,8 @@ if(Model_Reference == F)
         # Apply HTML styling for U2501
         ifelse(
           grepl("\u2501", formatted_labels),  # Check if label contains U2501 character
-          paste0("<span style='font-size:8pt; color:black'>", formatted_labels, "</span>"),
-          paste0("<span style='font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")   # Default 12pt for all others
+          paste0("<span style='font-family: Arial;font-size:8pt; color:black'>", formatted_labels, "</span>"),
+          paste0("<span style='font-family: Arial;font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")   # Default 12pt for all others
         )
       },
       limits = c(1, max_row_num),  # Set y-axis limits from 0 to the number of rows
@@ -2094,7 +2094,7 @@ if(Model_Reference == F)
      ) +
     ggplot2::theme(
       axis.text.y = ggtext::element_markdown(
-        family = "Cantarell",
+        family = "Courier",
         margin = ggplot2::margin(r = 0),  # No space between labels and axis
         vjust  = 0.58  # Adjust vertical alignment to center labels on the tick
       ) ,
@@ -2820,7 +2820,7 @@ if(Model_Reference == F)
 #print(res)
 
 
-
+#THIS IS THE REAL AXIS.
 p <- res |>
   ggplot2::ggplot(ggplot2::aes(y = Overall_Row_Number)) +  # Use Plot_Value for y-axis
   ggplot2::theme_classic() +
@@ -2857,8 +2857,9 @@ p <- res |>
 
         ifelse(
           grepl("\u2501", formatted_labels),
-          paste0("<span style='font-size:8pt; color:black'>", formatted_labels, "</span>"),
-          paste0("<span style='font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+          paste0("<span style='font-family: Arial; font-size:18pt; color:black'>", formatted_labels, "</span>"),
+       #   paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+          paste0("<span style='font-family: Bahnschrift; font-size:18pt; color:black'>", formatted_labels, "</span>")
         )
       }
     )
@@ -2866,7 +2867,7 @@ p <- res |>
 
   ggplot2::theme(
     axis.text.y = ggtext::element_markdown(
-   family = "Courier",
+  # family = "Arial",
       margin = ggplot2::margin(r = 0),  # No space between labels and axis
       vjust  = 0.58  # Adjust vertical alignment to center labels on the tick
     ),
