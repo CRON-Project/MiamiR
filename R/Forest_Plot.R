@@ -2866,7 +2866,7 @@ p <- res |>
 
   ggplot2::theme(
     axis.text.y = ggtext::element_markdown(
-      family = "Courier",
+   family = "Courier",
       margin = ggplot2::margin(r = 0),  # No space between labels and axis
       vjust  = 0.58  # Adjust vertical alignment to center labels on the tick
     ),
