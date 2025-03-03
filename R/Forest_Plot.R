@@ -2944,7 +2944,7 @@ p <- res |>
     axis.text.y = ggtext::element_markdown(
    family = "Courier2", #this bit controls left, above controls right!
       margin = ggplot2::margin(l = 0, r = 0),  # No space between labels and axis
-      vjust  = 0.678,  # Adjust vertical alignment to center labels on the tick - bigger = more down
+      vjust  = 0.642,  # Adjust vertical alignment to center labels on the tick - bigger = more down
       hjust = 1
     ),
      axis.text.y.right = ggplot2::element_text(
@@ -3133,7 +3133,9 @@ else {
   # Ensure `breaks` and `labels` are of the same length
   displayed_labels <- displayed_labels[breaks %in% displayed_breaks]
 
-  buffer <- (maxcalc - mincalc) * Line_Space
+  buffer <- (log10(maxcalc) - log10(mincalc)) * Line_Space  # Apply scaling in log space
+  buffer <- 10^buffer  # Convert back from log scale
+
 #  print(Line_Space)
 #  print(maxcalc)
 #  print(mincalc)
@@ -3142,7 +3144,7 @@ else {
 
   # Set axis with symmetrical breaks and filtered labels and ticks
   p <- p + ggplot2::scale_x_continuous(
-    limits = c(mincalc - buffer, maxcalc + buffer),    # Symmetrical axis limits - enough for strips to fit just under
+    limits = c(mincalc / buffer, maxcalc * buffer),   # Symmetrical axis limits - enough for strips to fit just under
     breaks = displayed_breaks,          # Filtered breaks for ticks
     labels = displayed_labels,
     trans = "log10",
