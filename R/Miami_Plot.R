@@ -110,6 +110,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 {
 
+  #add file loading later like others.
 
   if(Draft_Plot == T)
   {
@@ -378,7 +379,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   Top_Data <- Top_Data %>%
     dplyr::mutate(GENPOS = as.numeric(GENPOS), CHROM = as.numeric(CHROM))
 
-  return(Top_Data)
+#  return(Top_Data)
 
   Bottom_Data <- Bottom_Data %>%
     dplyr::mutate(GENPOS = as.numeric(GENPOS), CHROM = as.numeric(CHROM))
@@ -486,6 +487,8 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   print(Point_Size)
 
 
+
+
   a <- ggmanh::manhattan_plot(x = Top_Data, preserve.position = T, plot.title = Top_Title,
                               chr.colname = Top_Chromosome_Column, pos.colname = Top_Position_Column, label.colname = NULL,
                               pval.colname = Top_PValue_Column, annotateTop = FALSE,
@@ -573,7 +576,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 
 
-
+return(df)
 
   for (chrom in c(1:22, "X")) {
     # Filter for the current chromosome
