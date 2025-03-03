@@ -567,6 +567,9 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
   middle_new_pos_values <- numeric()
 
+  print(df)
+  return(p)
+
   for (chrom in c(1:22, "X")) {
     # Filter for the current chromosome
     df_filtered <- df %>%
@@ -602,7 +605,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
   Top_Plot_Outcome <- d
 
-  return(Top_Plot_Outcome)
+#  return(Top_Plot_Outcome)
   #return(Top_Plot_Outcome)
   # return(Top_Plot_Outcome)
 
