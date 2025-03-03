@@ -203,7 +203,7 @@ Single_Plot <- function(Data = Intelligence_Sum_Stats,
   Data$Lab[!(Data$CHROM %in% Chromosome_Labels)] <- NA
   Data$COLOUR[!(Data$CHROM %in% Chromosome_Index)] <- NA
 
-  Title <- paste0(Title, "\n")
+  Title <- paste0(Title, "\n\n")
 
   #Basic Plot
 
@@ -241,11 +241,11 @@ Single_Plot <- function(Data = Intelligence_Sum_Stats,
                  panel.grid.minor =  ggplot2::element_blank(),
                  panel.background =  ggplot2::element_blank(),
                  plot.title = ggplot2::element_text(hjust = 0.5, size = Title_Size),
-                 axis.text.x = ggplot2::element_text(size = Chromosome_Label_Size, vjust = -0.5),
+                 axis.text.x = ggplot2::element_text(size = Chromosome_Label_Size, vjust = -0.5, colour = "black"),
                  axis.line =  ggplot2::element_line(),
-                 axis.title.x =  ggplot2::element_text(size = X_Axis_Title_Size, vjust = -5 ),
-                 axis.title.y =  ggplot2::element_text(size = Y_Axis_Title_Size, vjust = 2),
-                 axis.text.y =  ggplot2::element_text(size = Y_Axis_Text_Size),
+                 axis.title.x =  ggplot2::element_text(size = X_Axis_Title_Size, vjust = -7 ),
+                 axis.title.y =  ggplot2::element_text(size = Y_Axis_Title_Size, vjust = 4),
+                 axis.text.y =  ggplot2::element_text(size = Y_Axis_Text_Size, colour = "black"),
                  axis.ticks.length.x  =  ggplot2::unit(0.8,"cm"),
                  legend.position = "none",
                  plot.margin =  ggplot2::margin(t = 20,  # Top margin
@@ -294,6 +294,9 @@ Single_Plot <- function(Data = Intelligence_Sum_Stats,
 
 
   middle_new_pos_values <- numeric()
+
+
+  #currently need to adjust to X manually update in future.
 
   for (chrom in c(1:22, "X")) {
     # Filter for the current chromosome
