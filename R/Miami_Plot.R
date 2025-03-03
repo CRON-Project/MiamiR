@@ -238,6 +238,8 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   Top_Data$COLOUR3[Top_Data$P != 1 & (Top_Data$CHROM %in% c(1,3,5,7,9,11,13,15,17,19,21,23))] <- Point_Size
 
 
+  return(Top_Data)
+
 
   Top_Title <- paste0(Top_Title, "\n")
   Bottom_Title <- paste0( "\n", Bottom_Title)
