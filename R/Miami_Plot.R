@@ -629,9 +629,9 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
   Top_Plot_Outcome <- d
 
-  return(Top_Plot_Outcome)
+ # return(Top_Plot_Outcome)
   #  Top_Data$CHROM[Top_Data$CHROM == 23] <- "X" #needs to go X later before calc due to ggmanh func
-  #return(Top_Plot_Outcome)
+  #return(Top_Plot_Outcome) #also update for 23 files input
 #  return(Top_Plot_Outcome)
 
   print("Top Plot Made...")
@@ -642,6 +642,8 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 
   print("Plotting Bottom Framework")
+
+  Bottom_Data$CHROM[Bottom_Data$CHROM == 23] <- "X"
 
   a1 <- ggmanh::manhattan_plot(x = Bottom_Data, preserve.position = T, plot.title =  ggplot2::ggtitle(""),
                        chr.colname = Bottom_Chromosome_Column, pos.colname = Bottom_Position_Column, label.colname = NULL,
