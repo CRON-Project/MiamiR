@@ -1684,7 +1684,8 @@ if(Model_Reference == F)
       res2 <- res2 %>% dplyr::arrange(desc(dplyr::row_number()))
 
 
-
+      print(res2)
+      return(res2)
 
       first_non_na <- min(which(!is.na(res2$Study)))
 
