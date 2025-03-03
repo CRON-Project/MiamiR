@@ -606,6 +606,8 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   }
 
 
+  print(middle_new_pos_values)
+
   return(p)
 
 
