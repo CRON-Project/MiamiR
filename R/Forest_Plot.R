@@ -72,15 +72,15 @@ Forest_Plot <- function(Data_Sets = c(),
                         Names = NULL,
                         Data_Set_Colours = viridis::viridis(length(Data_Sets)),
                         Chromosome_Columns = c(),
-                        Left_Spaces = 2,
+                        Left_Spaces = 2, #def 2
                         Right_Spaces = 2,
                         Missings = F,
                         P_Stat_Spaces = 3,
                         Model_Reference = FALSE,
-                        X_Axis_Text_Size = 10,
+                        X_Axis_Text_Size = 125,
                         Line_Space = 0.01,
                         Test_Statistic = NULL,
-                        Display_Test_Stat_Se_Column = TRUE,
+                        Display_Test_Stat_Se_Column = FALSE,
                         Display_Test_Stat_CI_Column = FALSE,
                         Display_P_Value_Column = TRUE,
                         Shapes = NULL,
@@ -88,17 +88,18 @@ Forest_Plot <- function(Data_Sets = c(),
                         Null_Line_Type = "dashed",
                         X_Axis_Title = NULL,
                         Null_Buffer = 0.0,
-                        X_Axis_Title_Size = 15,
-                        SNP_Stat_Text_Size = 12,
+                        X_Axis_Title_Size = 125,
+                        SNP_Stat_Text_Size = 125,  #some non odd tens dont work?
                         X_Axis_Label = TRUE,
                         X_Axis_Separation = NULL,
-                        Strip_Colour = "black",
+                        Strip_Colour = "goldenrod",
                         Strips = TRUE,
                         X_Axis_Text_Resolution = 2,
+                        P_Value_Resolution = 1,
                         Pre_Calculated_CIs = FALSE,
-                        Legend_On = TRUE,
-                        Legend_Title_Size = 15,
-                        Legend_Text_Size = 12.5,
+                        Legend_On = FALSE,
+                        Legend_Title_Size = 100,
+                        Legend_Text_Size = 100,
                         Legend_Title = "Study",
                         Left_Title = "SNP",
                         P_Value_Title = "p-value",
@@ -113,7 +114,7 @@ Forest_Plot <- function(Data_Sets = c(),
                         Selected_Covariates = c(),
                         Reference_Alleles = c(),  Effect_Alleles = c(),
                         Upper_CI_Columns = c(), Lower_CI_Columns = c(),
-                        File_Name = "Forest_Plot", Width =10, Height = 6, Quality = 600,
+                        File_Name = "Forest_Plot", Width =10, Height = 10, Quality = 600,
                         File_Type = "jpg"
                         )
 
@@ -868,7 +869,9 @@ if(Test_Statistic == "BETA")
 
 
 
-#  print(Combined_Processed_Data)
+
+
+ # print(Combined_Processed_Data)
 
 
 
@@ -1446,9 +1449,10 @@ if(Model_Reference == F)
 
 
 
+  res$P <- sprintf(paste0("%.", P_Value_Resolution, "e"), res$P)
 
 
-  res$P <- sprintf("%.2e", res$P)
+  #res$P <- sprintf("%.2e", res$P)
   res$UL <- as.numeric(res$UL)
   res$LL <- as.numeric(res$LL)
 
@@ -1890,13 +1894,15 @@ if(Model_Reference == F)
 #print(res$Left_Plot_Value)
 
 
-
+#no bother
   # Measure the visual width of each string in res$Left_Plot_Value
-  #string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
-  # grDevices::pdf(file = NULL)  # Open a dummy PDF device
-  # string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
-  # dev.off()
-  string_widths <- 20
+string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
+ grDevices::pdf(file = NULL)  # Open a dummy PDF device
+ string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
+ dev.off()
+ # string_widths <- 20
+
+print(string_widths)
 
 
   print("Getting Plot Ready again yes ok" )
@@ -1907,6 +1913,7 @@ if(Model_Reference == F)
 
 
 
+  print(max_width)
 
 
 
@@ -1915,13 +1922,13 @@ if(Model_Reference == F)
 
   # Measure the width of a single underscore
  # underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
-  # grDevices::pdf(file = NULL)
-  # underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
-  # dev.off()
-  underscore_width <- 20
+  grDevices::pdf(file = NULL)
+  underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
+  dev.off()
+ # underscore_width <- 20
 
 
-#  print(underscore_width)
+  print(underscore_width)
 
 
 
@@ -1930,9 +1937,18 @@ if(Model_Reference == F)
   # Calculate the exact number of underscores needed to match the maximum width
   exact_num_underscores <- max_width / underscore_width
 
-  numbar <- ceiling(exact_num_underscores * (SNP_Stat_Text_Size / 8))
+  #/100 due to massive font size required with this render was 8
 
- # print(numbar)
+  numbar <- ceiling(exact_num_underscores * (SNP_Stat_Text_Size / 19.5))
+
+
+
+#  numbar <- ceiling(exact_num_underscores)
+
+  print(numbar)
+
+
+#numbar <- 3
 
 
 
@@ -1978,6 +1994,8 @@ if(Model_Reference == F)
 
   print("Getting Plot Ready 3")
 
+
+  #numbar <- 100
 
  # bold_line_string <- paste(rep("\u2501", 2), collapse = "")
 #  print(bold_line_string)
@@ -2280,11 +2298,11 @@ if(Model_Reference == F)
  # zzz
   # Convert the label width into axis scale units
 
-
+#no bother
   #label_width_in_units <- as.numeric(grid::convertWidth(max_label_width, "npc", valueOnly = TRUE))
-  # grDevices::pdf(file = NULL)
-  # label_width_in_units <- as.numeric(grid::convertWidth(max_label_width, "npc", valueOnly = TRUE))
-  # dev.off()
+# grDevices::pdf(file = NULL)
+# label_width_in_units <- as.numeric(grid::convertWidth(max_label_width, "npc", valueOnly = TRUE))
+# dev.off()
   label_width_in_units <- 20
 
 
@@ -2327,15 +2345,29 @@ if(Model_Reference == F)
   # Filter to exclude Overall_Row_Number == 0 and stop 2 before max
   filtered_res <- dplyr::filter(res, Overall_Row_Number > min_row & Overall_Row_Number < (max_row - 2))
 
+  #print(filtered_res)
+
+
   # Initialize variables
   count_list <- list()  # Store counts per change
+
+  if(Model_Reference == T)
+  {
+  current_value <- filtered_res$group[1]
+  }else{
   current_value <- filtered_res$Left_Plot_Value[1]  # Track the current Left_Plot_Value
+  }
   count <- 0  # Count occurrences
   group_index <- 1  # Track position in list
 
   # Iterate through rows in the filtered dataset
   for (i in seq_len(nrow(filtered_res))) {
+    if(Model_Reference == F)
+    {
     left_value <- filtered_res$Left_Plot_Value[i]
+    }else{
+      left_value <- filtered_res$group[i]
+    }
 
     # If Left_Plot_Value changes, store the count and reset
     if (left_value != current_value) {
@@ -2479,6 +2511,10 @@ if(Model_Reference == F)
   res_plot$BETA2 <- gsub(" -0.00", "-0.00", res_plot$BETA2)
 
 
+
+
+
+
   res_plot$P[res_plot$RS == "-aaa-rs99999999"] <- "p-value"
 
   res_plot$BETA2[res_plot$RS == "-aaa-rs99999999"] <- " BETA (SE)"
@@ -2497,14 +2533,36 @@ if(Model_Reference == F)
   res_plot$BETA2[res_plot$RS == "-a-aaarModel"] <- Test_Stat_Se_Title
   res_plot$P[res_plot$RS == "-aaa-rs99999999"] <- ""
   res_plot$BETA2[res_plot$RS == "-aaa-rs99999999"] <- ""
-  res_plot$BETA2[res_plot$P == "1.00e+00"] <- "" # has to go first due to below
-  res_plot$P[res_plot$P == "1.00e+00"] <- ""
+ # res_plot$BETA2[res_plot$P == "1.00e+00"] <- "" # has to go first due to below
+#  res_plot$P[res_plot$P == "1.00e+00"] <- ""
 
 
-  res_plot$P[res_plot$P == "0.00e+00"] <- "0.00e-00"
+  print(.Machine$double.xmin)
+
+  #Make 000 as min floating point value
+ # res_plot$P[res_plot$P == "0.00e+00"] <- .Machine$double.xmin
 
 
 
+  # Dynamically construct the string representation for 1.00e+00 and 0.00e+00
+  one_string <- sprintf(paste0("%.", P_Value_Resolution, "e"), 1)
+  zero_string <- sprintf(paste0("%.", P_Value_Resolution, "e"), 0)
+
+  #print(one_string)
+  #print(zero_string)
+
+
+
+  # Replace "1.00e+00" dynamically
+  res_plot$BETA2[res_plot$P == one_string] <- "" # Ensure this runs first
+  res_plot$P[res_plot$P == one_string] <- ""
+
+  # Replace "0.00e+00" dynamically with the smallest floating-point value
+  # Format .Machine$double.xmin to match P_Value_Resolution
+  formatted_min_value <- sprintf(paste0("%.", P_Value_Resolution, "e"), .Machine$double.xmin)
+
+  # Replace "0.00e+00" dynamically with the formatted smallest floating-point value
+  res_plot$P[res_plot$P == zero_string] <- formatted_min_value
  # print(res_plot)
 
 
@@ -2523,12 +2581,22 @@ if(Model_Reference == F)
   #   res$P_BETA_SE <- paste0(res_plot$BETA2)
   # }
 
+  #no first
+
+  P_Calc <- P_Stat_Spaces -1
+
   P_Stat_Spaces <- strrep("Z", P_Stat_Spaces)
+
+
+
+  P_Stat_Spaces_3_Dig  <- strrep("Z", P_Calc)
+
+  #P_Stat_Spaces_Title <- strrep("Z", P_Stat_Spaces_Title)
 
   P_Stat_Spaces_Adj <- paste0(P_Stat_Spaces, "ZZZ") #add extra 3 for this
 
 
-  P_Stat_Spaces_Title <- paste0(P_Stat_Spaces, "..")
+  P_Stat_Spaces_Title <- paste0(P_Stat_Spaces, "") #title spaces!
 
 
   RS_condition <- grepl("-a-aaarModel", res$RS)
@@ -2537,7 +2605,7 @@ if(Model_Reference == F)
     # Adjust the space padding based on the length of the exponent part
     res$P_BETA_SE <- ifelse(
       nchar(gsub(".*e[\\+\\-]([0-9]+)", "\\1", res_plot$P)) == 3,  # Check if the exponent has 3 digits
-      paste0(res_plot$P, P_Stat_Spaces, "\u2009",  "\u200a", res_plot$BETA2),  # 9 spaces for three-digit exponents
+      paste0(res_plot$P, P_Stat_Spaces_3_Dig, res_plot$BETA2),   # paste0(res_plot$P, P_Stat_Spaces, "\u2009",  "\u200a", res_plot$BETA2),  # 9 spaces for three-digit exponents  #titles???? actually leave the same
       paste0(res_plot$P, P_Stat_Spaces, res_plot$BETA2)  # 10 spaces for shorter exponents
     )
 
@@ -2573,10 +2641,10 @@ if(Model_Reference == F)
 
   # Measure the visual width of each string in res$Left_Plot_Value
 #  string_widths <- grid::convertWidth(grid::stringWidth(res$P_BETA_SE), unitTo = "npc", valueOnly = TRUE)
-  # grDevices::pdf(file = NULL)
-  # string_widths <- grid::convertWidth(grid::stringWidth(res$P_BETA_SE), unitTo = "npc", valueOnly = TRUE)
-  # dev.off()
-  string_widths <- 20
+ grDevices::pdf(file = NULL)
+  string_widths <- grid::convertWidth(grid::stringWidth(res$P_BETA_SE), unitTo = "npc", valueOnly = TRUE)
+  dev.off()
+ # string_widths <- 20
 
 
   # Find the maximum visual width
@@ -2587,10 +2655,10 @@ if(Model_Reference == F)
   # Measure the width of a single underscore
 
 #  underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
-  # grDevices::pdf(file = NULL)
-  # underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
-  # dev.off()
-  underscore_width <- 20
+ grDevices::pdf(file = NULL)
+  underscore_width <- grid::convertWidth(grid::stringWidth("---"), unitTo = "npc", valueOnly = TRUE)
+  dev.off()
+#  underscore_width <- 20
 
  # print(underscore_width)
 
@@ -2602,7 +2670,7 @@ if(Model_Reference == F)
 
 #  numbar <- ceiling(exact_num_underscores)
 
-  numbar <- floor(exact_num_underscores * (SNP_Stat_Text_Size / 8))
+  numbar <- floor(exact_num_underscores * (SNP_Stat_Text_Size /19.5))
 
  # print(numbar)
 
@@ -2819,6 +2887,13 @@ if(Model_Reference == F)
 
 #print(res)
 
+  print(res$Left_Plot_Value)
+
+ # res$Left_Plot_Value <- 1
+
+  print(res$Left_Plot_Value)
+
+  #res$Left_Plot_Value <- trimws(res$Left_Plot_Value)
 
 #THIS IS THE REAL AXIS.
 p <- res |>
@@ -2837,14 +2912,14 @@ p <- res |>
 
       formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
 
-      ifelse(
+      ifelse(#this bit also controls left
         grepl("\u2501", formatted_labels),
-        paste0("<span style='font-size:8pt; color:black'>", formatted_labels, "</span>"),
-        paste0("<span style='font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+        paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
+        paste0("<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
       )
     },
     limits = c(1, max_row_num),  # Y-axis limits from 1 to max rows
-    expand = ggplot2::expansion(add = c(1, 0.03)),  # No extra padding
+    expand = ggplot2::expansion(add = c(1, 0.02)),  # No extra padding
 
     sec.axis = ggplot2::sec_axis(
       trans = ~.,  # Keep transformation the same
@@ -2857,9 +2932,9 @@ p <- res |>
 
         ifelse(
           grepl("\u2501", formatted_labels),
-          paste0("<span style='font-family: Arial; font-size:18pt; color:black'>", formatted_labels, "</span>"),
-       #   paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
-          paste0("<span style='font-family: Cantarell2; font-size:180pt; color:black'>", formatted_labels, "</span>")
+          paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
+          paste0("<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+        #  paste0("<span style='font-family: Courier2; font-size:180pt; color:black'>", formatted_labels, "</span>")
         )
       }
     )
@@ -2867,19 +2942,50 @@ p <- res |>
 
   ggplot2::theme(
     axis.text.y = ggtext::element_markdown(
-  # family = "Arial",
-      margin = ggplot2::margin(r = 0),  # No space between labels and axis
-      vjust  = 0.58  # Adjust vertical alignment to center labels on the tick
+   family = "Courier2", #this bit controls left, above controls right!
+      margin = ggplot2::margin(l = 0, r = 0),  # No space between labels and axis
+      vjust  = 0.678,  # Adjust vertical alignment to center labels on the tick - bigger = more down
+      hjust = 1
     ),
-    axis.text.y.right = ggplot2::element_text(
-      margin = ggplot2::margin(l = 0, r = 0),  # Removes gap to the right of secondary y-axis
-      hjust = 0  # Ensures right-alignment
-    ),
+     axis.text.y.right = ggplot2::element_text(
+       margin = ggplot2::margin(l = 0, r = 0),  # Removes gap to the right of secondary y-axis
+       hjust = 0  # Ensures right-alignment
+     ),
+   axis.text.y.left = ggplot2::element_text(
+     margin = ggplot2::margin(l = 0, r = -.8),  # Removes gap to the right of secondary y-axis r= -0.4
+     hjust = 1  # Ensures right-alignment
+   ),
    axis.ticks.y = ggplot2::element_blank(),  # Remove y-axis tick marks
    axis.ticks.length.y = ggplot2::unit(0, "cm")  # Ensure tick length is 0
   )
 
 
+  # ggplot2::theme(
+  #   axis.text.y = ggtext::element_markdown(  # Use Markdown for LEFT axis for consistency
+  #     family = "Courier2",  # Use standard Courier (not Courier2, which may not exist)
+  #     margin = ggplot2::margin(l = 0, r = 0),  # Remove unnecessary spacing
+  #     vjust  = 0.635,  # Align labels correctly
+  #     hjust = 1  # Right-align text
+  #   ),
+  #    axis.text.y.right = ggtext::element_markdown(  # Use Markdown for RIGHT axis as well
+  #      family = "Courier2",
+  #      margin = ggplot2::margin(l = 0, r = 0),  # Match left axis spacing
+  #      vjust = 0.635,  # Align correctly
+  #      hjust = 0  # Left-align text for right axis
+  #    )
+  #   ,
+  #    axis.text.y.left = ggtext::element_markdown(  # Ensure consistency with left axis
+  #      family = "Courier2",
+  #      margin = ggplot2::margin(l = 0, r = -1.2),  # Match right axis spacing
+  #      vjust = 0.635,
+  #      hjust = 1 #,
+  #     # vjust = 0.5# Right-align text
+  #
+  # ),     #   ),
+  #    axis.ticks.y = ggplot2::element_blank(),  # Remove y-axis tick marks
+  #    axis.ticks.length.y.left  = ggplot2::unit(0, "cm"),  # Ensure tick length is 0
+  # axis.ticks.length.y.right  = ggplot2::unit(0, "cm")
+  # )
 
 
 p <- p +
@@ -2890,7 +2996,7 @@ p <- p +
 
 
 
-#print(p)
+print(p)
 
 
 
@@ -2975,33 +3081,76 @@ if (Test_Statistic == "BETA") {
   # Ensure `breaks` and `labels` are of the same length
   displayed_labels <- displayed_labels[breaks %in% displayed_breaks]
 
+
+  buffer <- (maxcalc - mincalc) * Line_Space
+
   # Set axis with symmetrical breaks and filtered labels and ticks
   p <- p + ggplot2::scale_x_continuous(
-    limits = c(mincalc, maxcalc),  # Symmetrical axis limits - enough for strips to fit just under
+    limits = c(mincalc - buffer, maxcalc + buffer), # Symmetrical axis limits - enough for strips to fit just under
     breaks = displayed_breaks,          # Filtered breaks for ticks
     labels = displayed_labels,
-    expand = ggplot2::expansion(mult = c(Line_Space, Line_Space)) # Filtered labels
+  #  expand = ggplot2::expansion(mult = c(Line_Space, Line_Space)) # Filtered labels
   ) +
     ggplot2::theme(
-      axis.ticks.x = ggplot2::element_line(size = 0.5)  # Regular tick size
+      axis.ticks.x = ggplot2::element_line(size = 0.5, colour = "black")  # Regular tick size
     )
 }
 
 
 else {
   # Ensure that 1 is always in the breaks for OR (log10), but avoid too many labels close to 1
-  breaks <- seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation)
+  # breaks <- seq(midmaxneg1dp, midmaxpos1dp, X_Axis_Separation)
+  #
+  # # Exclude breaks very close to 1, only include 1
+  # breaks <- breaks[abs(breaks - 1) > Null_Buffer]  # Adjust threshold if necessary
+  # breaks <- c(1, breaks)  # Ensure 1 is still included
+  #
+  # p <- p + ggplot2::scale_x_continuous(
+  #   limits = c(mincalcLFull, mincalcRFull),
+  #   breaks = breaks,
+  #   trans = "log10",
+  #   labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
+  # )
 
-  # Exclude breaks very close to 1, only include 1
-  breaks <- breaks[abs(breaks - 1) > Null_Buffer]  # Adjust threshold if necessary
-  breaks <- c(1, breaks)  # Ensure 1 is still included
+  max_range <- max(abs(mincalc), abs(maxcalc))  # Ensure symmetry around 0
+  max_range <- ceiling(max_range / X_Axis_Separation) * X_Axis_Separation  # Round to nearest separation
 
-  p <- p + ggplot2::scale_x_continuous(
-    limits = c(mincalcLFull, mincalcRFull),
-    breaks = breaks,
-    trans = "log10",
-    labels = scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)
+  # Generate symmetrical breaks around 0
+  breaks <- seq(-max_range, max_range, X_Axis_Separation)
+
+  # Apply Null_Buffer: Remove breaks close to 0, but ensure 0 is included
+  breaks <- breaks[abs(breaks) > Null_Buffer]
+  breaks <- sort(c(0, breaks))  # Ensure 0 is included and sorted symmetrically
+
+  # Filter out breaks and labels beyond midmaxneg1dp and midmaxpos1dp
+  displayed_breaks <- breaks[breaks >= mincalc & breaks <= maxcalc]
+  displayed_labels <- ifelse(
+    breaks >= mincalc & breaks <= maxcalc,
+    scales::number_format(accuracy = 10^-X_Axis_Text_Resolution)(breaks),
+    ""  # Hide labels beyond the range
   )
+
+  # Ensure `breaks` and `labels` are of the same length
+  displayed_labels <- displayed_labels[breaks %in% displayed_breaks]
+
+  buffer <- (maxcalc - mincalc) * Line_Space
+#  print(Line_Space)
+#  print(maxcalc)
+#  print(mincalc)
+#  print(buffer)
+  #z
+
+  # Set axis with symmetrical breaks and filtered labels and ticks
+  p <- p + ggplot2::scale_x_continuous(
+    limits = c(mincalc - buffer, maxcalc + buffer),    # Symmetrical axis limits - enough for strips to fit just under
+    breaks = displayed_breaks,          # Filtered breaks for ticks
+    labels = displayed_labels,
+    trans = "log10",
+    expand = ggplot2::expansion(mult = c(Line_Space, Line_Space)) # Filtered labels
+  ) +
+    ggplot2::theme(
+      axis.ticks.x = ggplot2::element_line(size = 0.5, colour = "black")  # Regular tick size
+    )
 }
 
 
@@ -3014,7 +3163,7 @@ print("Scaling Breaks Done")
 
 
 
-  if(Test_Statistic == "BETA")
+  if(Test_Statistic == "BETAx")
   {
 
     shift_axis_x <- function(p, x = 0) {
@@ -3046,7 +3195,7 @@ print("Scaling Breaks Done")
 
 
 
-  if(Test_Statistic == "OR")
+  if(Test_Statistic == "ORx")
   {
 
 
@@ -3059,11 +3208,11 @@ print("Scaling Breaks Done")
 
       axis_width <- sum(ax$width)
      # axis_width_npc <- grid::convertWidth(sum(ax$width), unitTo = "npc", valueOnly = TRUE)
-      # grDevices::pdf(file = NULL)
-      # axis_width_npc <- grid::convertWidth(sum(ax$width), unitTo = "npc", valueOnly = TRUE)
-      # dev.off()
+   #   grDevices::pdf(file = NULL)
+    #  axis_width_npc <- grid::convertWidth(sum(ax$width), unitTo = "npc", valueOnly = TRUE)
+    #  dev.off()
 
-      axis_width_npc <- 20
+     axis_width_npc <- 20
 
       # Get the original x-limits of the plot (data coordinates)
       xlims <- ggplot2::ggplot_build(p)$layout$panel_params[[1]]$x.range
@@ -3102,7 +3251,6 @@ print("Scaling Breaks Done")
 
  # ggplot2::ggsave("Test.jpg", plot = p, width = Width, height = Height, units = "in", dpi = Quality)
 
-#  print(p)
 
 
 
@@ -3436,7 +3584,7 @@ values <- setNames(Data_Set_Colours, Names)
 
 labels <- setNames(Names, Names)
 
-
+#HERO
 
 
 
@@ -3546,11 +3694,6 @@ labels <- setNames(Names, Names)
 
 
 
-
-
-
-
-
   if(Legend_On == FALSE)
   {
     p_mid <- p +
@@ -3576,15 +3719,17 @@ labels <- setNames(Names, Names)
   }
 
 
+
+
   p_mid <- p_mid +   ggplot2::geom_hline(yintercept = (end), linetype = "solid", color = "black")+# + geom_hline(yintercept = 0, linetype = "solid", color = "black")
  #   ggplot2::geom_hline(yintercept = 1, linetype = "solid", color = "black")+
     ggplot2::geom_hline(yintercept = end+2, linetype = "solid", color = "black")+
     #+ geom_segment(aes(x = -Inf, xend = Inf, y = 36, yend = 36), color = "black", linetype = "solid")
     ggplot2::theme(#axis.line.x = ggplot2::element_blank(),
-          legend.text = ggplot2::element_text(size = Legend_Text_Size),
-          legend.title = ggplot2::element_text(size = Legend_Title_Size),
-          axis.text.x = ggplot2::element_text(size = X_Axis_Text_Size),
-          axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 15), vjust = -3, size = X_Axis_Title_Size ))#,
+         legend.text = ggplot2::element_text(size = Legend_Text_Size),
+         legend.title = ggplot2::element_text(size = Legend_Title_Size),
+         axis.text.x = ggplot2::element_text(size = X_Axis_Text_Size, family = "Courier2", color ="black"),
+          axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 15, b = -X_Axis_Title_Size), family = "Courier2", vjust = -3, color = "black", size = X_Axis_Title_Size ))#,
   #      axis.ticks.y= element_blank(),
   #      axis.text.y= element_blank(),
   #      axis.title.y= element_blank())
@@ -3592,10 +3737,12 @@ labels <- setNames(Names, Names)
 
 
 
+  print(p_mid)
+
 
  p_mid <- p_mid + ggplot2::theme(
   axis.ticks.length.x  = ggplot2::unit(0.4,"cm"),
-   axis.text.x = ggplot2::element_text(vjust = -1),
+   axis.text.x = ggplot2::element_text(vjust = -1, size = X_Axis_Text_Size, family = "Courier2"),
    legend.margin=ggplot2::margin(0,0,0,0)
  ) # adds more
 
@@ -3607,6 +3754,10 @@ labels <- setNames(Names, Names)
 
 #print(end)
 #print(end + 2)
+
+
+
+
 
 
 
