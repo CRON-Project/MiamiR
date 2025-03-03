@@ -493,6 +493,8 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
   print("CHROMS")
   print(table(Top_Data$CHROM))
+  Top_Data$CHROM[Top_Data$CHROM == 23] <- "X"
+  print(table(Top_Data$CHROM))
 
   a <- ggmanh::manhattan_plot(x = Top_Data, preserve.position = T, plot.title = Top_Title,
                               chr.colname = Top_Chromosome_Column, pos.colname = Top_Position_Column, label.colname = NULL,
