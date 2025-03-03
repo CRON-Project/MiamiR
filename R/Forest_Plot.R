@@ -2952,7 +2952,7 @@ p <- res |>
        hjust = 0  # Ensures right-alignment
      ),
    axis.text.y.left = ggplot2::element_text(
-     margin = ggplot2::margin(l = 0, r = -.8),  # Removes gap to the right of secondary y-axis r= -0.4
+     margin = ggplot2::margin(l = 0, r = -1.2),  # Removes gap to the right of secondary y-axis r= -0.4
      hjust = 1  # Ensures right-alignment
    ),
    axis.ticks.y = ggplot2::element_blank(),  # Remove y-axis tick marks
