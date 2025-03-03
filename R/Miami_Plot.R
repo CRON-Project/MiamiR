@@ -240,6 +240,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 
   Top_Title <- paste0(Top_Title, "\n")
+  Bottom_Title <- paste0( "\n", Bottom_Title)
 
   #Basic Plot
 
@@ -506,11 +507,11 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
                           panel.grid.minor =  ggplot2::element_blank(),
                           panel.background =  ggplot2::element_blank(),
                           plot.title =  ggplot2::element_text(hjust = 0.5, size = Top_Title_Size),
-                          axis.text.x =  ggplot2::element_text(size = Chromosome_Label_Size, vjust = -1.1),
+                          axis.text.x =  ggplot2::element_text(size = Chromosome_Label_Size, vjust = -1.1, colour = "black"),
                           axis.line =  ggplot2::element_line(),
                           axis.title.x =  ggplot2::element_blank(),
                           axis.title.y =  ggplot2::element_text(size = Y_Axis_Title_Size, vjust = 2),
-                          axis.text.y =  ggplot2::element_text(size = Y_Axis_Text_Size),
+                          axis.text.y =  ggplot2::element_text(size = Y_Axis_Text_Size, colour = "black"),
                           axis.ticks.length.x  =  ggplot2::unit(0.8,"cm"),
                           legend.position = "none",
                           plot.margin =  ggplot2::margin(t = 20,  # Top margin
@@ -600,6 +601,8 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 
   Top_Plot_Outcome <- d
+
+  return(Top_Plot_Outcome)
   #return(Top_Plot_Outcome)
   # return(Top_Plot_Outcome)
 
@@ -649,7 +652,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
                    axis.text.x.bottom =  ggplot2::element_blank(),
                    axis.line =  ggplot2::element_line(),
                    axis.title.y =  ggplot2::element_text(size = Y_Axis_Title_Size, vjust = 2),
-                   axis.text.y =  ggplot2::element_text(size = Y_Axis_Text_Size),
+                   axis.text.y =  ggplot2::element_text(size = Y_Axis_Text_Size, colour = "black"),
                    axis.ticks.length.x.top  =  ggplot2::unit(0.8,"cm"),
                    legend.position = "none",
                    plot.margin =  ggplot2::margin(t = 20,  # Top margin
@@ -760,6 +763,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
   print("Saving Miami Plot")
 
+#programme in bitmap and other adjustments which are annoying in future.
 
   ggplot2::ggsave(Overall_Name, plot = combined_grob, width = Width,
          height = Height, units = "in", dpi = Quality)
