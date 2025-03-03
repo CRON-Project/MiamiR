@@ -567,13 +567,18 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
   middle_new_pos_values <- numeric()
 
-  print(df)
-  return(p)
+
+
 
   for (chrom in c(1:22, "X")) {
     # Filter for the current chromosome
-    df_filtered <- df %>%
+
+    print(chrom)
+
+     df_filtered <- df %>%
       dplyr::filter(CHROM == chrom)
+
+    print(df_filtered)
 
     # Calculate the maximum and minimum of 'new_pos' if the Top_Dataframe is not empty
     if (nrow(df_filtered) > 0) {
@@ -602,6 +607,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 
 
+  return(d)
 
   Top_Plot_Outcome <- d
 
