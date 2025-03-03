@@ -491,6 +491,8 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 
 
+  print("CHROMS")
+  print(table(Top_Data$CHROM))
 
   a <- ggmanh::manhattan_plot(x = Top_Data, preserve.position = T, plot.title = Top_Title,
                               chr.colname = Top_Chromosome_Column, pos.colname = Top_Position_Column, label.colname = NULL,
@@ -572,6 +574,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   print("Scaling Axes")
 
 
+  return(p)
 
   df <- as.data.frame(p$data)
 
@@ -608,7 +611,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
   print(middle_new_pos_values)
 
-  return(p)
+#  return(p)
 
 
   d <- p +  ggplot2::scale_x_continuous(breaks = middle_new_pos_values,
