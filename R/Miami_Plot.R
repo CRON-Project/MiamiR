@@ -403,6 +403,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   print(nrow(unique_in_top))
 
 
+  return(Top_Data)
 
   # Display results
 
@@ -576,7 +577,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 
 
-return(df)
+
 
   for (chrom in c(1:22, "X")) {
     # Filter for the current chromosome
