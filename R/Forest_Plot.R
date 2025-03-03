@@ -1896,7 +1896,7 @@ if(Model_Reference == F)
 
 #no bother
   # Measure the visual width of each string in res$Left_Plot_Value
-string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
+#string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
  grDevices::pdf(file = NULL)  # Open a dummy PDF device
  string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
  dev.off()
