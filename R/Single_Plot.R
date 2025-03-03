@@ -205,7 +205,7 @@ Single_Plot <- function(Data = Intelligence_Sum_Stats,
 
   Title <- paste0(Title, "\n\n")
 
-  X_Axis_Title <- paste0("\n\n", X_Axis_Title) # needs to go above it to push down opp to above.
+  X_Axis_Title <- paste0("\n", X_Axis_Title) # needs to go above it to push down opp to above.
 
   #Basic Plot
 
