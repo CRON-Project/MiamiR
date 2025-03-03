@@ -205,6 +205,8 @@ Single_Plot <- function(Data = Intelligence_Sum_Stats,
 
   Title <- paste0(Title, "\n\n")
 
+  X_Axis_Title <- paste0(X_Axis_Title, "\n\n")
+
   #Basic Plot
 
   print(Chromosome_Colours)
@@ -244,7 +246,7 @@ Single_Plot <- function(Data = Intelligence_Sum_Stats,
                  axis.text.x = ggplot2::element_text(size = Chromosome_Label_Size, vjust = -0.5, colour = "black"),
                  axis.line =  ggplot2::element_line(),
                  axis.title.x =  ggplot2::element_text(size = X_Axis_Title_Size, vjust = -7 ),
-                 axis.title.y =  ggplot2::element_text(size = Y_Axis_Title_Size, vjust = 4),
+                 axis.title.y =  ggplot2::element_text(size = Y_Axis_Title_Size, vjust = 40),
                  axis.text.y =  ggplot2::element_text(size = Y_Axis_Text_Size, colour = "black"),
                  axis.ticks.length.x  =  ggplot2::unit(0.8,"cm"),
                  legend.position = "none",
