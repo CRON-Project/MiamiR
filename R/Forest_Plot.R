@@ -3401,6 +3401,7 @@ if(2==1)
     }
 
 
+    print("Still going2")
 
 
 
@@ -3446,6 +3447,7 @@ if(2==1)
 #  pz <- p
 
 
+print("Still going3")
 
 
 #print(blocksize_list)
