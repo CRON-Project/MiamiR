@@ -576,7 +576,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   print("Scaling Axes")
 
 
-  return(p)
+
 
   df <- as.data.frame(p$data)
 
@@ -586,7 +586,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 
 
-  for (chrom in c(1:23)) {
+  for (chrom in c(1:22, "X")) {
     # Filter for the current chromosome
 
     print(chrom)
@@ -629,7 +629,8 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
   Top_Plot_Outcome <- d
 
-#  return(Top_Plot_Outcome)
+  return(Top_Plot_Outcome)
+  #  Top_Data$CHROM[Top_Data$CHROM == 23] <- "X" #needs to go X later before calc due to ggmanh func
   #return(Top_Plot_Outcome)
 #  return(Top_Plot_Outcome)
 
