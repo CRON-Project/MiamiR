@@ -403,7 +403,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   print(nrow(unique_in_top))
 
 
-  return(Top_Data)
+#  return(Top_Data)
 
   # Display results
 
@@ -442,6 +442,8 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   Top_Data <-  dplyr::bind_rows(Top_Data, new_data)
 
   }
+
+  return(Top_Data)
 
   print("Top Config")
 
