@@ -606,7 +606,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   }
 
 
-
+  return(p)
 
 
   d <- p +  ggplot2::scale_x_continuous(breaks = middle_new_pos_values,
@@ -624,7 +624,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 #  return(Top_Plot_Outcome)
   #return(Top_Plot_Outcome)
-  return(Top_Plot_Outcome)
+#  return(Top_Plot_Outcome)
 
   print("Top Plot Made...")
 
