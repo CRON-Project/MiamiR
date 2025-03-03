@@ -3556,6 +3556,8 @@ for (block in seq_along(blocksize_list)) {
 
 
 
+print("Still going4")
+
 if (num_pattern_count > 2) {
 
 
@@ -3606,6 +3608,7 @@ labels <- setNames(Names, Names)
 #print(res$STUDY)
 
 
+print("Still going5")
 
 
 
@@ -3636,6 +3639,7 @@ labels <- setNames(Names, Names)
 
 
 
+  print("Still going6")
 
 
 
@@ -3739,7 +3743,7 @@ labels <- setNames(Names, Names)
 
 
 
-  print(p_mid)
+ # print(p_mid)
 
 
  p_mid <- p_mid + ggplot2::theme(
@@ -3870,7 +3874,7 @@ labels <- setNames(Names, Names)
 
   return(p_mid2)
 
-  ggplot2::ggsave(name, plot = p_mid2, width = Width, height = Height, units = "in", limitsize = F, dpi = Quality)
+#  ggplot2::ggsave(name, plot = p_mid2, width = Width, height = Height, units = "in", limitsize = F, dpi = Quality)
 
 #here
 #
@@ -3899,7 +3903,7 @@ labels <- setNames(Names, Names)
  # ggplot2::ggsave(paste0(name, ".pdf"), plot = p_mid2, width = Width, height = Height, units = "in", dpi = Quality, device = "pdf")
 
 
-  return(Combined_Processed_Data)
+#  return(Combined_Processed_Data)
 }
 
 
