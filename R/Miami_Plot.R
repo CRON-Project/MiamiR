@@ -570,7 +570,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 
 
-  for (chrom in c(1:22, "X")) {
+  for (chrom in c(1:23)) {
     # Filter for the current chromosome
 
     print(chrom)
