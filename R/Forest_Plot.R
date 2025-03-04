@@ -3764,7 +3764,7 @@ print("Still going5")
  p_mid <- p_mid + ggplot2::theme(
   axis.ticks.length.x  = ggplot2::unit(0.4,"cm"),
    axis.text.x = ggplot2::element_text(vjust = -1, size = X_Axis_Text_Size, family = "Courier2"),
-   legend.margin=ggplot2::margin(1,1,1,1)
+   legend.margin=ggplot2::margin(10,10,10,10)
  ) # adds more
 
 
