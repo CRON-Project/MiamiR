@@ -2944,8 +2944,12 @@ p <- res |>
       ifelse(#this bit also controls left
         grepl("\u2501", formatted_labels),
         paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
-        paste0("<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
-
+      #  paste0("<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+      paste0(
+        "<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black; text-align: left; display: block;'>",
+        formatted_labels,
+        "</span>"
+      )
       )
 
     },
