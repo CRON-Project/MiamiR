@@ -868,7 +868,7 @@ if(Test_Statistic == "BETA")
   if (length(Selected_SNPs) == 0) {
     Data <- Data
   } else {
-  Data <-Data[Data$COORD_Norm %in% Selected_SNPs | Data$COORD_Alt %in% Selected_SNPs |  Data$ID %in% Selected_SNPs , ] # will select even if there is a flip
+  Data <-Data[Data$COORD_Norm %in% Selected_SNPs | Data$COORD_Alt %in% Selected_SNPs |  Data$ID %in% Selected_SNPs | Data$Backup_ID %in% Selected_SNPs , ] # will select even if there is a flip
   }
 
 
