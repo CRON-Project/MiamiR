@@ -1383,8 +1383,8 @@ if(Model_Reference == F)
 
   Combined_Processed_Data$Left_Plot_Value <- paste0(
     "<span style='text-align:center; display:block;'>",
-    Combined_Processed_Data$Left_Plot_Value, "<br>",
-    Combined_Processed_Data$Backup_ID,
+    Combined_Processed_Data$Left_Plot_Value, "<br>", "(",
+    Combined_Processed_Data$Backup_ID, ")",
     "</span>"
   )
 
@@ -1909,15 +1909,18 @@ if(Model_Reference == F)
 #  print(Left_Spaces)
 
 
+  Left_Spaces_Dub <- Left_Spaces * 3
+  Left_Spaces_Dub <- strrep("Z", Left_Spaces_Dub)
+
   # Ensure strings except "SNP" have spaces added
-  res$Left_Plot_Value <- ifelse(res$Left_Plot_Value == "fake",
-                                res$Left_Plot_Value,
-                                paste0(res$Left_Plot_Value, Left_Spaces))
+  #res$Left_Plot_Value <- ifelse(res$Left_Plot_Value == "fake",
+   #                             res$Left_Plot_Value,
+    #                            paste0(res$Left_Plot_Value, Left_Spaces))
 
 
 
   res$Left_Plot_Value <- gsub("(<br>)", paste0(Left_Spaces, "\\1"), res$Left_Plot_Value)  # Insert SPACES before <br>
-  res$Left_Plot_Value <- gsub("($)", Left_Spaces, res$Left_Plot_Value, perl = TRUE)  # Insert SPACES at the end of the string
+  res$Left_Plot_Value <- gsub("($)", Left_Spaces_Dub, res$Left_Plot_Value, perl = TRUE)  # Insert SPACES at the end of the string
 
 
   print("Getting Plot Ready again yes" )
