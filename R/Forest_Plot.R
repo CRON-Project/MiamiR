@@ -1972,7 +1972,7 @@ if(Model_Reference == F)
     )
 
     res$Left_Plot_Value[res$RS != "-a-aaarModel"] <- gsub(
-      "($)", res$Left_Plot_Value[res$RS != "-aaa-rs99999999"], perl = TRUE
+      "($)", paste0(Left_Spaces, "\\1"), res$Left_Plot_Value[res$RS != "-aaa-rs99999999"], perl = TRUE
     )
 
     # Keep assigning Left_Title for the specific RS as per your original code
