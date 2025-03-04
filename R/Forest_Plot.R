@@ -1360,6 +1360,8 @@ if(Match_Allele_Direction == T)
 if(Model_Reference == F)
 {
 
+  Combined_Processed_Data$Backup_ID <-    Combined_Processed_Data$ID
+  print( Combined_Processed_Data$Backup_ID)
   Combined_Processed_Data$ID <- Combined_Processed_Data$COORD_Uni
 
 #print(Combined_Processed_Data)
