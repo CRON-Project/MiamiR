@@ -1947,6 +1947,9 @@ if(Model_Reference == F)
 
     res$Left_Plot_Value[res$RS == "-a-aaarModel"] <-  paste0(res$Left_Plot_Value, Left_Spaces)
 
+    print(res$RS)
+    print(res$Left_Plot_Value)
+
   print("Getting Plot Ready again yes" )
 #print(res$Left_Plot_Value)
 
