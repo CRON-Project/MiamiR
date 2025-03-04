@@ -274,10 +274,14 @@ Forest_Plot <- function(Data_Sets = c(),
 
 #print(Data_Sets)
 
+print(Data_Sets)
 
+z
 
   if (!is.null((Data_Sets))) {
     print("Using Data Set Names UPDATED")
+
+
 
 
 #    Data_Sets <- sub("^[0-9]+_", "", Data_Sets)
@@ -3085,6 +3089,10 @@ if (Test_Statistic == "BETA") {
 
   buffer <- (maxcalc - mincalc) * Line_Space
 
+  print(buffer)
+  print("Max")
+  print(maxcalc)
+
   # Set axis with symmetrical breaks and filtered labels and ticks
   p <- p + ggplot2::scale_x_continuous(
     limits = c(mincalc - buffer, maxcalc + buffer), # Symmetrical axis limits - enough for strips to fit just under
@@ -3752,7 +3760,7 @@ print("Still going5")
  p_mid <- p_mid + ggplot2::theme(
   axis.ticks.length.x  = ggplot2::unit(0.4,"cm"),
    axis.text.x = ggplot2::element_text(vjust = -1, size = X_Axis_Text_Size, family = "Courier2"),
-   legend.margin=ggplot2::margin(0,0,0,0)
+   legend.margin=ggplot2::margin(1,1,1,1)
  ) # adds more
 
 
