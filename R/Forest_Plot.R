@@ -2944,33 +2944,7 @@ p <- res |>
       ifelse(#this bit also controls left
         grepl("\u2501", formatted_labels),
         paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
-      #  paste0("<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
-      paste0(
-        "<div style='text-align:center; display:block;'>",  # Ensure overall centering
-
-        # Split at <br> and assign to different divs
-        if (grepl("<br>", formatted_labels)) {
-          parts <- unlist(strsplit(formatted_labels, "<br>", fixed = TRUE))
-          paste0(
-            "<div style='font-family: Courier2; font-size:", SNP_Stat_Text_Size,
-            "pt; color:black;'>", parts[1], "</div>",  # Top part
-
-            "<div style='font-family: Courier2; font-size:", SNP_Stat_Text_Size,
-            "pt; color:black;'>", parts[2], "</div>"  # Bottom part (after <br>)
-          )
-        } else {
-          paste0(
-            "<div style='font-family: Courier; font-size:", SNP_Stat_Text_Size,
-            "pt; color:black;'>", formatted_labels, "</div>"  # No <br>, just print label normally
-          )
-        },
-
-        # Ensure Backup_ID is always on a separate line below
-        "<div style='font-family: Courier; font-size:", SNP_Stat_Text_Size,
-        "pt; color:black;'>", res$Backup_ID[match(x, res$Plot_Value)], "</div>",
-
-        "</div>"
-      )
+        paste0("<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
 
       )
 
