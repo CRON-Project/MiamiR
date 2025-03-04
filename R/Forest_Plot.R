@@ -1928,9 +1928,24 @@ if(Model_Reference == F)
 
   if(Double_Label == T)
   {
-  res$Left_Plot_Value <- gsub("(<br>)", paste0(Left_Spaces, "\\1"), res$Left_Plot_Value)  # Insert SPACES before <br>
-  res$Left_Plot_Value <- gsub("($)", Left_Spaces_Dub, res$Left_Plot_Value, perl = TRUE)  # Insert SPACES at the end of the string
+  # res$Left_Plot_Value <- gsub("(<br>)", paste0(Left_Spaces, "\\1"), res$Left_Plot_Value)  # Insert SPACES before <br>
+  # res$Left_Plot_Value <- gsub("($)", Left_Spaces_Dub, res$Left_Plot_Value, perl = TRUE)  # Insert SPACES at the end of the string
+  # res_plot$Left_Title[res_plot$RS == "-aaa-rs99999999"] <- Left_Title
 
+
+    # Apply the modifications ONLY to rows where RS is NOT "-aaa-rs99999999"
+    res$Left_Plot_Value[res$RS != "-a-aaarModel"] <- gsub(
+      "(<br>)", paste0(Left_Spaces, "\\1"), res$Left_Plot_Value[res$RS != "-aaa-rs99999999"]
+    )
+
+    res$Left_Plot_Value[res$RS != "-a-aaarModel"] <- gsub(
+      "($)", Left_Spaces_Dub, res$Left_Plot_Value[res$RS != "-aaa-rs99999999"], perl = TRUE
+    )
+
+    # Keep assigning Left_Title for the specific RS as per your original code
+  #  res_plot$Left_Title[res_plot$RS == "-aaa-rs99999999"] <- Left_Title
+
+    res$Left_Plot_Value[res$RS == "-a-aaarModel"] <-  paste0(res$Left_Plot_Value, Left_Spaces)
 
   print("Getting Plot Ready again yes" )
 #print(res$Left_Plot_Value)
