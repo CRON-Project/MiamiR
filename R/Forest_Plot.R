@@ -278,7 +278,7 @@ print(Names)
 
 
 
-  if (!is.null((Data_Sets))) {
+if (!is.null(Data_Sets) & is.null(Names)) {
     print("Using Data Set Names UPDATED")
 
 
