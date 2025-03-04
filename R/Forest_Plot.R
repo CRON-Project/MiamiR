@@ -1895,7 +1895,7 @@ if(Model_Reference == F)
   }
 
   # Step 4: Compute the difference and create a space string equivalent to half of it
-  diff_widths <- abs(before_widths - after_widths)   # Half of the difference
+  diff_widths <- abs(before_widths - after_widths) / 2  # Half of the difference
   res$DIF <- sapply(diff_widths, function(w) paste(rep(" ", round(w * 100)), collapse = ""))  # Convert to spaces
 
   # Close the dummy PDF device
@@ -1972,7 +1972,7 @@ if(Model_Reference == F)
     )
 
     res$Left_Plot_Value[res$RS != "-a-aaarModel"] <- gsub(
-      "($)", res$Left_Spaces_Dub, res$Left_Plot_Value[res$RS != "-aaa-rs99999999"], perl = TRUE
+      "($)", res$Left_Plot_Value[res$RS != "-aaa-rs99999999"], perl = TRUE
     )
 
     # Keep assigning Left_Title for the specific RS as per your original code
