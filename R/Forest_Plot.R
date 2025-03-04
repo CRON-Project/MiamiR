@@ -272,11 +272,11 @@ Forest_Plot <- function(Data_Sets = c(),
 
 
 
-#print(Data_Sets)
-
 print(Data_Sets)
 
-z
+print(Names)
+
+
 
   if (!is.null((Data_Sets))) {
     print("Using Data Set Names UPDATED")
@@ -301,9 +301,9 @@ z
     Names <- paste("Dataset", seq_along(Data_Sets))  # Fallback to generic names
   }
 
- # print(Names)
+  print(Names)
 
-
+z
 #  print("fail here")
 
  # Left_Spaces <- strrep(" ", Left_Spaces) - #due to html white out later
