@@ -849,6 +849,11 @@ if(Test_Statistic == "BETA")
   if(Model_Reference == F)
   {
 
+  #keep maybe an RS also provided
+  Data$Backup_ID <- Data$ID
+  #need to remake earlier in case RS also provided
+  Data$ID <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
+
   Data$COORD_Norm <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
   Data$COORD_Alt <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE1, ":", Data$ALLELE0)
 
@@ -1360,8 +1365,8 @@ if(Match_Allele_Direction == T)
 if(Model_Reference == F)
 {
 
-  Combined_Processed_Data$Backup_ID <-    Combined_Processed_Data$ID
-  print( Combined_Processed_Data$Backup_ID)
+ # Combined_Processed_Data$Backup_ID <-    Combined_Processed_Data$ID
+ # print( Combined_Processed_Data$Backup_ID)
   Combined_Processed_Data$ID <- Combined_Processed_Data$COORD_Uni
 
 #print(Combined_Processed_Data)
