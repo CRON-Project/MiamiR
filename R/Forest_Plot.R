@@ -1385,14 +1385,14 @@ if(Model_Reference == F)
   if(Double_Label == T)
   {
 
-  Combined_Processed_Data$Left_Plot_Value <- paste0(
-    Combined_Processed_Data$Left_Plot_Value, "<br>", "(",
-    Combined_Processed_Data$Backup_ID, ")"
-  )
+  # Combined_Processed_Data$Left_Plot_Value <- paste0(
+  #   Combined_Processed_Data$Left_Plot_Value, "<br>", "(",
+  #   Combined_Processed_Data$Backup_ID, ")"
+  # )
 
   Combined_Processed_Data$Left_Plot_Value <- paste0(
     Combined_Processed_Data$Left_Plot_Value,
-    "<br><span style='display:block; padding-top:5px;'>(",  # Adds space above the second line
+    "<br><span style='display:block; padding-top:500px;'>(",  # Adds space above the second line
     Combined_Processed_Data$Backup_ID, ")</span>"
   )
 
