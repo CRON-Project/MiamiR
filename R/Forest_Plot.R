@@ -2979,16 +2979,16 @@ p <- res |>
     axis.text.y = ggtext::element_markdown(
    family = "Courier2", #this bit controls left, above controls right!
       margin = ggplot2::margin(l = 0, r = 0),  # No space between labels and axis
-      vjust  = 0.642,  # Adjust vertical alignment to center labels on the tick - bigger = more down
-      hjust = 1
+      vjust  = 0.642#,  # Adjust vertical alignment to center labels on the tick - bigger = more down
+     # hjust = 1
     ),
      axis.text.y.right = ggplot2::element_text(
        margin = ggplot2::margin(l = 0, r = 0),  # Removes gap to the right of secondary y-axis
        hjust = 0  # Ensures right-alignment
      ),
    axis.text.y.left = ggplot2::element_text(
-     margin = ggplot2::margin(l = 0, r = -1.2),  # Removes gap to the right of secondary y-axis r= -0.4
-     hjust = 1  # Ensures right-alignment
+     margin = ggplot2::margin(l = 0, r = -1.2)#,  # Removes gap to the right of secondary y-axis r= -0.4
+  #   hjust = 1  # Ensures right-alignment
    ),
    axis.ticks.y = ggplot2::element_blank(),  # Remove y-axis tick marks
    axis.ticks.length.y = ggplot2::unit(0, "cm")  # Ensure tick length is 0
