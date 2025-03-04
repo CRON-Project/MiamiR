@@ -1907,7 +1907,6 @@ if(Model_Reference == F)
 
   print("Getting Plot Ready again")
 
-  z
 
 
   # res$Left_Plot_Value <- ifelse(res$Left_Plot_Value == "SNP",
@@ -1948,7 +1947,7 @@ if(Model_Reference == F)
 #  print(Left_Spaces)
 
 
-  Left_Spaces_Dub <- strrep("Z", Left_Spaces_Dub)
+  res$Left_Spaces_Dub <- paste0(res$DIF, Left_Spaces)
 
 
   if(Double_Label == F)
@@ -1973,7 +1972,7 @@ if(Model_Reference == F)
     )
 
     res$Left_Plot_Value[res$RS != "-a-aaarModel"] <- gsub(
-      "($)", Left_Spaces_Dub, res$Left_Plot_Value[res$RS != "-aaa-rs99999999"], perl = TRUE
+      "($)", res$Left_Spaces_Dub, res$Left_Plot_Value[res$RS != "-aaa-rs99999999"], perl = TRUE
     )
 
     # Keep assigning Left_Title for the specific RS as per your original code
