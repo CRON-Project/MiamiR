@@ -1916,6 +1916,10 @@ if(Model_Reference == F)
 
 
 
+  res$Left_Plot_Value <- gsub("(<br>)", paste0(Left_Spaces, "\\1"), res$Left_Plot_Value)  # Insert SPACES before <br>
+  res$Left_Plot_Value <- gsub("($)", Left_Spaces, res$Left_Plot_Value, perl = TRUE)  # Insert SPACES at the end of the string
+
+
   print("Getting Plot Ready again yes" )
 #print(res$Left_Plot_Value)
 
@@ -2944,12 +2948,8 @@ p <- res |>
       ifelse(#this bit also controls left
         grepl("\u2501", formatted_labels),
         paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
-      #  paste0("<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
-      paste0(
-        "<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black; text-align: left; display: block;'>",
-        formatted_labels,
-        "</span>"
-      )
+        paste0("<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+
       )
 
     },
@@ -2979,16 +2979,16 @@ p <- res |>
     axis.text.y = ggtext::element_markdown(
    family = "Courier2", #this bit controls left, above controls right!
       margin = ggplot2::margin(l = 0, r = 0),  # No space between labels and axis
-      vjust  = 0.642#,  # Adjust vertical alignment to center labels on the tick - bigger = more down
-     # hjust = 1
+      vjust  = 0.642,  # Adjust vertical alignment to center labels on the tick - bigger = more down
+      hjust = 1
     ),
      axis.text.y.right = ggplot2::element_text(
        margin = ggplot2::margin(l = 0, r = 0),  # Removes gap to the right of secondary y-axis
        hjust = 0  # Ensures right-alignment
      ),
    axis.text.y.left = ggplot2::element_text(
-     margin = ggplot2::margin(l = 0, r = -1.2)#,  # Removes gap to the right of secondary y-axis r= -0.4
-  #   hjust = 1  # Ensures right-alignment
+     margin = ggplot2::margin(l = 0, r = -1.2),  # Removes gap to the right of secondary y-axis r= -0.4
+     hjust = 1  # Ensures right-alignment
    ),
    axis.ticks.y = ggplot2::element_blank(),  # Remove y-axis tick marks
    axis.ticks.length.y = ggplot2::unit(0, "cm")  # Ensure tick length is 0
