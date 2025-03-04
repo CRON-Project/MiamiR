@@ -1926,6 +1926,8 @@ if(Model_Reference == F)
   print("Getting Plot Ready again yes" )
 #print(res$Left_Plot_Value)
 
+  #get first bit (longer for width)
+  res$Left_Plot_Value_Mini <- sub("<br>.*", "", res$Left_Plot_Value)  # Extract only the part before <br>
 
 #print(res$Left_Plot_Value)
 
@@ -1934,7 +1936,7 @@ if(Model_Reference == F)
   # Measure the visual width of each string in res$Left_Plot_Value
 #string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
  grDevices::pdf(file = NULL)  # Open a dummy PDF device
- string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
+ string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value_Mini), unitTo = "npc", valueOnly = TRUE)
  dev.off()
  # string_widths <- 20
 
