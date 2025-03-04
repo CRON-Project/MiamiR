@@ -1377,8 +1377,16 @@ if(Model_Reference == F)
 
   Combined_Processed_Data$Left_Plot_Value <- Combined_Processed_Data$COORD_Uni
 
-  Combined_Processed_Data$Left_Plot_Value <- paste0( Combined_Processed_Data$Left_Plot_Value, "<br>",
-                                                     Combined_Processed_Data$Backup_ID)
+#  Combined_Processed_Data$Left_Plot_Value <- paste0( Combined_Processed_Data$Left_Plot_Value, "<br>",
+ #                                                    Combined_Processed_Data$Backup_ID)
+
+
+  Combined_Processed_Data$Left_Plot_Value <- paste0(
+    "<span style='text-align:center; display:block;'>",
+    Combined_Processed_Data$Left_Plot_Value, "<br>",
+    Combined_Processed_Data$Backup_ID,
+    "</span>"
+  )
 
   print(Combined_Processed_Data)
 
