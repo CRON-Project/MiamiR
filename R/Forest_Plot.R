@@ -101,7 +101,7 @@ Forest_Plot <- function(Data_Sets = c(),
                         Legend_On = FALSE,
                         Legend_Title_Size = 100,
                         Legend_Text_Size = 100,
-                        Legend_Title = "Study",
+                        Legend_Title = "STUDY",
                         Left_Title = "SNP",
                         P_Value_Title = "p-value",
                         Test_Stat_Se_Title = "BETA (SE)",
@@ -3132,6 +3132,7 @@ if(Legend_On == FALSE)
 }
 
 
+#return(p)
 
 #
 # p <- p +  ggplot2::guides(y.sec = ggh4x::guide_axis_manual(
@@ -3211,10 +3212,13 @@ if (Test_Statistic == "BETA") {
   print(buffer)
   print("Max")
   print(maxcalc)
+  print("Min")
+  print(mincalc)
+
 
   # Set axis with symmetrical breaks and filtered labels and ticks
   p <- p + ggplot2::scale_x_continuous(
-    limits = c(mincalc - buffer, maxcalc + buffer), # Symmetrical axis limits - enough for strips to fit just under
+    limits = c(-0.18, 0.13), # Symmetrical axis limits - enough for strips to fit just under
     breaks = displayed_breaks,          # Filtered breaks for ticks
     labels = displayed_labels#,
   #  expand = ggplot2::expansion(mult = c(Line_Space, Line_Space)) # Filtered labels
