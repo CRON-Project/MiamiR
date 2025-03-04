@@ -1389,11 +1389,10 @@ if(Model_Reference == F)
   #   Combined_Processed_Data$Left_Plot_Value, "<br>", "(",
   #   Combined_Processed_Data$Backup_ID, ")"
   # )
-
     Combined_Processed_Data$Left_Plot_Value <- paste0(
       Combined_Processed_Data$Left_Plot_Value,
-      "<br><span style='display:block; line-height:2;'>(",  # Increases space between lines
-      Combined_Processed_Data$Backup_ID, ")</span>"
+      "<br><br>(",  # Adds an extra line break to create spacing
+      Combined_Processed_Data$Backup_ID, ")"
     )
 
 
