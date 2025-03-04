@@ -1370,6 +1370,9 @@ if(Model_Reference == F)
 
   Combined_Processed_Data$Left_Plot_Value <- Combined_Processed_Data$COORD_Uni
 
+
+  print(Combined_Processed_Data)
+  z
 }
 
   res <- Combined_Processed_Data
