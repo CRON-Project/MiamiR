@@ -3101,7 +3101,7 @@ if (Test_Statistic == "BETA") {
   p <- p + ggplot2::scale_x_continuous(
     limits = c(mincalc - buffer, maxcalc + buffer), # Symmetrical axis limits - enough for strips to fit just under
     breaks = displayed_breaks,          # Filtered breaks for ticks
-    labels = displayed_labels,
+    labels = displayed_labels#,
   #  expand = ggplot2::expansion(mult = c(Line_Space, Line_Space)) # Filtered labels
   ) +
     ggplot2::theme(
@@ -3160,8 +3160,8 @@ else {
     limits = c(mincalc / buffer, maxcalc * buffer),   # Symmetrical axis limits - enough for strips to fit just under
     breaks = displayed_breaks,          # Filtered breaks for ticks
     labels = displayed_labels,
-    trans = "log10",
-    expand = ggplot2::expansion(mult = c(Line_Space, Line_Space)) # Filtered labels
+    trans = "log10"#,
+#    expand = ggplot2::expansion(mult = c(Line_Space, Line_Space)) # Filtered labels
   ) +
     ggplot2::theme(
       axis.ticks.x = ggplot2::element_line(size = 0.5, colour = "black")  # Regular tick size
