@@ -1931,6 +1931,9 @@ if(Model_Reference == F)
 
 #print(res$Left_Plot_Value)
 
+  print(res$Left_Plot_Value_Mini)
+
+
 
 #no bother
   # Measure the visual width of each string in res$Left_Plot_Value
@@ -1942,6 +1945,7 @@ if(Model_Reference == F)
 
 print(string_widths)
 
+z
 
   print("Getting Plot Ready again yes ok" )
 
