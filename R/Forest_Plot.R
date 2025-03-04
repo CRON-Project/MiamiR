@@ -1957,7 +1957,7 @@ if(Model_Reference == F)
 
   }else{
     grDevices::pdf(file = NULL)  # Open a dummy PDF device
-    string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value_Mini), unitTo = "npc", valueOnly = TRUE)
+    string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
     dev.off()
 
 
