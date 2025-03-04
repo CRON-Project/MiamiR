@@ -276,9 +276,12 @@ print(Data_Sets)
 
 print(Names)
 
-
-
-if (!is.null(Data_Sets) & is.null(Names)) {
+if(!is.null(Names))
+{
+  print("Using Names Provided")
+}
+else{
+if (!is.null(Data_Sets)) {
     print("Using Data Set Names UPDATED")
 
 
@@ -301,6 +304,7 @@ if (!is.null(Data_Sets) & is.null(Names)) {
     Names <- paste("Dataset", seq_along(Data_Sets))  # Fallback to generic names
   }
 
+}
   print(Names)
 
 z
