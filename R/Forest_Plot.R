@@ -1945,9 +1945,10 @@ if(Model_Reference == F)
     # Keep assigning Left_Title for the specific RS as per your original code
   #  res_plot$Left_Title[res_plot$RS == "-aaa-rs99999999"] <- Left_Title
 
-    res$Left_Plot_Value[res$RS == "-a-aaarModel"] <-  paste0(res$Left_Plot_Value, Left_Spaces)
+    res$Left_Plot_Value[res$RS == "-a-aaarModel"] <- paste0(res$Left_Plot_Value[res$RS == "-a-aaarModel"], Left_Spaces)
 
-    print(res$RS)
+    print(table(res$RS))
+
     print(res$Left_Plot_Value)
 
   print("Getting Plot Ready again yes" )
