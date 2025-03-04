@@ -75,6 +75,7 @@ Forest_Plot <- function(Data_Sets = c(),
                         Left_Spaces = 2, #def 2
                         Right_Spaces = 2,
                         Missings = F,
+                        Double_Label = F,
                         P_Stat_Spaces = 3,
                         Model_Reference = FALSE,
                         X_Axis_Text_Size = 125,
@@ -1381,10 +1382,15 @@ if(Model_Reference == F)
  #                                                    Combined_Processed_Data$Backup_ID)
 
 
+  if(Double_Label == T)
+  {
+
   Combined_Processed_Data$Left_Plot_Value <- paste0(
     Combined_Processed_Data$Left_Plot_Value, "<br>", "(",
     Combined_Processed_Data$Backup_ID, ")"
   )
+
+  }
 
   print(Combined_Processed_Data)
 
@@ -1910,13 +1916,18 @@ if(Model_Reference == F)
 
   Left_Spaces_Dub <- strrep("Z", Left_Spaces_Dub)
 
+
+  if(Double_Label == F)
+  {
   # Ensure strings except "SNP" have spaces added
-  #res$Left_Plot_Value <- ifelse(res$Left_Plot_Value == "fake",
-   #                             res$Left_Plot_Value,
-    #                            paste0(res$Left_Plot_Value, Left_Spaces))
+  res$Left_Plot_Value <- ifelse(res$Left_Plot_Value == "fake",
+                                res$Left_Plot_Value,
+                                paste0(res$Left_Plot_Value, Left_Spaces))
+}
 
 
-
+  if(Double_Label == T)
+  {
   res$Left_Plot_Value <- gsub("(<br>)", paste0(Left_Spaces, "\\1"), res$Left_Plot_Value)  # Insert SPACES before <br>
   res$Left_Plot_Value <- gsub("($)", Left_Spaces_Dub, res$Left_Plot_Value, perl = TRUE)  # Insert SPACES at the end of the string
 
@@ -1927,6 +1938,7 @@ if(Model_Reference == F)
   #get first bit (longer for width)
   res$Left_Plot_Value_Mini <- sub("<br>.*", "", res$Left_Plot_Value)  # Extract only the part before <br>
 
+  }
 #print(res$Left_Plot_Value)
 
   print(res$Left_Plot_Value_Mini)
@@ -1936,9 +1948,20 @@ if(Model_Reference == F)
 #no bother
   # Measure the visual width of each string in res$Left_Plot_Value
 #string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
- grDevices::pdf(file = NULL)  # Open a dummy PDF device
+  if(Double_Label == T)
+  {
+
+  grDevices::pdf(file = NULL)  # Open a dummy PDF device
  string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value_Mini), unitTo = "npc", valueOnly = TRUE)
  dev.off()
+
+  }else{
+    grDevices::pdf(file = NULL)  # Open a dummy PDF device
+    string_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value_Mini), unitTo = "npc", valueOnly = TRUE)
+    dev.off()
+
+
+  }
  # string_widths <- 20
 
 print(string_widths)
