@@ -1377,7 +1377,7 @@ if(Model_Reference == F)
 
   Combined_Processed_Data$Left_Plot_Value <- Combined_Processed_Data$COORD_Uni
 
-  Combined_Processed_Data$Left_Plot_Value <- paste0( Combined_Processed_Data$Left_Plot_Value,
+  Combined_Processed_Data$Left_Plot_Value <- paste0( Combined_Processed_Data$Left_Plot_Value, "\n",
                                                      Combined_Processed_Data$Backup_ID)
 
   print(Combined_Processed_Data)
