@@ -3220,7 +3220,8 @@ if (Test_Statistic == "BETA") {
   p <- p + ggplot2::scale_x_continuous(
     limits = c(-0.15, 0.10), # Symmetrical axis limits - enough for strips to fit just under
     breaks = displayed_breaks,          # Filtered breaks for ticks
-    labels = displayed_labels#,
+    labels = displayed_labels,
+    expand = c(0, 0)
   #  expand = ggplot2::expansion(mult = c(Line_Space, Line_Space)) # Filtered labels
   ) +
     ggplot2::theme(
