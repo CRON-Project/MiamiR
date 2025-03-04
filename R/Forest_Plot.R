@@ -1904,12 +1904,12 @@ if(Model_Reference == F)
 #  res$Left_Plot_Value[res$Left_Plot_Value == "SNP"] <- padded_value
 
 
+  Left_Spaces_Dub <- Left_Spaces * 3
  # print(Left_Spaces)
   Left_Spaces <- strrep("Z", Left_Spaces)  # Reassign as a repeated "Z" string
 #  print(Left_Spaces)
 
 
-  Left_Spaces_Dub <- Left_Spaces * 3
   Left_Spaces_Dub <- strrep("Z", Left_Spaces_Dub)
 
   # Ensure strings except "SNP" have spaces added
