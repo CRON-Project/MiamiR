@@ -1872,8 +1872,42 @@ if(Model_Reference == F)
 
   print("Getting Plot Ready")
 
+
+  # Open a dummy PDF device to measure string widths
+  grDevices::pdf(file = NULL)
+
+  # Step 1: Calculate full string widths
+  full_widths <- grid::convertWidth(grid::stringWidth(res$Left_Plot_Value), unitTo = "npc", valueOnly = TRUE)
+
+  # Step 2: Extract parts before and after <br>
+  parts <- strsplit(res$Left_Plot_Value, "<br>", fixed = TRUE)
+
+  # Step 3: Initialize width vectors
+  before_widths <- numeric(length(res$Left_Plot_Value))
+  after_widths <- numeric(length(res$Left_Plot_Value))
+
+  # Loop through each row to measure both parts
+  for (i in seq_along(parts)) {
+    if (length(parts[[i]]) == 2) {  # Ensure we have both parts
+      before_widths[i] <- grid::convertWidth(grid::stringWidth(parts[[i]][1]), unitTo = "npc", valueOnly = TRUE)
+      after_widths[i] <- grid::convertWidth(grid::stringWidth(parts[[i]][2]), unitTo = "npc", valueOnly = TRUE)
+    }
+  }
+
+  # Step 4: Compute the difference and create a space string equivalent to half of it
+  diff_widths <- abs(before_widths - after_widths) / 2  # Half of the difference
+  res$DIF <- sapply(diff_widths, function(w) paste(rep(" ", round(w * 100)), collapse = ""))  # Convert to spaces
+
+  # Close the dummy PDF device
+  dev.off()
+
+  # Print the new DIF column
+  print(res$DIF)
+  print(res$Left_Plot_Value)
+
   print("Getting Plot Ready again")
 
+  z
 
 
   # res$Left_Plot_Value <- ifelse(res$Left_Plot_Value == "SNP",
