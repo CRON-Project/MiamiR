@@ -871,7 +871,7 @@ if(Test_Statistic == "BETA")
 
 
 
- # print(Combined_Processed_Data)
+  print(Combined_Processed_Data)
 
 
 
@@ -2920,7 +2920,7 @@ p <- res |>
       )
     },
     limits = c(1, max_row_num),  # Y-axis limits from 1 to max rows
-    expand = ggplot2::expansion(add = c(1, 0.02)),  # No extra padding
+    expand = ggplot2::expansion(add = c(1, 0.03)),  # No extra padding
 
     sec.axis = ggplot2::sec_axis(
       trans = ~.,  # Keep transformation the same
@@ -3735,8 +3735,8 @@ print("Still going5")
     ggplot2::geom_hline(yintercept = end+2, linetype = "solid", color = "black")+
     #+ geom_segment(aes(x = -Inf, xend = Inf, y = 36, yend = 36), color = "black", linetype = "solid")
     ggplot2::theme(#axis.line.x = ggplot2::element_blank(),
-         legend.text = ggplot2::element_text(size = Legend_Text_Size),
-         legend.title = ggplot2::element_text(size = Legend_Title_Size),
+         legend.text = ggplot2::element_text(size = Legend_Text_Size, family = "Courier2", color ="black"),
+         legend.title = ggplot2::element_text(size = Legend_Title_Size, family = "Courier2", color ="black"),
          axis.text.x = ggplot2::element_text(size = X_Axis_Text_Size, family = "Courier2", color ="black"),
           axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 15, b = -X_Axis_Title_Size), family = "Courier2", vjust = -3, color = "black", size = X_Axis_Title_Size ))#,
   #      axis.ticks.y= element_blank(),
