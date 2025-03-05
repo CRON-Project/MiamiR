@@ -1518,6 +1518,10 @@ if(Model_Reference == F)
   print(res$Backup_ID)
   print(res)
   print("check")
+  res <- res %>%
+    mutate(Backup_Single = str_extract(Backup_ID, "rs\\d+"))
+  print(res)
+  print(res$Backup_Single)
   z
 
   if(Model_Reference == F)
