@@ -1530,9 +1530,18 @@ if(Model_Reference == F)
 
 
 
+  # res <- res %>%
+  #   dplyr::mutate(RS = dplyr::case_when( #need to allow RS label to work
+  #     RS %in% Selected_SNPs %in%  Selected_SNPs ~ paste(postfixes[match(RS, Selected_SNPs)], RS, sep = "-"),
+  #     TRUE ~ RS  # Default if none match
+  #   ))
   res <- res %>%
-    dplyr::mutate(RS = dplyr::case_when( #need to allow RS label to work
-      RS %in% Selected_SNPs | Backup_Single %in%  Selected_SNPs ~ paste(postfixes[match(RS, Selected_SNPs)], RS, sep = "-"),
+    dplyr::mutate(RS = dplyr::case_when(
+      RS %in% Selected_SNPs | Backup_Single %in% Selected_SNPs ~ paste(
+        postfixes[match(ifelse(RS %in% Selected_SNPs, RS, Backup_Single), Selected_SNPs)],
+        RS,
+        sep = "-"
+      ),
       TRUE ~ RS  # Default if none match
     ))
 
