@@ -1569,7 +1569,7 @@ if(Model_Reference == F)
   print(res$RS)
   print(res$Backup_Single)
 
-  z
+
 
   if(Test_Statistic == "BETA")
   {
