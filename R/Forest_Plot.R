@@ -1514,6 +1514,12 @@ if(Model_Reference == F)
 
   if(Model_Reference == F)
   {
+
+    print(Selected_SNPs)
+    print(res$RS)
+    print(res$Backup_ID)
+
+
   res <- res %>%
     dplyr::mutate(RS = dplyr::case_when( #need to allow RS label to work
       RS %in% Selected_SNPs | Backup_ID %in%  Selected_SNPs ~ paste(postfixes[match(RS, Selected_SNPs)], RS, sep = "-"),
