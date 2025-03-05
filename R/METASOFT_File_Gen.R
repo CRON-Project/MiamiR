@@ -864,7 +864,7 @@ Combined_Processed_Data$COORD_Uni <- stringi::stri_c("chr", Combined_Processed_D
       print(filename)  # Optional: to see the generated filename
 
 
-      write.table(Combined_Processed_Data_Joined, filename, sep = "\t", row.names = FALSE, quote = FALSE)
+    #  write.table(Combined_Processed_Data_Joined, filename, sep = "\t", row.names = FALSE, quote = FALSE)
 
 
 
