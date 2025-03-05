@@ -1518,7 +1518,7 @@ if(Model_Reference == F)
     print(Selected_SNPs)
     print(res$RS)
     print(res$Backup_ID)
-
+z
 
   res <- res %>%
     dplyr::mutate(RS = dplyr::case_when( #need to allow RS label to work
@@ -1548,7 +1548,7 @@ if(Model_Reference == F)
 
   print(res)
   print(res$RS)
-  z
+
 
 
   if(Test_Statistic == "BETA")
