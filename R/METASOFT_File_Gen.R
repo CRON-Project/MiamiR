@@ -521,6 +521,7 @@ METASOFT_File_Gen <- function(Data_Sets = c(),
     Data$COORD_Norm <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
     Data$COORD_Alt <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE1, ":", Data$ALLELE0)
 
+    #think if strands in future and how to keep? Also, must have same ID though.
 
 
     Combined_Processed_Data <- rbind(Combined_Processed_Data, Data)
@@ -599,6 +600,11 @@ METASOFT_File_Gen <- function(Data_Sets = c(),
 
         print("Aligning reference alleles with data...")
 
+
+        print(Combined_Processed_Data)
+        print(reference)
+
+        z
 
 Combined_Processed_Data2 <- Combined_Processed_Data %>%
   dplyr::left_join(reference, by = c("COORD_Norm" = "REF_COORD_Norm"))
