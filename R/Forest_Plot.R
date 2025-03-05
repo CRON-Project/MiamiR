@@ -1319,8 +1319,8 @@ if(Match_Allele_Direction == T)
 
 
  print(Combined_Processed_Data)
- return(Combined_Processed_Data)
-z
+# return(Combined_Processed_Data)
+
 
 
   if(Test_Statistic == "OR")
