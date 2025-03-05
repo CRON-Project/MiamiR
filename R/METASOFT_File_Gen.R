@@ -793,6 +793,17 @@ Combined_Processed_Data$COORD_Uni <- stringi::stri_c("chr", Combined_Processed_D
      print(genpos_cols)
 
 
+     # Filter genpos_cols to only keep those containing Match_Allele_Study
+     genpos_cols <- genpos_cols[grepl(Match_Allele_Study, genpos_cols)]
+
+
+     print("Only excluding if missing value for this/backbone:")
+     # Print the result
+     print(genpos_cols)
+
+
+     #only if not in backbone is excluded as allele flip cant be referenced to something and out method is that now
+
    #   return(Combined_Processed_Data_Joined)
 
      print("Removing SNPs with missing data from backbone/allele flip study...")
