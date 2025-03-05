@@ -1540,8 +1540,9 @@ if(Model_Reference == F)
     )
 
 
-#  print(res)
-
+  print(res)
+  print(res$RS)
+  z
 
 
   if(Test_Statistic == "BETA")
