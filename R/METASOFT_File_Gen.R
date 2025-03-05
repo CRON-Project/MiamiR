@@ -789,11 +789,17 @@ Combined_Processed_Data$COORD_Uni <- stringi::stri_c("chr", Combined_Processed_D
       genpos_cols <- grep("GENPOS$", colnames(Combined_Processed_Data_Joined), value = TRUE)
 
 
-  #   print(genpos_cols)
+     print("GENPOS cols")
+     print(genpos_cols)
+
 
    #   return(Combined_Processed_Data_Joined)
 
-     print("Removing SNPs with missing data from any study...")
+     print("Removing SNPs with missing data from backbone/allele flip study...")
+
+     #could allow to keep all, remove any blank in futue like with the below code originally....
+     #Need to adjust in future for non-regenie X, is it 23, X, chr x etc.
+     #Could add combo cols below to generate files with all combos of studies to meta.
 
       # Drop rows where all GENPOS columns are NA
       if (length(genpos_cols) > 0) {
