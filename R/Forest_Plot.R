@@ -1522,7 +1522,7 @@ if(Model_Reference == F)
     mutate(Backup_Single = stringr::str_extract(Backup_ID, "rs\\d+"))
   print(res)
   print(res$Backup_Single)
-  z
+
 
   if(Model_Reference == F)
   {
@@ -1532,7 +1532,7 @@ if(Model_Reference == F)
 
   res <- res %>%
     dplyr::mutate(RS = dplyr::case_when( #need to allow RS label to work
-      RS %in% Selected_SNPs | Backup_ID %in%  Selected_SNPs ~ paste(postfixes[match(RS, Selected_SNPs)], RS, sep = "-"),
+      RS %in% Selected_SNPs | Backup_Single %in%  Selected_SNPs ~ paste(postfixes[match(RS, Selected_SNPs)], RS, sep = "-"),
       TRUE ~ RS  # Default if none match
     ))
 
@@ -1558,7 +1558,7 @@ if(Model_Reference == F)
 
   print(res)
   print(res$RS)
-
+  print(res$Backup_Single)
 
 
   if(Test_Statistic == "BETA")
