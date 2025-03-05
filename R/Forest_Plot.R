@@ -1512,13 +1512,19 @@ if(Model_Reference == F)
       TRUE ~ STUDY  # Default if none match
     ))
 
+
+  print(Selected_SNPs)
+  print(res$RS)
+  print(res$Backup_ID)
+  print(res)
+  print("check")
+  z
+
   if(Model_Reference == F)
   {
 
-    print(Selected_SNPs)
-    print(res$RS)
-    print(res$Backup_ID)
-z
+
+
 
   res <- res %>%
     dplyr::mutate(RS = dplyr::case_when( #need to allow RS label to work
