@@ -819,7 +819,7 @@ Combined_Processed_Data$COORD_Uni <- Combined_Processed_Data$REF_ID
     #  return(Combined_Processed_Data_Joined)
 
 
-  #    print(nrow(Combined_Processed_Data_Joined))
+      print(nrow(Combined_Processed_Data_Joined))
 
   #    print(colnames(Combined_Processed_Data_Joined))
       genpos_cols <- grep("GENPOS$", colnames(Combined_Processed_Data_Joined), value = TRUE)
