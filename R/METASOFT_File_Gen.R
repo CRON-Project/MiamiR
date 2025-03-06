@@ -712,7 +712,12 @@ Combined_Processed_Data$COORD_Uni <- stringi::stri_c("chr", Combined_Processed_D
 
     #  print(Combined_Processed_Data)
 
-  return(Combined_Processed_Data)
+#  return(Combined_Processed_Data)
+
+  #SOME NAs obvisouly if no match ie. ref like UKB not in other one
+  #Remove rows where matched for allele flip, but actually strand change as ID is different.
+  #Issue if there were RS possibly but okay for now as all HG38 COORDS
+  Combined_Processed_Data <- Combined_Processed_Data[!is.na(Combined_Processed_Data$ID) & !is.na(Combined_Processed_Data$REF_ID) & Combined_Processed_Data$ID != Combined_Processed_Data$REF_ID, ]
 
 #
 
