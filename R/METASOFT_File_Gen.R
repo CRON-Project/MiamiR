@@ -706,7 +706,11 @@ print(paste0("Number of alleles which were not present either aligned or flipped
 
 print("Creating unified IDs for Flips, based on reference study direction of effect")
 
-Combined_Processed_Data$COORD_Uni <- stringi::stri_c("chr", Combined_Processed_Data$CHROM, ":", Combined_Processed_Data$GENPOS, ":", Combined_Processed_Data$REF_Ref_ALLELE0, ":", Combined_Processed_Data$REF_Ref_ALLELE1)
+Combined_Processed_Data$COORD_Uni_Dir <- stringi::stri_c("chr", Combined_Processed_Data$CHROM, ":", Combined_Processed_Data$GENPOS, ":", Combined_Processed_Data$REF_Ref_ALLELE0, ":", Combined_Processed_Data$REF_Ref_ALLELE1)
+#direction determined but can dup due to strand change
+
+#Safe and makes sure all exact from ref
+Combined_Processed_Data$COORD_Uni <- Combined_Processed_Data$REF_ID
 
 }
 
@@ -733,7 +737,7 @@ Combined_Processed_Data$COORD_Uni <- stringi::stri_c("chr", Combined_Processed_D
 
 
 
-  return(Combined_Processed_Data)
+#  return(Combined_Processed_Data)
       # Print final dataset
    #   print(Combined_Processed_Data)
   #    print(Match_Allele_Study)
