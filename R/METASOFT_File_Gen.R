@@ -879,7 +879,7 @@ Combined_Processed_Data$COORD_Uni <- Combined_Processed_Data$REF_ID
       # Identify columns that end exactly with "BETA" or "SE" plus "COORD_Uni"
       keep_cols <- colnames(Combined_Processed_Data_Joined)[
         grepl(paste0(Output, "$", collapse = "|"), colnames(Combined_Processed_Data_Joined)) |
-          colnames(Combined_Processed_Data_Joined) == "COORD_Uni" | colnames(Combined_Processed_Data_Joined) == "Dir"
+          colnames(Combined_Processed_Data_Joined) == "COORD_Uni" | colnames(Combined_Processed_Data_Joined) == "Dir.x"
       ]
 
 
