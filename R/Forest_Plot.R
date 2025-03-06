@@ -3793,13 +3793,22 @@ print("Still going5")
 
   {
 
+    #names is in order
 
   #  p <- p + ggplot2::guides(color = ggplot2::guide_legend(title = Legend_Title, override.aes = list(shape = 15)))
+#
+#     p <- p + ggplot2::guides(
+#       color = ggplot2::guide_legend(
+#         title = Legend_Title,
+#         override.aes = list(shape = c(15, 15, 18, rep(15, length(Names) - 3)))
+#
+#       )
+#     )
 
     p <- p + ggplot2::guides(
       color = ggplot2::guide_legend(
         title = Legend_Title,
-        override.aes = list(shape = c(15, 15, 18, rep(15, length(Names) - 3)))
+        override.aes = list(shape = Shapes)
       )
     )
 
