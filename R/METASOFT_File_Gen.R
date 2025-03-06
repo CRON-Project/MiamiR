@@ -766,8 +766,15 @@ Combined_Processed_Data$COORD_Uni <- Combined_Processed_Data$REF_ID
         study_name <- unique(sub_df$STUDY)
 
         # Rename columns by prefixing the study name, except for COORD_Uni
-        colnames(sub_df) <- c(paste0(study_name, "_", colnames(sub_df)[-ncol(sub_df)]), "COORD_Uni")
+      #  colnames(sub_df) <- c(paste0(study_name, "_", colnames(sub_df)[-ncol(sub_df)]), "COORD_Uni")
 
+        cols_to_rename <- !(colnames(sub_df) %in% c("COORD_Uni", "Dir"))
+
+        # Rename only selected columns
+        colnames(sub_df)[cols_to_rename] <- paste0(study_name, "_", colnames(sub_df)[cols_to_rename])
+        #keep dir too
+
+      #  Dir
         return(sub_df)
       })
 
@@ -872,7 +879,7 @@ Combined_Processed_Data$COORD_Uni <- Combined_Processed_Data$REF_ID
       # Identify columns that end exactly with "BETA" or "SE" plus "COORD_Uni"
       keep_cols <- colnames(Combined_Processed_Data_Joined)[
         grepl(paste0(Output, "$", collapse = "|"), colnames(Combined_Processed_Data_Joined)) |
-          colnames(Combined_Processed_Data_Joined) == "COORD_Uni"
+          colnames(Combined_Processed_Data_Joined) == "COORD_Uni" | colnames(Combined_Processed_Data_Joined) == "Dir"
       ]
 
 
