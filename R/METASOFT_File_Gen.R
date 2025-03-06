@@ -819,7 +819,7 @@ Combined_Processed_Data$COORD_Uni <- Combined_Processed_Data$REF_ID
     #  return(Combined_Processed_Data_Joined)
 
 
-      print(nrow(Combined_Processed_Data_Joined))
+  #    print(nrow(Combined_Processed_Data_Joined))
 
   #    print(colnames(Combined_Processed_Data_Joined))
       genpos_cols <- grep("GENPOS$", colnames(Combined_Processed_Data_Joined), value = TRUE)
@@ -885,7 +885,8 @@ Combined_Processed_Data$COORD_Uni <- Combined_Processed_Data$REF_ID
 
       print("These column types will be kept from each data frame and married to unified ID in order:")
       print(Output)
-
+      print(Combined_Processed_Data_Joined)
+      print(keep_cols)
 
 
       # Preserve the original order found in the dataframe
