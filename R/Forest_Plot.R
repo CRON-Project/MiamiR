@@ -1520,10 +1520,15 @@ if(Model_Reference == F)
   print(res$Backup_ID)
   print(res)
   print("check")
+
+  if(Double_Label == T)
+  {
+
   res <- res %>%
     mutate(Backup_Single = stringr::str_extract(Backup_ID, "rs\\d+"))
+  }
   print(res)
-  print(res$Backup_Single)
+ # print(res$Backup_Single)
 
 
   if(Model_Reference == F)
@@ -1569,7 +1574,7 @@ if(Model_Reference == F)
 
   print(res)
   print(res$RS)
-  print(res$Backup_Single)
+ # print(res$Backup_Single)
 
 
 
