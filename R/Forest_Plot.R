@@ -3958,7 +3958,8 @@ print("Still going5")
   if(X_Axis_Label == T)
   {
 
-    p_mid <- p_mid + ggplot2::xlab("BETA\n")
+    X_Axis_Title <- paste0(X_Axis_Title, "\n" )
+    p_mid <- p_mid + ggplot2::xlab(X_Axis_Title)
   }
   if(X_Axis_Label == F)
   {
