@@ -1399,10 +1399,14 @@ if(Match_Allele_Direction == T)
 
 
   print(Combined_Processed_Data)
-  z
+
 
 if(Model_Reference == F)
 {
+
+  if (!"COORD_Uni" %in% colnames(Combined_Processed_Data) || all(is.na(Combined_Processed_Data$COORD_Uni))) {
+    Combined_Processed_Data$COORD_Uni <- Combined_Processed_Data$Real_ID  # Assign Real_ID if COORD_Uni is missing or all NA
+  }
 
  # Combined_Processed_Data$Backup_ID <-    Combined_Processed_Data$ID
  # print( Combined_Processed_Data$Backup_ID)
@@ -1437,9 +1441,13 @@ if(Model_Reference == F)
 
   }
 
-  print(Combined_Processed_Data)
+ # print(Combined_Processed_Data)
 
 }
+
+
+  print(Combined_Processed_Data)
+  z
 
   res <- Combined_Processed_Data
 
