@@ -855,7 +855,7 @@ if(Test_Statistic == "BETA")
   #need to remake earlier in case RS also provided
 
 
-  Data <- Data %>% tidyr::separate(ID, into = c("NEW_CHROM", "NEW_POS", "NEW_ALLELE0", "NEW_ALLELE1"), sep = ":", remove = FALSE)
+  Data$Real_ID <- Data$ID
 
   Data$ID <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
 
@@ -1190,7 +1190,7 @@ if(Match_Allele_Direction == T)
         dplyr::mutate(STUDY_Clean = STUDY) %>%
         dplyr::filter(STUDY_Clean == Match_Allele_Study_Clean) %>%
       #  tidyr::separate(ID, into = c("NEW_CHR", "NEW_POS", "NEW_ALLELE0", "NEW_ALLELE1"), sep = ":", remove = FALSE) %>%
-        dplyr::select(ID, ALLELE0, ALLELE1, COORD_Norm, COORD_Alt, NEW_ALLELE0, NEW_ALLELE1) %>%
+        dplyr::select(ID, ALLELE0, ALLELE1, COORD_Norm, COORD_Alt, Real_ID) %>%
         dplyr::rename(Ref_ALLELE0 = ALLELE0, Ref_ALLELE1 = ALLELE1)
 
 
