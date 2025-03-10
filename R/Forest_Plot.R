@@ -3372,6 +3372,7 @@ else {
     limits = c(mincalc / buffer, maxcalc * buffer),   # Symmetrical axis limits - enough for strips to fit just under
     breaks = displayed_breaks,          # Filtered breaks for ticks
     labels = displayed_labels,
+    expand = c(0, 0),
     trans = "log10"#,
 #    expand = ggplot2::expansion(mult = c(Line_Space, Line_Space)) # Filtered labels
   ) +
