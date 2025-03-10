@@ -1179,16 +1179,15 @@ if(Match_Allele_Direction == T)
         dplyr::rename(Ref_ALLELE0 = ALLELE0, Ref_ALLELE1 = ALLELE1)
 
 
-      #make sure actually comes from the ID so static instead always for direction later
+
       reference <- Combined_Processed_Data %>%
-        dplyr::mutate(STUDY_Clean = STUDY) %>%  # Remove number prefix
-        dplyr::filter(STUDY_Clean == Match_Allele_Study_Clean) %>%  # Compare cleaned names
-        dplyr::mutate(
-          ALLELE0 = stringr::str_extract(ID, "(?<=:)[^:]+(?=:[^:]+$)"),  # Extract part after second colon and before third
-          ALLELE1 = stringr::str_extract(ID, "(?<=:[^:]+:)[^:]+$")  # Extract part after third colon
-        ) %>%
+        dplyr::mutate(STUDY_Clean = STUDY) %>%
+        dplyr::filter(STUDY_Clean == Match_Allele_Study_Clean) %>%
+        tidyr::separate(ID, into = c("CHR", "POS", "ALLELE0", "ALLELE1"), sep = ":", remove = FALSE) %>%
         dplyr::select(ID, ALLELE0, ALLELE1, COORD_Norm, COORD_Alt) %>%
         dplyr::rename(Ref_ALLELE0 = ALLELE0, Ref_ALLELE1 = ALLELE1)
+
+
 
     }
 
