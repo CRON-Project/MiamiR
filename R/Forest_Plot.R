@@ -72,6 +72,7 @@ Forest_Plot <- function(Data_Sets = c(),
                         Names = NULL,
                         Data_Set_Colours = viridis::viridis(length(Data_Sets)),
                         Chromosome_Columns = c(),
+                        Lab_Col = "Lab",
                         Left_Spaces = 2, #def 2
                         Right_Spaces = 2,
                         Missings = F,
@@ -851,7 +852,7 @@ if(Test_Statistic == "BETA")
   {
 
   #keep maybe an RS also provided
-  Data$Backup_ID <- Data$ID
+  Data$Backup_ID <- Data[[Lab_Col]]
   #need to remake earlier in case RS also provided
 
 
