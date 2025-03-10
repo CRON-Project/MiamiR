@@ -1570,7 +1570,12 @@ if(Model_Reference == F)
 
   res <- res %>%
     mutate(Backup_Single = stringr::str_extract(Backup_ID, "rs\\d+"))
+  }else{
+    res <- res %>%
+      mutate(Backup_Single = Backup_ID)
   }
+
+
   print(res)
  # print(res$Backup_Single)
 
@@ -1586,32 +1591,16 @@ if(Model_Reference == F)
   #     RS %in% Selected_SNPs %in%  Selected_SNPs ~ paste(postfixes[match(RS, Selected_SNPs)], RS, sep = "-"),
   #     TRUE ~ RS  # Default if none match
   #   ))
+  res <- res %>%
+    dplyr::mutate(RS = dplyr::case_when(
+      RS %in% Selected_SNPs | Backup_Single %in% Selected_SNPs ~ paste(
+        postfixes[match(ifelse(RS %in% Selected_SNPs, RS, Backup_Single), Selected_SNPs)],
+        RS,
+        sep = "-"
+      ),
+      TRUE ~ RS  # Default if none match
+    ))
 
-
-  # res <- res %>%
-  #   dplyr::mutate(RS = dplyr::case_when(
-  #     RS %in% Selected_SNPs | Backup_Single %in% Selected_SNPs ~ paste(
-  #       postfixes[match(ifelse(RS %in% Selected_SNPs, RS, Backup_Single), Selected_SNPs)],
-  #       RS,
-  #       sep = "-"
-  #     ),
-  #     TRUE ~ RS  # Default if none match
-  #   ))
-  #
-    res <- res %>%
-      dplyr::mutate(RS = dplyr::case_when(
-        RS %in% Selected_SNPs ~ paste(
-          postfixes[match(RS, Selected_SNPs)],
-          RS,
-          sep = "-"
-        ),
-        (!RS %in% Selected_SNPs) & "Backup_Single" %in% colnames(res) & Backup_Single %in% Selected_SNPs ~ paste(
-          postfixes[match(Backup_Single, Selected_SNPs)],
-          RS,
-          sep = "-"
-        ),
-        TRUE ~ RS  # Default if none match
-      ))
 
 
   }else{
