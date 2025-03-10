@@ -870,7 +870,6 @@ if(Test_Statistic == "BETA")
 
   }
 
-  return(Data)
 
   if(Model_Reference == F)
   {
@@ -1194,8 +1193,8 @@ if(Match_Allele_Direction == T)
       reference <- Combined_Processed_Data %>%
         dplyr::mutate(STUDY_Clean = STUDY) %>%
         dplyr::filter(STUDY_Clean == Match_Allele_Study_Clean) %>%
-      #  tidyr::separate(ID, into = c("NEW_CHR", "NEW_POS", "NEW_ALLELE0", "NEW_ALLELE1"), sep = ":", remove = FALSE) %>%
         dplyr::select(ID, ALLELE0, ALLELE1, COORD_Norm, COORD_Alt, Real_ID) %>%
+       tidyr::separate(Real_ID, into = c("NEW_CHR", "NEW_POS", "NEW_ALLELE0", "NEW_ALLELE1"), sep = ":", remove = FALSE) %>%
         dplyr::rename(Ref_ALLELE0 = ALLELE0, Ref_ALLELE1 = ALLELE1)
 
 
