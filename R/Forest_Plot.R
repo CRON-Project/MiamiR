@@ -837,7 +837,7 @@ if(Test_Statistic == "BETA")
 
   if(Model_Reference == F)
   {
-  Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, SE, P, STUDY, Shape)
+  Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, SE, P, STUDY, Shape, !!Lab_Col)
   }
 
   if(Model_Reference == T)
@@ -852,6 +852,7 @@ if(Test_Statistic == "BETA")
   {
 
   #keep maybe an RS also provided
+
   Data$Backup_ID <- Data[[Lab_Col]]
 
 
