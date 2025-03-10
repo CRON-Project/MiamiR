@@ -1184,7 +1184,7 @@ if(Match_Allele_Direction == T)
         dplyr::mutate(STUDY_Clean = STUDY) %>%
         dplyr::filter(STUDY_Clean == Match_Allele_Study_Clean) %>%
         tidyr::separate(ID, into = c("NEW_CHR", "NEW_POS", "NEW_ALLELE0", "NEW_ALLELE1"), sep = ":", remove = FALSE) %>%
-        dplyr::select(ID, ALLELE0, ALLELE1, COORD_Norm, COORD_Alt) %>%
+        dplyr::select(ID, ALLELE0, ALLELE1, COORD_Norm, COORD_Alt, NEW_ALLELE0, NEW_ALLELE1) %>%
         dplyr::rename(Ref_ALLELE0 = ALLELE0, Ref_ALLELE1 = ALLELE1)
 
 
