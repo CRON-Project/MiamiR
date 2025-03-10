@@ -835,9 +835,14 @@ if(Test_Statistic == "BETA")
 
  # print(Data)
 
-  if(Model_Reference == F)
+  if(Model_Reference == F & Double_Label == T)
   {
   Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, SE, P, STUDY, Shape, !!Lab_Col)
+  }
+
+  if(Model_Reference == F & Double_Label == F)
+  {
+    Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, SE, P, STUDY, Shape)
   }
 
   if(Model_Reference == T)
@@ -853,7 +858,14 @@ if(Test_Statistic == "BETA")
 
   #keep maybe an RS also provided
 
+  if(Double_Label == T)
+  {
+
   Data$Backup_ID <- Data[[Lab_Col]]
+  }else
+  {
+    Data$Backup_ID <- Data$ID
+  }
 
 
   #need to remake earlier in case RS also provided
