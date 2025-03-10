@@ -1195,7 +1195,7 @@ if(Match_Allele_Direction == T)
         dplyr::filter(STUDY_Clean == Match_Allele_Study_Clean) %>%
         dplyr::select(ID, ALLELE0, ALLELE1, COORD_Norm, COORD_Alt, Real_ID) %>%
        tidyr::separate(Real_ID, into = c("NEW_CHR", "NEW_POS", "NEW_ALLELE0", "NEW_ALLELE1"), sep = ":", remove = FALSE) %>%
-        dplyr::rename(Ref_ALLELE0 = ALLELE0, Ref_ALLELE1 = ALLELE1)
+        dplyr::rename(Ref_ALLELE0 = NEW_ALLELE0, Ref_ALLELE1 = NEW_ALLELE1)
 
 
 
@@ -1205,7 +1205,7 @@ if(Match_Allele_Direction == T)
 
 
 
-    return(reference)
+ #   return(reference)
 #If from peak finder because of COORD_Uni they will also have ref match - think about raw later
 
 
