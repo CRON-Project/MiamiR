@@ -853,6 +853,8 @@ if(Test_Statistic == "BETA")
 
   #keep maybe an RS also provided
   Data$Backup_ID <- Data[[Lab_Col]]
+
+
   #need to remake earlier in case RS also provided
 
 
@@ -867,6 +869,7 @@ if(Test_Statistic == "BETA")
 
   }
 
+  return(Data)
 
   if(Model_Reference == F)
   {
