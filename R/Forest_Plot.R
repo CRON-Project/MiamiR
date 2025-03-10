@@ -1184,8 +1184,8 @@ if(Match_Allele_Direction == T)
         dplyr::mutate(STUDY_Clean = STUDY) %>%  # Remove number prefix
         dplyr::filter(STUDY_Clean == Match_Allele_Study_Clean) %>%  # Compare cleaned names
         dplyr::mutate(
-          ALLELE0 = str_extract(ID, "(?<=:)[^:]+(?=:[^:]+$)"),  # Extract part after second colon and before third
-          ALLELE1 = str_extract(ID, "(?<=:[^:]+:)[^:]+$")  # Extract part after third colon
+          ALLELE0 = stringr::str_extract(ID, "(?<=:)[^:]+(?=:[^:]+$)"),  # Extract part after second colon and before third
+          ALLELE1 = stringr::str_extract(ID, "(?<=:[^:]+:)[^:]+$")  # Extract part after third colon
         ) %>%
         dplyr::select(ID, ALLELE0, ALLELE1, COORD_Norm, COORD_Alt) %>%
         dplyr::rename(Ref_ALLELE0 = ALLELE0, Ref_ALLELE1 = ALLELE1)
