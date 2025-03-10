@@ -1398,6 +1398,8 @@ if(Match_Allele_Direction == T)
    #Want to make sure I am actually plotting what has been adjusted for ! direction wise.
 
 
+  print(Combined_Processed_Data)
+  z
 
 if(Model_Reference == F)
 {
