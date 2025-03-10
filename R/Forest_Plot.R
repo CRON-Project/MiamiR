@@ -853,7 +853,13 @@ if(Test_Statistic == "BETA")
   #keep maybe an RS also provided
   Data$Backup_ID <- Data$ID
   #need to remake earlier in case RS also provided
+
+
+  Data <- Data %>% tidyr::separate(ID, into = c("NEW_CHROM", "NEW_POS", "NEW_ALLELE0", "NEW_ALLELE1"), sep = ":", remove = FALSE)
+
   Data$ID <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
+
+
 
   Data$COORD_Norm <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
   Data$COORD_Alt <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE1, ":", Data$ALLELE0)
@@ -1183,7 +1189,7 @@ if(Match_Allele_Direction == T)
       reference <- Combined_Processed_Data %>%
         dplyr::mutate(STUDY_Clean = STUDY) %>%
         dplyr::filter(STUDY_Clean == Match_Allele_Study_Clean) %>%
-        tidyr::separate(ID, into = c("NEW_CHR", "NEW_POS", "NEW_ALLELE0", "NEW_ALLELE1"), sep = ":", remove = FALSE) %>%
+      #  tidyr::separate(ID, into = c("NEW_CHR", "NEW_POS", "NEW_ALLELE0", "NEW_ALLELE1"), sep = ":", remove = FALSE) %>%
         dplyr::select(ID, ALLELE0, ALLELE1, COORD_Norm, COORD_Alt, NEW_ALLELE0, NEW_ALLELE1) %>%
         dplyr::rename(Ref_ALLELE0 = ALLELE0, Ref_ALLELE1 = ALLELE1)
 
