@@ -3182,11 +3182,25 @@ p <- res |>
         # labels[safe_add_neg] <- paste0("<span style='color:#ffffff00;'>", labels[safe_add_neg], "</span>")
 
 
-         labels[safe_add_neg] <- gsub(
-           " -(\\d)",  # Match " -" followed by a digit
-           " <span style='color:#ffffff00;'>-</span>\\1",  # Make only "-" invisible
-           labels[safe_add_neg]
-         )
+         labels[safe_add_neg] <- sapply(labels[safe_add_neg], function(lbl) {
+           dot_pos <- gregexpr("\\.", lbl)[[1]]
+
+           if (any(dot_pos > 2)) {
+             for (i in dot_pos) {
+               target_pos <- i - 2
+               if (substr(lbl, target_pos, target_pos) == "-") {
+                 # Replace just that "-" with invisible span
+                 lbl <- paste0(
+                   substr(lbl, 1, target_pos - 1),
+                   "<span style='color:#ffffff00;'>-</span>",
+                   substr(lbl, target_pos + 1, nchar(lbl))
+                 )
+                 break  # Stop after first match
+               }
+             }
+           }
+           return(lbl)
+         }, USE.NAMES = FALSE)
 
 
          formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
