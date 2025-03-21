@@ -3171,23 +3171,22 @@ p <- res |>
     sec.axis = ggplot2::sec_axis(
       trans = ~.,  # Keep transformation the same
       breaks = res$Overall_Row_Number,
-       labels = function(x) {
-         labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
-         add_neg <- res$Add_Neg[match(x, res$Overall_Row_Number)]
-         labels[is.na(labels)] <- ""
+         labels = function(x) {
+           labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
+           add_neg <- res$Add_Neg[match(x, res$Overall_Row_Number)]
+           labels[is.na(labels)] <- ""
 
-         # Make artificial '-' invisible (only the first minus!) #
-         # Fully hide labels for artificially added negatives
-         safe_add_neg <- !is.na(add_neg) & add_neg
-        # labels[safe_add_neg] <- paste0("<span style='color:#ffffff00;'>", labels[safe_add_neg], "</span>")
-         neg_rows <- safe_add_neg
+           # Identify rows where Add_Neg is TRUE (i.e., artificially added negatives)
+           neg_rows <- !is.na(add_neg) & add_neg
 
-         labels[neg_rows] <- gsub(
-           "^-",  # Match only the first "-" at the start
-           "<span style='color:#ffffff00;'>-</span>",
-           labels[neg_rows]
-         )
+           # Make only the first `-` invisible in these rows
+           labels[neg_rows] <- gsub(
+             "^-",  # Match only the first `-`
+             "<span style='color:#ffffff00;'>-</span>",  # Make it invisible
+             labels[neg_rows]
+           )
 
+           return(labels)
 
          formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
          formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
