@@ -2838,9 +2838,18 @@ print(string_widths)
 
 
 
-    print(res)
-    z
 
+    #tmp fix
+    # Find rows where P_BETA_SE contains '--'
+    double_neg_rows <- grepl("--", res$P_BETA_SE)
+
+    # Replace '--' with a single '-'
+    res$P_BETA_SE[double_neg_rows] <- gsub("--", "-", res$P_BETA_SE[double_neg_rows])
+
+    # Set Add_Neg to FALSE for these rows
+    res$Add_Neg[double_neg_rows] <- FALSE
+
+    print(res)
 
     res$P_BETA_SE <- ifelse(
       RS_condition,
