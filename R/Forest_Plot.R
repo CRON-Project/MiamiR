@@ -3168,18 +3168,18 @@ p <- res |>
         # labels[safe_add_neg] <- paste0("<span style='color:#ffffff00;'>", labels[safe_add_neg], "</span>")
          safe_add_neg <- !is.na(add_neg) & add_neg
          if (any(safe_add_neg)) {
-           dash_pos <- regexpr("-", labels[safe_add_neg])  # get position of "-"
-
-           invisible_part <- mapply(function(lbl, pos) {
-             if (pos > 0) {
+           invisible_part <- sapply(labels[safe_add_neg], function(lbl) {
+             dash_positions <- gregexpr("-", lbl)[[1]]
+             if (length(dash_positions) >= 2 && dash_positions[1] != -1) {
+               second_dash_pos <- dash_positions[2]
                paste0(
-                 "<span style='color:#ffffff00;'>", substr(lbl, 1, pos), "</span>",
-                 substr(lbl, pos + 1, nchar(lbl))
+                 "<span style='color:#ffffff00;'>", substr(lbl, 1, second_dash_pos), "</span>",
+                 substr(lbl, second_dash_pos + 1, nchar(lbl))
                )
              } else {
-               lbl  # fallback in case "-" isn't found
+               lbl  # fallback if fewer than 2 dashes
              }
-           }, lbl = labels[safe_add_neg], pos = dash_pos, USE.NAMES = FALSE)
+           }, USE.NAMES = FALSE)
 
            labels[safe_add_neg] <- invisible_part
          }
