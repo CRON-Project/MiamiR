@@ -3183,7 +3183,7 @@ p <- res |>
 
 
            labels[safe_add_neg] <- gsub(
-             "-", "<span style='font-size:1px; color:#ffffff00;'>-</span>",  # Tiny and invisible
+             "-", "<span style='color:grey;'>-</span>",  # Change `-` to grey
              labels[safe_add_neg]
            )
 
