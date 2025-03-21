@@ -3193,17 +3193,15 @@ p <- res |>
           labels[safe_add_neg]
         )
 
-        # Mask other invisible elements
+        # Preserve Z and .. styling
         labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
         labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", labels)
 
-        # Avoid double-wrapping: only wrap if not already styled
-        is_wrapped <- grepl("^<span", labels)
-
-        formatted_labels <- ifelse(
-          is_wrapped,
-          labels,  # already styled (e.g., invisible minus)
-          paste0("<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", labels, "</span>")
+        # Wrap full label regardless, preserving internal HTML like invisible minus
+        formatted_labels <- paste0(
+          "<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>",
+          labels,
+          "</span>"
         )
 
         return(formatted_labels)
