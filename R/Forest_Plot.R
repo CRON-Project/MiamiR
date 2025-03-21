@@ -3167,18 +3167,10 @@ p <- res |>
          safe_add_neg <- !is.na(add_neg) & add_neg
         # labels[safe_add_neg] <- paste0("<span style='color:#ffffff00;'>", labels[safe_add_neg], "</span>")
          safe_add_neg <- !is.na(add_neg) & add_neg
-         labels[safe_add_neg] <- sapply(labels[safe_add_neg], function(lbl) {
-           if (nchar(lbl) >= 3) {
-             paste0(
-               substr(lbl, 1, 2),  # First 9 characters stay normal
-               "<span style='color:#ffffff00;'>", substr(lbl, 3, 3), "</span>",  # 10th char becomes invisible
-               substr(lbl, 11, nchar(lbl))  # Everything after stays normal
-             )
-           } else {
-             lbl  # If label is too short, leave it unchanged
-           }
-         }, USE.NAMES = FALSE)
-
+         labels[safe_add_neg] <- gsub(
+           "-", "<span style='color:#ffffff00;'>-</span>",
+           labels[safe_add_neg]
+         )
 
 
          formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
