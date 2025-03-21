@@ -3182,8 +3182,12 @@ p <- res |>
            safe_add_neg <- !is.na(add_neg) & add_neg
 
 
+           # Step 1: Replace every `-` in all labels with Unicode minus `−`
+           labels <- gsub("-", "−", labels)
+
+           # Step 2: Make `−` grey only in `safe_add_neg` rows
            labels[safe_add_neg] <- gsub(
-             "-", "<span style='color:gray30;'>−</span>",  # Unicode minus
+             "−", "<span style='color:gray30;'>−</span>",
              labels[safe_add_neg]
            )
          formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
