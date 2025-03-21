@@ -3167,10 +3167,20 @@ p <- res |>
          safe_add_neg <- !is.na(add_neg) & add_neg
         # labels[safe_add_neg] <- paste0("<span style='color:#ffffff00;'>", labels[safe_add_neg], "</span>")
          safe_add_neg <- !is.na(add_neg) & add_neg
-         labels[safe_add_neg] <- gsub(
-           "-", "<span style='color:#ffffff00;'>-</span>",
-           labels[safe_add_neg]
-         )
+         labels[safe_add_neg] <- sapply(labels[safe_add_neg], function(lbl) {
+           dash_positions <- gregexpr("-", lbl)[[1]]  # Get all '-' positions
+
+           if (length(dash_positions) >= 2 && dash_positions[1] != -1) {
+             second_dash_pos <- dash_positions[2]  # Get 2nd '-' position
+             paste0(
+               substr(lbl, 1, second_dash_pos - 1),  # Keep first part unchanged
+               "<span style='color:#ffffff00;'>-</span>",  # Make 2nd '-' invisible
+               substr(lbl, second_dash_pos + 1, nchar(lbl))  # Keep rest unchanged
+             )
+           } else {
+             lbl  # Leave unchanged if no 2nd '-'
+           }
+         }, USE.NAMES = FALSE)
 
 
          formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
