@@ -3154,7 +3154,7 @@ p <- res |>
         labels[is.na(labels)] <- ""
 
         # Make artificial '-' invisible (only the first minus!) #
-        labels[add_neg & grepl("^-", labels)] <- sub(
+        labels[add_neg] <- sub(
           "^-",
           "<span style='color:#ffffff00;'>-</span>",
           labels[add_neg & grepl("^-", labels)]
