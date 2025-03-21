@@ -3182,7 +3182,7 @@ p <- res |>
            safe_add_neg <- !is.na(add_neg) & add_neg
 
            labels[safe_add_neg] <- gsub(
-             "8", "<span style='color:#ffffff00;'>8</span>",
+             "-", "<span style='color:#ffffff00;'>-</span>",
              labels[safe_add_neg]
            )
 
