@@ -3189,10 +3189,10 @@ p <- res |>
              for (i in dot_pos) {
                target_pos <- i - 2
                if (substr(lbl, target_pos, target_pos) == "-") {
-                 # Replace just that "-" with invisible span
+                 # Replace just that "-" with invisible span + zero-width space
                  lbl <- paste0(
                    substr(lbl, 1, target_pos - 1),
-                   "<span style='color:#ffffff00;'>-</span>",
+                   "<span style='color:#ffffff00;'>-</span>&#8203;",  # Invisible '-' + zero-width space
                    substr(lbl, target_pos + 1, nchar(lbl))
                  )
                  break  # Stop after first match
