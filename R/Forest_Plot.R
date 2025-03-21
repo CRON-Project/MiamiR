@@ -2702,7 +2702,7 @@ print(string_widths)
   res_plot$SE <- as.numeric(res_plot$SE)
 
 #  res_plot$BETA2 <- ifelse(res_plot$BETA2 >= 0  | res_plot$BETA2 == 0.00, paste(rep("", negative_sign_length), sprintf('%.2f', res_plot$BETA2)), sprintf('%.2f', res_plot$BETA2))
-  res_plot$BETA2 <- ifelse(res_plot$BETA2 >= 0  | res_plot$BETA2 == 0.00, paste( sprintf('%.2f', res_plot$BETA2)), sprintf('%.2f', res_plot$BETA2))
+  res_plot$BETA2 <- ifelse(res_plot$BETA2 >= 0  | res_plot$BETA2 == 0.00, paste(" ", sprintf('%.2f', res_plot$BETA2)), sprintf('%.2f', res_plot$BETA2))
 
 
   res_plot$SE <- sprintf('%.2f', res_plot$SE)
