@@ -3183,10 +3183,9 @@ p <- res |>
 
 
            labels[safe_add_neg] <- gsub(
-             "-", "<span style='color:grey;'>-</span>",  # Change `-` to grey
+             "-", "<span style='color:gray30;'>−</span>",  # Unicode minus
              labels[safe_add_neg]
            )
-
          formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
          formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
 
