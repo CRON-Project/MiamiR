@@ -3181,15 +3181,29 @@ p <- res |>
 
            safe_add_neg <- !is.na(add_neg) & add_neg
 
-
-           # Step 1: Replace every `-` in all labels with Unicode minus `−`
+           # Step 1: Replace all standard dashes with Unicode minus
            labels <- gsub("-", "−", labels)
 
-           # Step 2: Make `−` grey only in `safe_add_neg` rows
-           labels[safe_add_neg] <- gsub(
-             "−", "<span style='color:gray30;'>−</span>",
-             labels[safe_add_neg]
-           )
+           # Step 2: For Add_Neg == TRUE, make second minus invisible
+           safe_add_neg <- !is.na(add_neg) & add_neg
+
+           labels[safe_add_neg] <- sapply(labels[safe_add_neg], function(lbl) {
+             minus_positions <- gregexpr("−", lbl)[[1]]
+
+             if (length(minus_positions) >= 2 && minus_positions[1] != -1) {
+               second_pos <- minus_positions[2]
+               paste0(
+                 substr(lbl, 1, second_pos - 1),
+                 "<span style='color:#ffffff00;'>−</span>",
+                 substr(lbl, second_pos + 1, nchar(lbl))
+               )
+             } else {
+               lbl  # fallback if no second minus
+             }
+           }, USE.NAMES = FALSE)
+
+
+
          formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
          formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
 
