@@ -2703,7 +2703,9 @@ print(string_widths)
 
 #  res_plot$BETA2 <- ifelse(res_plot$BETA2 >= 0  | res_plot$BETA2 == 0.00, paste(rep("", negative_sign_length), sprintf('%.2f', res_plot$BETA2)), sprintf('%.2f', res_plot$BETA2))
 #  res_plot$BETA2 <- ifelse(res_plot$BETA2 >= 0  | res_plot$BETA2 == 0.00, paste(rep("-", 1), sprintf('%.2f', res_plot$BETA2)), sprintf('%.2f', res_plot$BETA2))
-  res_plot$BETA2 <- ifelse(res_plot$BETA2 >= 0 | res_plot$BETA2 == 0.00,
+  res_plot$Add_Neg <- res_plot$BETA2 >= 0 | res_plot$BETA2 == 0.00
+
+  res_plot$BETA2 <- ifelse(res_plot$Add_Neg,
                            sprintf('-%0.2f', res_plot$BETA2),
                            sprintf('%0.2f', res_plot$BETA2))
 
@@ -3148,7 +3150,17 @@ p <- res |>
       breaks = res$Overall_Row_Number,
       labels = function(x) {
         labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
+        add_neg <- res$Add_Neg[match(x, res$Overall_Row_Number)]
         labels[is.na(labels)] <- ""
+
+        # Make artificial '-' invisible (only the first minus!) #
+        labels[add_neg & grepl("^-", labels)] <- sub(
+          "^-",
+          "<span style='color:#ffffff00;'>-</span>",
+          labels[add_neg & grepl("^-", labels)]
+        )
+
+
         formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
         formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
 
