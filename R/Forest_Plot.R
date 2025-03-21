@@ -2705,6 +2705,8 @@ print(string_widths)
 #  res_plot$BETA2 <- ifelse(res_plot$BETA2 >= 0  | res_plot$BETA2 == 0.00, paste(rep("-", 1), sprintf('%.2f', res_plot$BETA2)), sprintf('%.2f', res_plot$BETA2))
   res_plot$Add_Neg <- res_plot$BETA2 >= 0 | res_plot$BETA2 == 0.00
 
+
+
   res_plot$BETA2 <- ifelse(res_plot$Add_Neg,
                            sprintf('-%0.2f', res_plot$BETA2),
                            sprintf('%0.2f', res_plot$BETA2))
@@ -2830,6 +2832,9 @@ print(string_widths)
       paste0(res_plot$P, P_Stat_Spaces_3_Dig, res_plot$BETA2),   # paste0(res_plot$P, P_Stat_Spaces, "\u2009",  "\u200a", res_plot$BETA2),  # 9 spaces for three-digit exponents  #titles???? actually leave the same
       paste0(res_plot$P, P_Stat_Spaces, res_plot$BETA2)  # 10 spaces for shorter exponents
     )
+
+
+    res$Add_Neg <- res_plot$BETA2 >= 0 | res_plot$BETA2 == 0.00
 
 
     res$P_BETA_SE <- ifelse(
