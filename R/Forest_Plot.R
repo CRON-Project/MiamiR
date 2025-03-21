@@ -3181,8 +3181,10 @@ p <- res |>
          safe_add_neg <- !is.na(add_neg) & add_neg
         # labels[safe_add_neg] <- paste0("<span style='color:#ffffff00;'>", labels[safe_add_neg], "</span>")
 
+
          labels[safe_add_neg] <- gsub(
-           "8", "<span style='color:#ffffff00;'>8</span>",
+           " -(\\d)",  # Match " -" followed by a digit
+           " <span style='color:#ffffff00;'>-</span>\\1",  # Make only "-" invisible
            labels[safe_add_neg]
          )
 
