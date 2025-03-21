@@ -3183,7 +3183,7 @@ p <- res |>
 
 
            labels[safe_add_neg] <- gsub(
-             "-", "<span style='color:#ffffff00;'>-</span>&nbsp;",  # Invisible "-" + non-breaking space
+             "-", "<span style='opacity:0;'>−</span>",  # Unicode minus keeps spacing, opacity hides it
              labels[safe_add_neg]
            )
 
