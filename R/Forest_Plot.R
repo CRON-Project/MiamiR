@@ -3164,8 +3164,11 @@ p <- res |>
 
         # Make artificial '-' invisible (only the first minus!) #
         safe_add_neg <- !is.na(add_neg) & add_neg
-        labels[safe_add_neg] <- paste0("<span style='color:#ffffff00;'>", labels[safe_add_neg], "</span>")
-
+        labels[safe_add_neg] <- sub(
+          "^-",
+          "<span style='color:#ffffff00;'>-</span>",
+          labels[safe_add_neg]
+        )
 
         formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
         formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
