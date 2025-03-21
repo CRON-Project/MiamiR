@@ -3122,7 +3122,7 @@ print(string_widths)
 
   print(res$Add_Neg)
 
-  z
+
 
   #res$Left_Plot_Value <- trimws(res$Left_Plot_Value)
 
