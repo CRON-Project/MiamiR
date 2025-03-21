@@ -3177,16 +3177,14 @@ p <- res |>
            labels[is.na(labels)] <- ""
 
            # Identify rows where Add_Neg is TRUE (i.e., artificially added negatives)
-           neg_rows <- !is.na(add_neg) & add_neg
 
-           # Make only the first `-` invisible in these rows
-           labels[neg_rows] <- gsub(
-             "^-",  # Match only the first `-`
-             "<span style='color:#ffffff00;'>-</span>",  # Make it invisible
-             labels[neg_rows]
+
+           safe_add_neg <- !is.na(add_neg) & add_neg
+
+           labels[safe_add_neg] <- gsub(
+             "8", "<span style='color:#ffffff00;'>8</span>",
+             labels[safe_add_neg]
            )
-
-           return(labels)
 
          formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
          formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
