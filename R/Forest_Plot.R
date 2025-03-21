@@ -3168,20 +3168,19 @@ p <- res |>
         # labels[safe_add_neg] <- paste0("<span style='color:#ffffff00;'>", labels[safe_add_neg], "</span>")
          safe_add_neg <- !is.na(add_neg) & add_neg
          if (any(safe_add_neg)) {
-           invisible_part <- sapply(labels[safe_add_neg], function(lbl) {
+           labels[safe_add_neg] <- sapply(labels[safe_add_neg], function(lbl) {
              dash_positions <- gregexpr("-", lbl)[[1]]
              if (length(dash_positions) >= 2 && dash_positions[1] != -1) {
                second_dash_pos <- dash_positions[2]
                paste0(
-                 "<span style='color:#ffffff00;'>", substr(lbl, 1, second_dash_pos), "</span>",
+                 substr(lbl, 1, second_dash_pos - 1),
+                 "<span style='color:#ffffff00;'>-</span>",
                  substr(lbl, second_dash_pos + 1, nchar(lbl))
                )
              } else {
-               lbl  # fallback if fewer than 2 dashes
+               lbl  # fallback: no change
              }
            }, USE.NAMES = FALSE)
-
-           labels[safe_add_neg] <- invisible_part
          }
 
 
