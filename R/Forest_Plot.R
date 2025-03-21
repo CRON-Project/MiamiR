@@ -3157,55 +3157,28 @@ p <- res |>
     sec.axis = ggplot2::sec_axis(
       trans = ~.,  # Keep transformation the same
       breaks = res$Overall_Row_Number,
-      # labels = function(x) {
-      #   labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
-      #   add_neg <- res$Add_Neg[match(x, res$Overall_Row_Number)]
-      #   labels[is.na(labels)] <- ""
-      #
-      #   # Make artificial '-' invisible (only the first minus!) #
-      #   safe_add_neg <- !is.na(add_neg) & add_neg
-      #   labels[safe_add_neg] <- sub(
-      #     "^-",
-      #     "<span style='color:#ffffff00;'>-</span>",
-      #     labels[safe_add_neg]
-      #   )
-      #
-      #   formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
-      #   formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
-      #
-      #   ifelse(
-      #     grepl("\u2501", formatted_labels),
-      #     paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
-      #     paste0("<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
-      #   #  paste0("<span style='font-family: Courier2; font-size:180pt; color:black'>", formatted_labels, "</span>")
-      #   )
-      # }
-      labels = function(x) {
-        labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
-        add_neg <- res$Add_Neg[match(x, res$Overall_Row_Number)]
-        labels[is.na(labels)] <- ""
+       labels = function(x) {
+         labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
+         add_neg <- res$Add_Neg[match(x, res$Overall_Row_Number)]
+         labels[is.na(labels)] <- ""
 
-        # Make artificial '-' invisible (only the first minus)
-        safe_add_neg <- !is.na(add_neg) & add_neg
-        labels[safe_add_neg] <- sub(
-          "^-",
-          "<span style='color:#ffffff00;'>-</span>",
-          labels[safe_add_neg]
-        )
+         # Make artificial '-' invisible (only the first minus!) #
+         # Fully hide labels for artificially added negatives
+         safe_add_neg <- !is.na(add_neg) & add_neg
+         labels[safe_add_neg] <- paste0("<span style='color:#ffffff00;'>", labels[safe_add_neg], "</span>")
 
-        # Preserve Z and .. styling
-        labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
-        labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", labels)
 
-        # Wrap full label regardless, preserving internal HTML like invisible minus
-        formatted_labels <- paste0(
-          "<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>",
-          labels,
-          "</span>"
-        )
+         formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
+         formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
 
-        return(formatted_labels)
-      }
+         ifelse(
+           grepl("\u2501", formatted_labels),
+           paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
+           paste0("<span style='font-family: Courier2; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+         #  paste0("<span style='font-family: Courier2; font-size:180pt; color:black'>", formatted_labels, "</span>")
+         )
+       }
+
     )
   ) +
 
