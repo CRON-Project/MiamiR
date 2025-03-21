@@ -2708,7 +2708,7 @@ print(string_widths)
   res$Add_Neg <- res_plot$BETA2 >= 0 | res_plot$BETA2 == 0.00
 
   print(res_plot)
-  z
+
 
   res_plot$BETA2 <- ifelse(res_plot$Add_Neg,
                            sprintf('-%0.2f', res_plot$BETA2),
@@ -2837,6 +2837,9 @@ print(string_widths)
     )
 
 
+
+    print(res)
+    z
 
 
     res$P_BETA_SE <- ifelse(
