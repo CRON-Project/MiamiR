@@ -3170,14 +3170,14 @@ p <- res |>
          labels[safe_add_neg] <- sapply(labels[safe_add_neg], function(lbl) {
            if (nchar(lbl) >= 10) {
              paste0(
-               substr(lbl, 1, 9),
-               "<span style='color:#ffffff00;'>", substr(lbl, 10, 10), "</span>",
-               substr(lbl, 11, nchar(lbl))
+               substr(lbl, 1, 9),  # First 9 characters stay normal
+               "<span style='color:#ffffff00;'>", substr(lbl, 10, 10), "</span>",  # 10th char becomes invisible
+               substr(lbl, 11, nchar(lbl))  # Everything after stays normal
              )
            } else {
-             lbl  # leave as is if less than 10 characters
+             lbl  # If label is too short, leave it unchanged
            }
-         })
+         }, USE.NAMES = FALSE)
 
 
 
