@@ -2695,7 +2695,7 @@ print(string_widths)
   negative_sign_length <- nchar(sub("^-", "", as.character(min(res_plot$BETA2[res_plot$BETA2 < 0], na.rm = TRUE))))
 
   print("adjusting neg sign length")
-  negative_sign_length <- negative_sign_length/2
+  negative_sign_length <- 0
 
   res_plot$BETA2
   res_plot$BETA2 <- as.numeric(res_plot$BETA2)
