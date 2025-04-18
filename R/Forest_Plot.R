@@ -2857,6 +2857,12 @@ print(string_widths)
     print("Passed 1")
 
 
+    print(res)
+    print(res_plot)
+
+    z
+
+
     #tmp fix
     # Find rows where P_BETA_SE contains '--'
     double_neg_rows <- grepl("--", res$P_BETA_SE)
