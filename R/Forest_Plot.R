@@ -2327,7 +2327,7 @@ print(string_widths)
      ) +
     ggplot2::theme(
       axis.text.y = ggtext::element_markdown(
-        family = "Courier",
+        family = "Arial",
         margin = ggplot2::margin(r = 0),  # No space between labels and axis
         vjust  = 0.58  # Adjust vertical alignment to center labels on the tick
       ) ,
@@ -3161,7 +3161,7 @@ p <- res |>
       ifelse(#this bit also controls left
         grepl("\u2501", formatted_labels),
         paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
-        paste0("<span style='font-family: Courier; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+        paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
 
       )
 
@@ -3211,7 +3211,7 @@ p <- res |>
          ifelse(
            grepl("\u2501", formatted_labels),
            paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
-           paste0("<span style='font-family: Courier; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+           paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
          #  paste0("<span style='font-family: Courier2; font-size:180pt; color:black'>", formatted_labels, "</span>")
          )
        }
@@ -3221,7 +3221,7 @@ p <- res |>
 
   ggplot2::theme(
     axis.text.y = ggtext::element_markdown(
-   family = "Courier", #this bit controls left, above controls right!
+   family = "Arial", #this bit controls left, above controls right!
       margin = ggplot2::margin(l = 0, r = 0),  # No space between labels and axis
       vjust  = 0.642,  # Adjust vertical alignment to center labels on the tick - bigger = more down
       hjust = 1
@@ -4038,10 +4038,10 @@ print("Still going5")
     ggplot2::geom_hline(yintercept = end+2, linetype = "solid", color = "black")+
     #+ geom_segment(aes(x = -Inf, xend = Inf, y = 36, yend = 36), color = "black", linetype = "solid")
     ggplot2::theme(#axis.line.x = ggplot2::element_blank(),
-         legend.text = ggplot2::element_text(size = Legend_Text_Size, family = "Courier", color ="black"),
-         legend.title = ggplot2::element_text(size = Legend_Title_Size, family = "Courier", color ="black"),
-         axis.text.x = ggplot2::element_text(size = X_Axis_Text_Size, family = "Courier", color ="black"),
-          axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 15, b = -X_Axis_Title_Size), family = "Courier", vjust = -3, color = "black", size = X_Axis_Title_Size ))#,
+         legend.text = ggplot2::element_text(size = Legend_Text_Size, family = "Arial", color ="black"),
+         legend.title = ggplot2::element_text(size = Legend_Title_Size, family = "Arial", color ="black"),
+         axis.text.x = ggplot2::element_text(size = X_Axis_Text_Size, family = "Arial", color ="black"),
+          axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 15, b = -X_Axis_Title_Size), family = "Arial", vjust = -3, color = "black", size = X_Axis_Title_Size ))#,
   #      axis.ticks.y= element_blank(),
   #      axis.text.y= element_blank(),
   #      axis.title.y= element_blank())
@@ -4054,7 +4054,7 @@ print("Still going5")
 
  p_mid <- p_mid + ggplot2::theme(
   axis.ticks.length.x  = ggplot2::unit(0.4,"cm"),
-   axis.text.x = ggplot2::element_text(vjust = -1, size = X_Axis_Text_Size, family = "Courier"),
+   axis.text.x = ggplot2::element_text(vjust = -1, size = X_Axis_Text_Size, family = "Arial"),
    legend.margin=ggplot2::margin(10,10,10,10)
  ) # adds more
 
