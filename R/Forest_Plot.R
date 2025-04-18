@@ -2843,6 +2843,8 @@ print(string_widths)
     )
 
 
+  }
+
     if(Display_P_Value_Column == T & Display_Test_Stat_Se_Column == F) {
 
       res$P_BETA_SE <- ifelse(
@@ -2883,7 +2885,7 @@ print(string_widths)
   }
 
 
-  }
+
 
 
   if(Display_P_Value_Column == T & Display_Test_Stat_Se_Column == F) {
