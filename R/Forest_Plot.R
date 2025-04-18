@@ -2860,7 +2860,7 @@ print(string_widths)
     print(res)
     print(res_plot)
 
-    z
+
 
 
     #tmp fix
@@ -2887,7 +2887,7 @@ print(string_widths)
 
 
      } else {
-    res$P_BETA_SE <- res_plot$BETA2
+    res$P_BETA_SE <-    res$P_BETA_SE
   }
 
 
