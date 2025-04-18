@@ -1,332 +1,1095 @@
-  library(shiny)
-  library(ggplot2)
-  library(vroom)
-  library(dplyr)
+library(shiny)
+library(ggplot2)
+library(vroom)
+library(dplyr)
+library(plotly)
+library(htmlwidgets)
 
-  # Increase file upload limit to 10 GB
-  options(shiny.maxRequestSize = 10 * 1024^3)
-  options(shiny.http.timeout = 300)  # Timeout increased to 5 minutes
-  options(shiny.maxRequestSize = 10 * 1024^3)  # 30 MB
+# Increase file upload limit to 10 GB
+options(shiny.maxRequestSize = 10 * 1024^3)
+options(shiny.http.timeout = 300)  # Timeout increased to 5 minutes
+options(shiny.maxRequestSize = 10 * 1024^3)  # 30 MB
 
 
-  # Helper function to generate dynamic UI inputs, specifically handling list inputs
-  generate_inputs <- function(func) {
-    arg_list <- formals(func)
+# Helper function to generate dynamic UI inputs, specifically handling list inputs
+generate_inputs <- function(func) {
+  arg_list <- formals(func)
 
-    inputs <- lapply(names(arg_list), function(arg_name) {
-      if (arg_name == "Data" | arg_name == "Top_Data" | arg_name == "Bottom_Data") return(NULL)  # Skip the Data argument
+  inputs <- lapply(names(arg_list), function(arg_name) {
+    # Skip known data inputs and arguments with no defaults
+    if (arg_name %in% c("Data", "Top_Data", "Bottom_Data")) return(NULL)
 
-      arg_value <- arg_list[[arg_name]]
+    arg_value <- arg_list[[arg_name]]
 
-      # Automatically handle vector or list arguments as comma-separated inputs
-      if (is.call(arg_value)) arg_value <- eval(arg_value)
+    # Skip missing (no default) arguments
+    if (missing(arg_value) || is.symbol(arg_value)) return(NULL)
 
-      if (is.numeric(arg_value) && length(arg_value) > 1) {
-        # Convert numeric vector to comma-separated string
-        textInput(arg_name, label = arg_name, value = paste(arg_value, collapse = ","))
+    # Handle vector or list inputs
+    if (is.call(arg_value)) arg_value <- eval(arg_value)
 
-      } else if (is.character(arg_value) && length(arg_value) > 1) {
-        # Convert character vector to comma-separated string
-        textInput(arg_name, label = arg_name, value = paste(arg_value, collapse = ","))
+    if (is.numeric(arg_value) && length(arg_value) > 1) {
+      textInput(arg_name, label = arg_name, value = paste(arg_value, collapse = ","))
+    } else if (is.character(arg_value) && length(arg_value) > 1) {
+      textInput(arg_name, label = arg_name, value = paste(arg_value, collapse = ","))
+    } else if (is.numeric(arg_value)) {
+      numericInput(arg_name, label = arg_name, value = arg_value)
+    } else if (is.character(arg_value)) {
+      textInput(arg_name, label = arg_name, value = arg_value)
+    } else if (is.logical(arg_value)) {
+      checkboxInput(arg_name, label = arg_name, value = arg_value)
+    } else {
+      textInput(arg_name, label = arg_name, value = as.character(arg_value))
+    }
+  })
 
-      } else if (is.numeric(arg_value)) {
-        # Single numeric input
-        numericInput(arg_name, label = arg_name, value = arg_value)
+  # Add the download config inputs
+  file_type_input <- textInput("File_Type", label = "File Type", value = "jpg")
+  width_input <- numericInput("Width", label = "Plot Width (in)", value = 30)
+  height_input <- numericInput("Height", label = "Plot Height (in)", value = 15)
+  dpi_input <- numericInput("Quality", label = "Plot DPI", value = 300)
 
-      } else if (is.character(arg_value)) {
-        # Single text input
-        textInput(arg_name, label = arg_name, value = arg_value)
+  return(c(
+    list(file_type_input, width_input, height_input, dpi_input),
+    Filter(Negate(is.null), inputs)
+  ))
+}
 
-      } else if (is.logical(arg_value)) {
-        # Checkbox input for booleans
-        checkboxInput(arg_name, label = arg_name, value = arg_value)
 
-      } else {
-        # Fallback for unknown types
-        textInput(arg_name, label = arg_name, value = as.character(arg_value))
+# Define UI for the Shiny app
+# Define UI for the Shiny app
+# Define UI for the Shiny app
+# Define UI for the Shiny app
+# Define UI for the Shiny app
+ui <- fluidPage(
+  titlePanel("MiamiR User Web App"),
+
+  tabsetPanel(
+
+    tabPanel("Home",  # New Home Tab
+             mainPanel(
+               h2("Welcome to the MiamiR package Shiny App"),
+               p("This application allows you to process data and generate different types of plots, including Manhattan, Miami and Forest Plots."),
+               p("To get started, select one of the tabs above:"),
+               tags$ul(
+                 tags$li("Single_Plot() for generating Manhattan Plots"),
+                 tags$li("Miami_Plot() for generating Miami Plots"),
+                 tags$li("Forest_Plot() for generating Forest Plots"),
+                 tags$li("Annotate_Data() for annotating data with RS codes for index SNPs"),
+                 tags$li("Model_Munge() for creating and munging LM and GLM models ahead of plotting")
+               ),
+               p("Click on a tab to get started!"),
+
+
+               tags$img(src = "https://i.redd.it/l5sfjf60tclc1.gif", width = "500px", height = "auto")
+               #   tags$img(src = "2024-10-11-MiamiR", width = "500px", height = "auto")  # Add the gif stored in the www folder
+
+             )
+
+
+
+    ),
+
+
+    tabPanel("Single_Plot()",  # First Tab for Single_Plot
+             sidebarLayout(
+               sidebarPanel(
+                 fileInput("file1", "Upload Any File Type (up to 10GB)",
+                           accept = c("text/csv",
+                                      "text/comma-separated-values,text/plain",
+                                      ".csv")),
+
+                 fluidRow(
+                   column(6, uiOutput("generateBtn1")),
+                   column(6, uiOutput("downloadBtn1"))
+                 ),
+                 tags$br(), tags$br(),
+
+                 uiOutput("dynamic_inputs_1"),  # Dynamically generated inputs
+
+                 #   textInput("File_Type", label = "File Type", value = "jpg")  # Add this line
+               ),
+               mainPanel(
+                 h4("Data Preview:"),
+                 tableOutput("dataPreview1"),
+
+                 h4("Rendered Plot:"),
+                 uiOutput("fullscreenButton1"),  # <- This stays above the plot
+                 uiOutput("plotStatusUI"),
+                 uiOutput("interactivePlot1_ui")
+               )
+
+             )
+    ),
+
+
+    tabPanel("Regional_Plot()",
+             sidebarLayout(
+               sidebarPanel(
+                 fileInput("file6", "Upload Data (up to 10GB)",
+                           accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+
+                 numericInput("Chromosome", "Chromosome", value = 1, min = 1),
+
+                 fluidRow(
+                   column(6, actionButton("submit6", "Generate Regional Plot")),
+                   column(6, downloadButton("downloadPlot6", "Download All Plots"))
+                 ),
+                 tags$br(), tags$br(),
+
+                 uiOutput("dynamic_inputs_6")
+               ),
+
+               mainPanel(
+                 h4("Data Preview:"),
+                 tableOutput("dataPreview6"),
+
+                 h4("Rendered Regional Plots:"),
+                 uiOutput("renderedPlot6")
+               )
+             )
+    ),
+
+
+    tabPanel("Miami_Plot()",  # Second Tab for Miami_Plot
+             sidebarLayout(
+               sidebarPanel(
+                 fileInput("topData", "Upload Top Data (up to 10GB)",
+                           accept = c("text/csv",
+                                      "text/comma-separated-values,text/plain",
+                                      ".csv")),
+                 fileInput("bottomData", "Upload Bottom Data (up to 10GB)",
+                           accept = c("text/csv",
+                                      "text/comma-separated-values,text/plain",
+                                      ".csv")),
+
+                 # Wrap Generate and Download buttons in a fluidRow with two columns for side-by-side layout
+                 fluidRow(
+                   column(6, actionButton("submit2", "Generate Miami Plot")),
+                   column(6, downloadButton("downloadPlot2", "Download Miami Plot"))
+                 ),
+                 tags$br(),  # Add some spacing below the buttons
+
+                 uiOutput("dynamic_inputs_2")  # Dynamically generated inputs for Miami_Plot
+               ),
+
+               mainPanel(
+                 h4("Top Data Preview:"),
+                 tableOutput("topDataPreview"),  # Data preview for Top_Data
+
+                 h4("Bottom Data Preview:"),
+                 tableOutput("bottomDataPreview"),  # Data preview for Bottom_Data
+
+                 h4("Rendered Miami Plot:") ,
+                 plotOutput("renderedPlot2")  # Directly render the ggplot object for Miami_Plot
+               )
+             )
+    ),
+
+    tabPanel("Forest_Plot()",  # Third Tab for Forest_Plot
+             sidebarLayout(
+               sidebarPanel(
+                 numericInput("numDatasets", "How many datasets do you want to upload?",
+                              value = 1, min = 1, max = 10),
+
+                 uiOutput("dynamic_uploads"),  # Dynamically generated file inputs for datasets
+
+                 # Place Generate and Download buttons right after the file uploads
+                 fluidRow(
+                   column(6, actionButton("submit3", "Generate Forest Plot")),
+                   column(6, downloadButton("downloadPlot3", "Download Forest Plot"))
+                 ),
+                 tags$br(), tags$br(),  # Add some spacing below the buttons
+
+                 uiOutput("dynamic_inputs_3")  # Dynamically generated inputs for Forest_Plot
+               ),
+
+               mainPanel(
+                 h4("Data Preview:"),
+                 uiOutput("dataPreview3"),  # Data preview for Forest_Plot (dynamically generated)
+
+                 h4("Rendered Forest Plot:"),
+                 plotOutput("renderedPlot3")  # Directly render the ggplot object for Forest_Plot
+               )
+             )
+    ),
+
+
+
+
+
+    tabPanel("Annotate_Data()",  # New Tab for Annotate_Data
+             sidebarLayout(
+               sidebarPanel(
+                 fileInput("file4", "Upload Data File (up to 10GB)",
+                           accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+
+                 # Place a Download button after file upload
+                 fluidRow(
+                   column(6, actionButton("submit4", "Annotate Data")),
+                   column(6, downloadButton("downloadData", "Download Annotated Data"))
+                 ),
+                 tags$br(), tags$br(),  # Add some spacing below the buttons
+
+                 uiOutput("dynamic_inputs_4")  # Dynamically generated inputs for Annotate_Data
+               ),
+
+               mainPanel(
+                 h4("Data Preview:"),
+                 tableOutput("dataPreview4"),  # Data preview for Annotate_Data
+
+                 h4("Annotated SNPs:"),
+                 tableOutput("annotatedSNPs")  # Display the filtered rows where 'Lab' is not blank
+               )
+             )
+    ),
+
+
+    tabPanel("Model_Munge()",
+             sidebarLayout(
+               sidebarPanel(
+                 fileInput("file5", "Upload Data File (up to 10GB)",
+                           accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+
+                 textAreaInput("modelCode", "Write Your Model Code (e.g., lm(Var1 ~ Var2 + Var3))",
+                               value = "lm(Var1 ~ Var2 + Var3)", rows = 3),
+
+                 # Buttons to run the model and munge
+                 fluidRow(
+                   column(6, actionButton("submit5", "Run Model")),
+                   column(6, actionButton("mungeButton", "Munge Data"))
+                 ),
+                 tags$br(), tags$br(),
+
+                 uiOutput("dynamic_inputs_5"),  # Dynamically generated inputs for Model_Munge
+
+                 # Download button for the munged data
+                 downloadButton("downloadMunge", "Download Munged Data")
+               ),
+
+               mainPanel(
+                 h4("Data Preview:"),
+                 tableOutput("dataPreview5"),  # Data preview for uploaded dataset
+
+                 h4("Model Summary:"),
+                 verbatimTextOutput("modelSummary"),  # Display the model summary
+
+                 h4("Munged Data:"),
+                 tableOutput("mungedData")  # Display the munged data
+               )
+             )
+    )
+  ),
+  tags$script(HTML("
+  Shiny.addCustomMessageHandler('plot_progress', function(message) {
+    const el = document.getElementById('plotProgressStatus');
+    if (el) {
+      el.textContent = 'Progress: ' + message.pct + '% (' + message.msg + ') based on script lines';
+    }
+  });
+"))
+)
+
+server <- function(input, output, session) {
+
+  render_interactive_plot <- function(plot_obj, width = NULL, height = NULL) {
+    ggplotly(plot_obj, tooltip = "text") %>%
+      layout(
+        hoverlabel = list(font = list(size = 35)),
+        autosize = is.null(width),  # FALSE only when width is explicitly set
+        width = width,
+        height = height,
+        margin = list(t = 100, b = 50, l = 50, r = 50)
+      ) %>%
+      config(displayModeBar = TRUE, responsive = TRUE) %>%
+      onRender("
+      function(el, x) {
+        if (!document.getElementById('snpMenu')) {
+          var menu = document.createElement('div');
+          menu.id = 'snpMenu';
+          menu.style.position = 'absolute';
+          menu.style.display = 'none';
+          menu.style.zIndex = 10000;
+          menu.style.background = '#fff';
+          menu.style.border = '1px solid #ccc';
+          menu.style.padding = '8px';
+          menu.style.borderRadius = '5px';
+          menu.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+          menu.innerHTML = `
+            <div style='margin-bottom:5px; font-weight:bold;'>View SNP in:</div>
+            <button id='dbsnpBtn'>dbSNP</button>
+            <button id='otBtn'>Open Targets</button>
+          `;
+          document.body.appendChild(menu);
+        }
+
+        el.on('plotly_click', function(data) {
+          var text = data.points[0].text;
+          var snp_id = text.match(/rs\\d+/);
+          var chrom = text.match(/CHR:\\s?(\\w+)/)?.[1];
+          var pos = text.match(/POS:\\s?(\\d+)/)?.[1];
+          var allele_line = text.match(/REF:\\s?([A-Z])\\s?ALT:\\s?([A-Z])/) || text.match(/REF=([A-Z])\\sALT=([A-Z])/);
+          var ref = allele_line?.[1];
+          var alt = allele_line?.[2];
+
+          var menu = document.getElementById('snpMenu');
+          menu.style.display = 'block';
+
+          var popupWidth = 180;
+          var popupHeight = 70;
+          var pointX = data.event.pageX;
+          var pointY = data.event.pageY;
+
+          menu.style.left = (pointX - popupWidth - 10) + 'px';
+          menu.style.top = (pointY - popupHeight / 2) + 'px';
+
+          document.getElementById('dbsnpBtn').onclick = function() {
+            if (snp_id) {
+              window.open('https://www.ncbi.nlm.nih.gov/snp/' + snp_id[0], '_blank');
+              menu.style.display = 'none';
+            }
+          };
+
+          document.getElementById('otBtn').onclick = function() {
+            if (chrom && pos && ref && alt) {
+              var otURL = `https://genetics.opentargets.org/variant/${chrom}_${pos}_${ref}_${alt}/associations`;
+              window.open(otURL, '_blank');
+              menu.style.display = 'none';
+            } else {
+              alert('Missing info for Open Targets link');
+            }
+          };
+        });
+
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('#snpMenu') && !e.target.closest('.plotly')) {
+            document.getElementById('snpMenu').style.display = 'none';
+          }
+        });
       }
-    })
-
-    # Return the inputs, filtering out any NULL values (i.e., excluding 'Data')
-    return(Filter(Negate(is.null), inputs))
+    ")
   }
 
 
-  # Define UI for the Shiny app
-  # Define UI for the Shiny app
-  # Define UI for the Shiny app
-  # Define UI for the Shiny app
-  # Define UI for the Shiny app
-  ui <- fluidPage(
-    titlePanel("MiamiR User Web App"),
+  run_with_counter <- function(func, args = list(), session = NULL) {
+    exprs <- as.list(body(func))[-1]
+    total <- length(exprs)
+    env <- new.env(parent = environment(func))
 
-    tabsetPanel(
+    # Merge defaults from function formals
+    defaults <- formals(func)
+    for (name in names(defaults)) {
+      if (name %in% names(args)) {
+        assign(name, args[[name]], envir = env)
+      } else {
+        assign(name, eval(defaults[[name]], envir = env), envir = env)
+      }
+    }
 
-      tabPanel("Home",  # New Home Tab
-               mainPanel(
-                 h2("Welcome to the MiamiR package Shiny App"),
-                 p("This application allows you to process data and generate different types of plots, including Manhattan, Miami and Forest Plots."),
-                 p("To get started, select one of the tabs above:"),
-                 tags$ul(
-                   tags$li("Single_Plot() for generating Manhattan Plots"),
-                   tags$li("Miami_Plot() for generating Miami Plots"),
-                   tags$li("Forest_Plot() for generating Forest Plots"),
-                   tags$li("Annotate_Data() for annotating data with RS codes for index SNPs"),
-                   tags$li("Model_Munge() for creating and munging LM and GLM models ahead of plotting")
-                 ),
-                 p("Click on a tab to get started!"),
+    result <- NULL
+    for (i in seq_along(exprs)) {
+      pct <- round(100 * i / total)
+      message(sprintf("Progress: %d%% (Line %d of %d)", pct, i, total))
 
+      if (!is.null(session)) {
+        session$sendCustomMessage("plot_progress", list(
+          pct = pct,
+          msg = paste("Line", i, "of", total)
+        ))
+      }
 
-                 tags$img(src = "https://i.redd.it/l5sfjf60tclc1.gif", width = "500px", height = "auto")
-              #   tags$img(src = "2024-10-11-MiamiR", width = "500px", height = "auto")  # Add the gif stored in the www folder
+      result <- eval(exprs[[i]], envir = env)
+    }
 
-                )
+    return(result)
+  }
 
+  ### Single_Plot Logic ###
+  # Load the uploaded data for Single_Plot
+  # Global variable to store the path of the generated plot
+  plot_width <- reactive({
+    req(input$Width)
+    input$Width * 96
+  })
 
+  plot_height <- reactive({
+    req(input$Height)
+    input$Height * 96
+  })
 
-      ),
+  plot_file_1 <- reactiveVal(NULL)
 
+  ### Single_Plot Logic ###
+  # Load the uploaded data for Single_Plot
 
-      tabPanel("Single_Plot()",  # First Tab for Single_Plot
-               sidebarLayout(
-                 sidebarPanel(
-                   fileInput("file1", "Upload Any File Type (up to 10GB)",
-                             accept = c("text/csv",
-                                        "text/comma-separated-values,text/plain",
-                                        ".csv")),
-
-                   # Place Generate and Download buttons right after the file upload
-                   fluidRow(
-                     column(6, actionButton("submit1", "Generate Manhattan Plot")),
-                     column(6, downloadButton("downloadPlot1", "Download Manhattan Plot"))
-                   ),
-                   tags$br(), tags$br(),  # Add some spacing below the buttons
-
-                   uiOutput("dynamic_inputs_1")  # Dynamically generated inputs for first plot
-                 ),
-
-                 mainPanel(
-                   h4("Data Preview:"),
-                   tableOutput("dataPreview1"),  # Data preview for first plot
-
-                   h4("Rendered Plot:"),
-                   plotOutput("renderedPlot1")  # Directly render the ggplot object for first plot
-                 )
-               )
-      ),
-
-      tabPanel("Miami_Plot()",  # Second Tab for Miami_Plot
-               sidebarLayout(
-                 sidebarPanel(
-                   fileInput("topData", "Upload Top Data (up to 10GB)",
-                             accept = c("text/csv",
-                                        "text/comma-separated-values,text/plain",
-                                        ".csv")),
-                   fileInput("bottomData", "Upload Bottom Data (up to 10GB)",
-                             accept = c("text/csv",
-                                        "text/comma-separated-values,text/plain",
-                                        ".csv")),
-
-                   # Wrap Generate and Download buttons in a fluidRow with two columns for side-by-side layout
-                   fluidRow(
-                     column(6, actionButton("submit2", "Generate Miami Plot")),
-                     column(6, downloadButton("downloadPlot2", "Download Miami Plot"))
-                   ),
-                   tags$br(),  # Add some spacing below the buttons
-
-                   uiOutput("dynamic_inputs_2")  # Dynamically generated inputs for Miami_Plot
-                 ),
-
-                 mainPanel(
-                   h4("Top Data Preview:"),
-                   tableOutput("topDataPreview"),  # Data preview for Top_Data
-
-                   h4("Bottom Data Preview:"),
-                   tableOutput("bottomDataPreview"),  # Data preview for Bottom_Data
-
-                   h4("Rendered Miami Plot:") ,
-                  plotOutput("renderedPlot2")  # Directly render the ggplot object for Miami_Plot
-                 )
-               )
-      ),
-
-      tabPanel("Forest_Plot()",  # Third Tab for Forest_Plot
-               sidebarLayout(
-                 sidebarPanel(
-                   numericInput("numDatasets", "How many datasets do you want to upload?",
-                                value = 1, min = 1, max = 10),
-
-                   uiOutput("dynamic_uploads"),  # Dynamically generated file inputs for datasets
-
-                   # Place Generate and Download buttons right after the file uploads
-                   fluidRow(
-                     column(6, actionButton("submit3", "Generate Forest Plot")),
-                     column(6, downloadButton("downloadPlot3", "Download Forest Plot"))
-                   ),
-                   tags$br(), tags$br(),  # Add some spacing below the buttons
-
-                   uiOutput("dynamic_inputs_3")  # Dynamically generated inputs for Forest_Plot
-                 ),
-
-                 mainPanel(
-                   h4("Data Preview:"),
-                   uiOutput("dataPreview3"),  # Data preview for Forest_Plot (dynamically generated)
-
-                   h4("Rendered Forest Plot:"),
-                   plotOutput("renderedPlot3")  # Directly render the ggplot object for Forest_Plot
-                 )
-               )
-      ),
-
-      tabPanel("Annotate_Data()",  # New Tab for Annotate_Data
-               sidebarLayout(
-                 sidebarPanel(
-                   fileInput("file4", "Upload Data File (up to 10GB)",
-                             accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
-
-                   # Place a Download button after file upload
-                   fluidRow(
-                     column(6, actionButton("submit4", "Annotate Data")),
-                     column(6, downloadButton("downloadData", "Download Annotated Data"))
-                   ),
-                   tags$br(), tags$br(),  # Add some spacing below the buttons
-
-                   uiOutput("dynamic_inputs_4")  # Dynamically generated inputs for Annotate_Data
-                 ),
-
-                 mainPanel(
-                   h4("Data Preview:"),
-                   tableOutput("dataPreview4"),  # Data preview for Annotate_Data
-
-                   h4("Annotated SNPs:"),
-                   tableOutput("annotatedSNPs")  # Display the filtered rows where 'Lab' is not blank
-                 )
-               )
-      ),
+  user_inputs_cache <- reactiveVal(NULL)
 
 
-      tabPanel("Model_Munge()",
-               sidebarLayout(
-                 sidebarPanel(
-                   fileInput("file5", "Upload Data File (up to 10GB)",
-                             accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
 
-                   textAreaInput("modelCode", "Write Your Model Code (e.g., lm(Var1 ~ Var2 + Var3))",
-                                 value = "lm(Var1 ~ Var2 + Var3)", rows = 3),
 
-                   # Buttons to run the model and munge
-                   fluidRow(
-                     column(6, actionButton("submit5", "Run Model")),
-                     column(6, actionButton("mungeButton", "Munge Data"))
-                   ),
-                   tags$br(), tags$br(),
+  observe({
+    req(input$file1)
 
-                   uiOutput("dynamic_inputs_5"),  # Dynamically generated inputs for Model_Munge
+    output$dataPreview1 <- renderTable({
+      vroom(input$file1$datapath, n_max = 10)  # Preview first 10 rows
+    })
 
-                   # Download button for the munged data
-                   downloadButton("downloadMunge", "Download Munged Data")
-                 ),
-
-                 mainPanel(
-                   h4("Data Preview:"),
-                   tableOutput("dataPreview5"),  # Data preview for uploaded dataset
-
-                   h4("Model Summary:"),
-                   verbatimTextOutput("modelSummary"),  # Display the model summary
-
-                   h4("Munged Data:"),
-                   tableOutput("mungedData")  # Display the munged data
-                 )
-               )
-      )
-    )
-  )
-
-  server <- function(input, output, session) {
-
-    ### Single_Plot Logic ###
-    # Load the uploaded data for Single_Plot
-    # Global variable to store the path of the generated plot
-    plot_file_1 <- reactiveVal(NULL)
-
-    ### Single_Plot Logic ###
-    # Load the uploaded data for Single_Plot
-    observe({
+    output$generateBtn1 <- renderUI({
       req(input$file1)
+      actionButton("submit1", "Generate Manhattan Plot", class = "btn-primary")
+    })
 
-      output$dataPreview1 <- renderTable({
-        vroom(input$file1$datapath, n_max = 10)  # Preview first 10 rows
+    output$downloadBtn1 <- renderUI({
+      req(plot_file_1())  # Only show after plot file exists
+      downloadButton("downloadPlot1", "Download Manhattan Plot")
+    })
+
+    output$fullscreenButton1 <- renderUI({
+      req(input$submit1)  # Show only after "Generate" is clicked
+      actionButton("fullscreenBtn1", "View Fullscreen", class = "btn-primary")
+    })
+
+
+    # Assign the uploaded data to the 'Data' argument
+    full_data_1 <- reactive({
+      req(input$file1)
+      vroom(input$file1$datapath)  # Load the full dataset
+    })
+
+    # Dynamically generate UI inputs for Single_Plot
+    output$dynamic_inputs_1 <- renderUI({
+      generate_inputs(Single_Plot)  # Generate dynamic inputs for Single_Plot
+    })
+
+    # Collect user inputs and dynamically pass them to Single_Plot, including Data
+    # Collect user inputs and dynamically pass them to Single_Plot, including Data
+    reactive_inputs_1 <- reactive({
+      args <- formals(Single_Plot)
+
+      user_inputs <- lapply(names(args), function(arg_name) {
+        user_input <- input[[arg_name]]
+        if (is.null(user_input) || user_input == "") return(NULL)
+        if (grepl(",", user_input)) {
+          input_value <- strsplit(user_input, ",")[[1]]
+          return(trimws(input_value))
+        } else {
+          return(user_input)
+        }
       })
 
-      # Assign the uploaded data to the 'Data' argument
-      full_data_1 <- reactive({
-        req(input$file1)
-        vroom(input$file1$datapath)  # Load the full dataset
-      })
+      names(user_inputs) <- names(args)
+      user_inputs$Data <- full_data_1()  # Assign the uploaded data to 'Data'
 
-      # Dynamically generate UI inputs for Single_Plot
-      output$dynamic_inputs_1 <- renderUI({
-        generate_inputs(Single_Plot)  # Generate dynamic inputs for Single_Plot
-      })
+      # 🔥 Inject default title if not provided
+      if (is.null(user_inputs$Title)) {
+        if (!is.null(input$file1$name)) {
+          user_inputs$Title <- tools::file_path_sans_ext(input$file1$name)
+        }
+      }
 
-      # Collect user inputs and dynamically pass them to Single_Plot, including Data
-      reactive_inputs_1 <- reactive({
-        args <- formals(Single_Plot)
+      return(user_inputs)
+    })
 
-        user_inputs <- lapply(names(args), function(arg_name) {
-          user_input <- input[[arg_name]]
-          if (is.null(user_input) || user_input == "") return(NULL)
-          if (grepl(",", user_input)) {
-            input_value <- strsplit(user_input, ",")[[1]]
-            return(trimws(input_value))
+
+    observeEvent(input$fullscreenBtn1, {
+      showModal(modalDialog(
+        easyClose = TRUE,
+        footer = NULL,
+        size = "l",
+
+        tags$style(HTML("
+      .modal-dialog {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        z-index: 1050;
+      }
+      .modal-content {
+        height: 100vh;
+        border: none;
+        border-radius: 0;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+      }
+      .modal-body {
+        flex-grow: 1;
+        overflow-y: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      #interactivePlot1_fullscreen {
+        flex-grow: 1;
+      }
+    ")),
+
+        # Exit button row
+        fluidRow(
+          column(4, align = "left", actionButton("exitFullscreen1", "Exit Fullscreen", class = "btn-danger")),
+          column(4),
+          column(4)
+        ),
+        tags$br(),
+
+        # Fullscreen plot: same plotly code, just bigger!
+        tags$div(
+          style = "transform: scale(0.55); transform-origin: top left;",
+          if (isTRUE(user_inputs_cache()$Interactive)) {
+            plotlyOutput("interactivePlot1_fullscreen",
+                         width = paste0(plot_width(), "px"),
+                         height = paste0(plot_height(), "px"))
           } else {
-            return(user_input)
+            imageOutput("staticPlot1_fullscreen",
+                        width = paste0(plot_width(), "px"),
+                        height = paste0(plot_height(), "px"))
           }
+        )
+      ))
+    })
+
+
+
+    observeEvent(input$exitFullscreen1, {
+      removeModal()
+    })
+
+
+    output$interactivePlot1_fullscreen <- renderPlotly({
+      req(user_inputs_cache())
+      req(user_inputs_cache()$Interactive)
+
+      user_args <- isolate(reactive_inputs_1())
+      user_args$Interactive <- TRUE
+      plot_obj <- run_with_counter(Single_Plot, args = user_args, session = session)
+
+      render_interactive_plot(plot_obj, width = input$Width * 96, height = input$Height * 96)
+    })
+
+
+
+
+
+
+    observeEvent(input$submit1, {
+
+      output$plotStatusUI <- renderUI({
+        tags$div(
+          style = "padding: 50px; text-align: center; font-size: 18px; color: #333;",
+          "⏳ Rendering plot... Please wait.",
+          tags$br(),
+          tags$div(
+            id = "plotProgressStatus",
+            style = "font-weight: bold; font-size: 20px; color: #007bff;"
+          )
+        )
+      })
+
+
+      user_args <- isolate(reactive_inputs_1())
+      user_inputs_cache(user_args)
+
+      temp_file <- tempfile(fileext = paste0(".", input$File_Type))
+      plot_file_1(temp_file)
+
+      # Always generate the plot
+      plot_obj <- run_with_counter(Single_Plot, args = user_args, session = session)
+
+      # Save static version
+      ggsave(temp_file, plot = plot_obj,
+             width = input$Width, height = input$Height,
+             units = "in", dpi = input$Quality)
+
+      if (isTRUE(user_args$Interactive)) {
+        output$interactivePlot1 <- renderPlotly({
+          req(input$submit1)
+          req(user_inputs_cache())
+          req(user_inputs_cache()$Interactive)
+
+          user_args <- isolate(reactive_inputs_1())
+          user_args$Interactive <- TRUE
+          plot_obj <- run_with_counter(Single_Plot, args = user_args, session = session)
+
+          render_interactive_plot(plot_obj)
         })
 
-        names(user_inputs) <- names(args)
-        user_inputs$Data <- full_data_1()  # Assign the uploaded data to 'Data'
-        return(user_inputs)
-      })
 
-      # Save and display the Single_Plot plot as an image
-      output$renderedPlot1 <- renderImage({
-        req(input$submit1)
+        output$interactivePlot1_ui <- renderUI({
+          tags$div(
+            style = "transform: scale(0.35); transform-origin: top left;",
+            plotlyOutput("interactivePlot1",
+                         width = paste0(input$Width * 96, "px"),
+                         height = paste0(input$Height * 96, "px"))
+          )
+        })
+      } else {
+        output$staticPlot1 <- renderImage({
+          list(
+            src = plot_file_1(),
+            contentType = ifelse(input$File_Type == "png", "image/png", "image/jpeg"),
+            width = "100%",   # Let the browser handle sizing
+            height = "auto",
+            alt = "Static plot"
+          )
+        }, deleteFile = FALSE)
 
-        # Generate a temporary file to store the saved plot
-        temp_file <- tempfile(fileext = paste0(".", input$File_Type))
-        plot_file_1(temp_file)  # Store the temp file globally
 
-        # Collect user inputs and dynamically pass them to Single_Plot
-        user_args <- reactive_inputs_1()
+        output$interactivePlot1_ui <- renderUI({
+          imageOutput("staticPlot1",
+                      width = "100%",
+                      height = "auto")
+        })
+      }
+    })
 
-        # Create the plot and save it to the temporary file
-        Plot_Outcome <- do.call(Single_Plot, user_args)
-        ggplot2::ggsave(temp_file, plot = Plot_Outcome, width = input$Width,
-                        height = input$Height, units = "in", dpi = input$Quality)
 
-        # Return the image to be displayed in the UI
-        list(src = temp_file, contentType = paste0("image/", input$File_Type),
-             width = "100%", height = "auto")
-      }, deleteFile = FALSE)  # Do not delete the file after rendering
 
-      # Download handler for Single_Plot
-      output$downloadPlot1 <- downloadHandler(
-        filename = function() { paste0("Single_Plot_", Sys.Date(), ".", input$File_Type) },
-        content = function(file) {
-          # If the plot file already exists, use it
-          if (!is.null(plot_file_1())) {
-            file.copy(plot_file_1(), file)
-          } else {
-            # Otherwise, regenerate the plot
-            user_args <- reactive_inputs_1()
-            Plot_Outcome <- do.call(Single_Plot, user_args)
-            ggplot2::ggsave(file, plot = Plot_Outcome, width = input$Width,
-                            height = input$Height, units = "in", dpi = input$Quality)
-          }
-        }
+    output$interactivePlot1_ui <- renderUI({
+      tags$div(
+        style = "padding: 100px; text-align: center; font-size: 18px; color: #333;",
+        "Please generate your plot!",
+        tags$br(),
+        tags$div(
+          id = "plotProgressStatus",
+          style = "font-weight: bold; font-size: 20px; color: #007bff;"
+        )
       )
     })
+
+
+    output$interactivePlot1 <- renderPlotly({
+      req(input$submit1)
+      req(user_inputs_cache())
+      req(user_inputs_cache()$Interactive)
+
+      user_args <- isolate(reactive_inputs_1())
+      user_args$Interactive <- TRUE
+
+      plot_obj <- run_with_counter(Single_Plot, args = user_args, session = session)
+
+      ggplotly(plot_obj, tooltip = "text") %>%
+        layout(
+          autosize = TRUE,
+          margin = list(t = 50, b = 50, l = 50, r = 50)
+        ) %>%
+        config(displayModeBar = FALSE)
+    })
+
+
+
+    output$staticPlot1_fullscreen <- renderImage({
+      req(plot_file_1())
+
+      list(
+        src = plot_file_1(),
+        contentType = ifelse(input$File_Type == "png", "image/png", "image/jpeg"),
+        width = plot_width(),
+        height = plot_height(),
+        alt = "Fullscreen static plot"
+      )
+    }, deleteFile = FALSE)
+
+
+    # output$interactivePlot1_ui <- renderUI({
+    #   req(input$Width, input$Height)
+    #   req(user_inputs_cache())
+    #
+    #   if (isTRUE(user_inputs_cache()$Interactive)) {
+    #     plotlyOutput("interactivePlot1",
+    #                  width = paste0(input$Width * 96, "px"),
+    #                  height = paste0(input$Height * 96, "px"))
+    #   } else {
+    #     imageOutput("staticPlot1", width = paste0(input$Width * 96, "px"),
+    #                 height = paste0(input$Height * 96, "px"))
+    #   }
+    # })
+
+
+    #
+    #       output$staticPlot1 <- renderImage({
+    #         req(plot_file_1())
+    #
+    #         list(
+    #           src = plot_file_1(),
+    #           contentType = 'image/jpeg',
+    #           width = input$Width * 96,
+    #           height = input$Height * 96,
+    #           alt = "Static plot"
+    #         )
+    #       }, deleteFile = FALSE)
+
+
+    # Download handler for Single_Plot
+    output$downloadPlot1 <- downloadHandler(
+      filename = function() { paste0("Single_Plot_", Sys.Date(), ".", input$File_Type) },
+      content = function(file) {
+        if (!is.null(plot_file_1()) && input$File_Type != "pdf") {
+          file.copy(plot_file_1(), file)
+        } else {
+          Plot_Outcome <- do.call(Single_Plot, user_inputs_cache())
+
+          if (input$File_Type == "pdf") {
+            # PDF-specific handling (no dpi here, default is vector)
+            ggsave(file, plot = Plot_Outcome,
+                   width = input$Width, height = input$Height,
+                   units = "in")
+          } else {
+            ggsave(file, plot = Plot_Outcome,
+                   width = input$Width, height = input$Height,
+                   units = "in", dpi = input$Quality)
+          }
+        }
+
+      }
+    )
+  })
+
+
+    ###REIGONAL PLOT LOGICS
+
+
+    plot_file_6 <- reactiveVal(NULL)
+    regional_plot_paths <- reactiveVal(NULL)
+
+    observe({
+      req(input$file6)
+
+      output$dataPreview6 <- renderTable({
+        vroom(input$file6$datapath, n_max = 10)
+      })
+
+      output$dynamic_inputs_6 <- renderUI({
+        generate_inputs(Regional_Plot)
+      })
+    })
+
+    Regional_Plots_Results <- reactiveVal(NULL)
+
+    observeEvent(input$submit6, {
+
+      full_data_6 <- vroom(input$file6$datapath)
+
+      fn_args <- formals(Regional_Plot)
+
+      user_args <- lapply(names(fn_args), function(arg_name) {
+        if (arg_name %in% c("Data")) return(NULL)
+        value <- input[[arg_name]]
+        if (is.null(value) || value == "") return(NULL)
+        if (grepl(",", value)) {
+          return(trimws(strsplit(value, ",")[[1]]))
+        } else {
+          return(value)
+        }
+      })
+
+      names(user_args) <- names(fn_args)
+      user_args$Data <- full_data_6
+
+      # ✅ Generate Plots (this gives you named list of patchwork or ggplot objects)
+      Regional_Plots <- do.call(Regional_Plot, user_args)
+      Regional_Plots_Results(Regional_Plots)  # ✅ Store actual plot objects 🔥
+
+      # Save Static Plots
+      plot_dir <- file.path(tempdir(), paste0("regional_plots_", as.integer(Sys.time())))
+      dir.create(plot_dir, recursive = TRUE, showWarnings = FALSE)
+
+      saved_files <- list()
+      for (plot_name in names(Regional_Plots)) {
+        plot <- Regional_Plots[[plot_name]]
+        safe_name <- gsub("[^A-Za-z0-9]", "_", plot_name)
+        save_path <- file.path(plot_dir, paste0(safe_name, ".jpg"))
+
+        height_to_use <- attr(plot, "dynamic_height")
+        if (is.null(height_to_use)) height_to_use <- 25
+
+        ggsave(save_path, plot = plot, width = 30, height = height_to_use, units = "in", dpi = 300)
+        saved_files[[plot_name]] <- save_path
+      }
+
+      regional_plot_paths(saved_files)
+    })
+
+
+    # Track index of current plot
+    current_plot_index <- reactiveVal(1)
+
+    observeEvent(input$prevPlot, {
+      new_index <- current_plot_index() - 1
+      if (new_index < 1) new_index <- length(regional_plot_paths())
+      current_plot_index(new_index)
+    })
+
+    observeEvent(input$nextPlot, {
+      new_index <- current_plot_index() + 1
+      if (new_index > length(regional_plot_paths())) new_index <- 1
+      current_plot_index(new_index)
+    })
+
+
+    output$renderedPlot6 <- renderUI({
+      req(regional_plot_paths())
+      req(Regional_Plots_Results())
+
+      plot_names <- names(regional_plot_paths())
+      idx <- current_plot_index()
+      total <- length(plot_names)
+
+      plot_obj <- Regional_Plots_Results()[[plot_names[idx]]]
+
+      # 🔥 Pull height attribute
+      height_in <- attr(plot_obj, "dynamic_height")
+      if (is.null(height_in)) height_in <- 25
+      height_in_px <- height_in * 96
+
+      tagList(
+        tags$br(),
+        fluidRow(
+          column(4, align = "left", tagList(
+            actionButton("prevPlot", "<< Previous"),
+            actionButton("fullscreenBtn", "View Fullscreen", class = "btn-primary")
+          )),
+          column(4, align = "center", tags$h5(paste(idx, "of", total))),
+          column(4, align = "right", actionButton("nextPlot", "Next >>"))
+        ),
+        tags$br(),
+        if (isTRUE(input$Interactive)) {
+          tagList(
+            tags$div(
+              style = "transform: scale(0.35); transform-origin: top left;",
+              plotlyOutput("interactivePlot6", width = 30 * 96, height = height_in_px * 0.5)
+            ),
+            plotOutput("inlineGeneTrackPlot6", width = "100%", height = paste0(height_in_px * 0.5, "px"))
+          )
+        } else {
+          imageOutput("regional_img")
+        }
+
+      )
+    })
+
+
+
+
+    output$regional_img <- renderImage({
+      req(regional_plot_paths())
+      plot_names <- names(regional_plot_paths())
+      idx <- current_plot_index()
+
+      list(
+        src = regional_plot_paths()[[plot_names[idx]]],
+        contentType = "image/jpeg",
+        width = "100%",
+        height = "auto",
+        alt = "Static regional plot"
+      )
+    }, deleteFile = FALSE)
+
+
+
+    output$inlineGeneTrackPlot6 <- renderPlot({
+      req(Regional_Plots_Results())
+      plot_names <- names(Regional_Plots_Results())
+      idx <- current_plot_index()
+      full_plot <- Regional_Plots_Results()[[plot_names[idx]]]
+
+      p_gene <- attr(full_plot, "gene_track_panel", exact = TRUE)
+      if (is.null(p_gene)) return(NULL)
+
+      print(p_gene)
+    })
+
+
+    # 🔥 Place this directly below output$renderedPlot6
+    output$interactivePlot6 <- renderPlotly({
+      req(Regional_Plots_Results())
+      plot_names <- names(Regional_Plots_Results())
+      idx <- current_plot_index()
+      full_plot <- Regional_Plots_Results()[[plot_names[idx]]]
+
+      p_top <- attr(full_plot, "interactive_panel", exact = TRUE)
+      if (is.null(p_top)) p_top <- full_plot
+
+      height_in <- attr(full_plot, "dynamic_height")
+      if (is.null(height_in)) height_in <- 25
+
+      render_interactive_plot(p_top, width = 30 * 96, height = height_in * 96 * 0.5)  # same as fullscreen
+    })
+
+    output$modalCounter <- renderUI({
+      req(regional_plot_paths())
+      tags$h4(paste(current_plot_index(), "of", length(regional_plot_paths())))
+    })
+
+    observeEvent(input$prevPlotModal, {
+      current_plot_index(ifelse(current_plot_index() > 1,
+                                current_plot_index() - 1,
+                                length(regional_plot_paths())))
+    })
+
+    observeEvent(input$nextPlotModal, {
+      current_plot_index(ifelse(current_plot_index() < length(regional_plot_paths()),
+                                current_plot_index() + 1,
+                                1))
+    })
+
+
+    observeEvent(input$exitFullscreen6, {
+      removeModal()
+    })
+
+
+
+    output$modalImage <- renderImage({
+      req(regional_plot_paths())
+      plot_names <- names(regional_plot_paths())
+      idx <- current_plot_index()
+
+      list(
+        src = regional_plot_paths()[[plot_names[idx]]],
+        contentType = "image/jpeg",
+        width = "100%",
+        height = "auto",
+        alt = "Fullscreen static plot"
+      )
+    }, deleteFile = FALSE)
+
+    observeEvent(input$exitFullscreen, {
+      removeModal()
+    })
+
+
+    observeEvent(input$fullscreenBtn, {
+
+      showModal(modalDialog(
+        easyClose = TRUE,
+        footer = NULL,
+        size = "l",
+
+        tags$style(HTML("
+      .modal-dialog {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        z-index: 1050;
+      }
+      .modal-content {
+        height: 100vh;
+        border: none;
+        border-radius: 0;
+        background-color: #fff;
+      }
+      .modal-body {
+        height: calc(100vh - 80px);
+        overflow-y: auto;
+      }
+      .btn { margin-right: 8px; }  /* Optional spacing between buttons */
+    ")),
+
+        fluidRow(
+          column(4, align = "left", tagList(
+            actionButton("prevPlotModal", "<< Previous"),
+            actionButton("exitFullscreen", "Exit Fullscreen", class = "btn-danger")
+          )),
+          column(4, align = "center", uiOutput("modalCounter")),
+          column(4, align = "right", actionButton("nextPlotModal", "Next >>"))
+        ),
+        tags$br(),
+        uiOutput("modalPlot6_ui")
+      ))
+    })
+
+
+
+
+
+    output$modalPlot6_ui <- renderUI({
+      req(Regional_Plots_Results())
+      req(regional_plot_paths())
+
+      idx <- current_plot_index()
+      plot_names <- names(Regional_Plots_Results())
+      full_plot <- Regional_Plots_Results()[[plot_names[idx]]]
+
+      if (isTRUE(input$Interactive)) {
+        # Extract dynamic dimensions
+        height_in <- attr(full_plot, "dynamic_height")
+        if (is.null(height_in)) height_in <- 25
+        height_px <- height_in * 96 * 0.5
+
+        p_gene <- attr(full_plot, "gene_track_panel", exact = TRUE)
+        plot_width <- attr(p_gene, "plot_width", exact = TRUE)
+        if (is.null(plot_width)) plot_width <- 30
+        plot_width_px <- plot_width * 96
+
+        tagList(
+          tags$div(
+            style = "transform: scale(0.35); transform-origin: top left;",
+            plotlyOutput("modalInteractivePlot6", width = 30 * 96, height = height_in * 96 * 0.5)
+          ),
+          tags$div(
+            style = "margin-top: 40px;",
+            plotOutput("modalGeneTrackPlot6",
+                       width = paste0(plot_width_px, "px"),
+                       height = paste0(height_px, "px"))
+          )
+        )
+      } else {
+        imageOutput("modalImage", width = "100%", height = "auto")
+      }
+    })
+
+
+
+
+
+    output$modalGeneTrackPlot6 <- renderPlot({
+      req(Regional_Plots_Results())
+      plot_names <- names(Regional_Plots_Results())
+      idx <- current_plot_index()
+      full_plot <- Regional_Plots_Results()[[plot_names[idx]]]
+
+      p_gene <- attr(full_plot, "gene_track_panel", exact = TRUE)
+      if (is.null(p_gene)) return(NULL)
+
+      plot_width <- attr(p_gene, "plot_width", exact = TRUE)
+      if (is.null(plot_width)) plot_width <- 30
+      plot_height <- attr(full_plot, "dynamic_height", exact = TRUE)
+      if (is.null(plot_height)) plot_height <- 25
+
+      print(p_gene)
+    })
+
+
+
+
+
+    output$modalInteractivePlot6 <- renderPlotly({
+      req(Regional_Plots_Results())
+      plot_names <- names(Regional_Plots_Results())
+      idx <- current_plot_index()
+      full_plot <- Regional_Plots_Results()[[plot_names[idx]]]
+
+      p_top <- attr(full_plot, "interactive_panel", exact = TRUE)
+      if (is.null(p_top)) p_top <- full_plot
+
+      height_in <- attr(full_plot, "dynamic_height")
+      if (is.null(height_in)) height_in <- 25
+
+      render_interactive_plot(p_top, width = 30 * 96, height = height_in * 96 * 0.5)  # Half height for top
+    })
+
+    output$downloadPlot6 <- downloadHandler(
+      filename = function() { paste0("Regional_Plots_", Sys.Date(), ".zip") },
+      content = function(file) {
+        saved_files <- Regional_Plots_Results()
+        zip::zipr(zipfile = file, files = saved_files)
+      }
+    )
+
 
 
     ### Miami_Plot Logic ###

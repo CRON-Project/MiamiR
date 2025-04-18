@@ -24,7 +24,8 @@ Imports:
     magrittr,
     scales,
     stringi,
-    viridis
+    viridis,
+    patchwork
 biocViews: Visualization, Software
 Depends: 
     R (>= 2.10)

@@ -45,26 +45,149 @@ print(head(Labelled_Data, n = 10))
 Here's how to create a sole Manhattan plot of our labelled summary statistics using the Single_Plot() function - it will return a plotting object and a saved .jpg file.
 
 
-```{r, results="hide", warning = FALSE, message = FALSE}
+```{r, results="hide", warning = FALSE, message = TRUE}
 
 setwd("C:/Users/callumon/Miami_Package_R/MiamiR/vignettes")
 
-Manhattan_Plot <- Single_Plot(Data = Labelled_Data,
-                        Chromosome_Column = "CHROM",
-                        Position_Column = "GENPOS", SNP_ID_Column = "ID",
-                        PValue_Column = "P",
-                        Title = "Intelligence",
-                        Chromosome_Colours = c("blue", "turquoise"),
-                        File_Name = "Manhattan_Plot",
-                        Width = 30, Height = 7.5, Quality = 100,
-                       File_Type = "jpg")
+
+
+Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
+
+Manhattan_Plot <- run_with_counter(quote({
+  Single_Plot(Data = Intelligence_Sum_Stats)
+}))
+
+
+ggplot2::ggsave("Intelligence_Plot.jpg", plot = Manhattan_Plot, width = 30,
+                 height = 15, units = "in", dpi = 300)
+
 
 
 ```
+```{r, results="hide", warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=300, out.width="100%"}
+# Your ggplot code here
+
+knitr::include_graphics("C:/Users/callumon/Miami_Package_R/MiamiR/vignettes/Intelligence_Plot.jpg")
+
+```
+
+
+Files can also be fed in for all functions using variables containing file paths or file paths themselves. Here a different random subset of the above summary statistics is used:
+
+
+
+```{r, results="hide", warning = FALSE, message = TRUE}
+
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR/vignettes")
+
+
+Manhattan_Plot <- Single_Plot(Data = "C:/Users/callumon/Miami_Package_R/MiamiR/Intelligence_Sum_Stats_Mini.txt")
+
+
+ggplot2::ggsave("Intelligence_Plot_2.jpg", plot = Manhattan_Plot, width = 30,
+                 height = 15, units = "in", dpi = 300)
+
+
+
+```
+
+
 ```{r, results="hide", warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
 # Your ggplot code here
-print(Manhattan_Plot)
+
+knitr::include_graphics("C:/Users/callumon/Miami_Package_R/MiamiR/vignettes/Intelligence_Plot_2.jpg")
+
 ```
+
+
+There is also a regional plot function wrapped around this functionality
+
+```{r, results="hide", warning = FALSE, message = TRUE}
+
+
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+
+library(jsonlite)
+gene_data <- read_json("Gene_Data_HG38_Processed.json", simplifyVector = TRUE)
+
+
+
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR/vignettes")
+
+
+
+  Regional_Plots <- Regional_Plot(Data = Intelligence_Sum_Stats, Chromosome = 3 )
+
+
+# # Save each plot using its list name
+# for (plot_name in names(Regional_Plots)) {
+#   plot <- Regional_Plots[[plot_name]]
+# 
+#   # Create a safe filename from the name
+#   file_safe <- gsub("[^A-Za-z0-9]", "_", plot_name)
+# 
+#   filename <- paste0(file_safe, ".jpg")
+# 
+#   ggplot2::ggsave(
+#     filename = filename,
+#     plot = plot,
+#     width = 30,
+#     height = 25,
+#     units = "in",
+#     dpi = 300
+#   )
+#   
+  
+  
+  for (plot_name in names(Regional_Plots)) {
+  plot <- Regional_Plots[[plot_name]]
+
+  file_safe <- gsub("[^A-Za-z0-9]", "_", plot_name)
+
+  filename <- paste0(file_safe, ".jpg")
+
+  height_to_use <- attr(plot, "dynamic_height")
+  if (is.null(height_to_use)) height_to_use <- 25
+
+  ggplot2::ggsave(
+    filename = filename,
+    plot = plot,
+    width = 30,
+    height = height_to_use,
+    units = "in",
+    dpi = 300
+  )
+}
+
+  
+#}
+
+
+
+```
+
+
+
+```{r, results="hide", warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+# Your ggplot code here 
+img_dir <- "C:/Users/callumon/Miami_Package_R/MiamiR/vignettes"
+
+# List files that end with 'Regional_Plot.jpg'
+img_paths <- list.files(
+  path = img_dir,
+  pattern = "Regional_Plot\\.jpg$",  # exact match
+  recursive = TRUE,
+  full.names = TRUE
+)
+
+# Optional: sort to keep order consistent
+img_paths <- sort(img_paths)
+
+# Display all matching plots
+knitr::include_graphics(img_paths)
+
+```
+
 
 Here's how to create a Miami plot of a pair of summary statistics using the Miami_Plot() function - it will return a plotting object and a saved .jpg file.
 

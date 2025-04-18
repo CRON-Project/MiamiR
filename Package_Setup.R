@@ -304,3 +304,13 @@ usethis::use_pipe() # for %>%
 #vignettes - must build and install from source first
 use_vignette("Introduction_To_MiamiR")
 
+
+
+setwd("C:/Users/callumon/Downloads")
+library("vroom")
+library("dplyr")
+Intelligence_Sum_Stats <- vroom("SavageJansen_2018_intelligence_metaanalysis.txt")
+Intelligence_Sum_Stats <- sample_n(Intelligence_Sum_Stats, 100000)
+setwd("C:/Users/callumon/Miami_Package_R/MiamiR/")
+
+write.table(Intelligence_Sum_Stats, "Intelligence_Sum_Stats_Mini.txt", row.names = F, col.names = T)
