@@ -849,6 +849,7 @@ if(Test_Statistic == "BETA")
   {
     Data <- Data %>% dplyr::select(ID,  BETA, SE, P, STUDY, Shape, group, Reference)
 
+    Data$Backup_ID <- Data$ID
   }
 
 
@@ -1569,10 +1570,10 @@ if(Model_Reference == F)
   {
 
   res <- res %>%
-    mutate(Backup_Single = stringr::str_extract(Backup_ID, "rs\\d+"))
+    dplyr::mutate(Backup_Single = stringr::str_extract(Backup_ID, "rs\\d+"))
   }else{
     res <- res %>%
-      mutate(Backup_Single = Backup_ID)
+      dplyr::mutate(Backup_Single = Backup_ID)
   }
 
 
