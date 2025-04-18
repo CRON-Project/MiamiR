@@ -2834,7 +2834,7 @@ print(string_widths)
 
   print("stan set")
 
-  if(Display_P_Value_Column == T & Display_Test_Stat_Se_Column == T) {
+  if(Display_P_Value_Column == T & (Display_Test_Stat_Se_Column == T | Display_Test_Stat_CI_Column == T)) {
     # Adjust the space padding based on the length of the exponent part
     res$P_BETA_SE <- ifelse(
       nchar(gsub(".*e[\\+\\-]([0-9]+)", "\\1", res_plot$P)) == 3,  # Check if the exponent has 3 digits
@@ -2845,7 +2845,7 @@ print(string_widths)
 
   }
 
-    if(Display_P_Value_Column == T & Display_Test_Stat_Se_Column == F) {
+    if(Display_P_Value_Column == T & Display_Test_Stat_Se_Column == F & Display_Test_Stat_CI_Column == F ) {
 
       res$P_BETA_SE <- ifelse(
         nchar(gsub(".*e[\\+\\-]([0-9]+)", "\\1", res_plot$P)) == 3,  # Check if the exponent has 3 digits
