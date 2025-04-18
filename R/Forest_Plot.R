@@ -2876,7 +2876,7 @@ print(string_widths)
     print(res)
 
 
-    if(Display_P_Value_Column == T & Display_Test_Stat_Se_Column == T) {
+    if(Display_P_Value_Column == T & (Display_Test_Stat_Se_Column == T | Display_Test_Stat_CI_Column == T) ) {
 
 
     res$P_BETA_SE <- ifelse(
