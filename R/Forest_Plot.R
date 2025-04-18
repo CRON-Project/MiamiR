@@ -2857,6 +2857,10 @@ print(string_widths)
 
     print(res)
 
+
+    if(Display_P_Value_Column == T & Display_Test_Stat_Se_Column == T) {
+
+
     res$P_BETA_SE <- ifelse(
       RS_condition,
       paste0(res_plot$P, P_Stat_Spaces_Title, res_plot$BETA2),
@@ -2866,6 +2870,17 @@ print(string_widths)
 
      } else {
     res$P_BETA_SE <- res_plot$BETA2
+  }
+
+
+  }
+
+
+  if(Display_P_Value_Column == T & Display_Test_Stat_Se_Column == F) {
+
+
+
+
   }
 
 
