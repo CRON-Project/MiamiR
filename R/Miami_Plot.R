@@ -85,6 +85,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
                        Bottom_PValue_Column = "P",
                        Top_Title = "Plot1", Bottom_Title = "Plot2",
                        Bottom_Title_Size = 35,
+                       Y_Axis_Title = "-log₁₀(P)",
                        Top_Title_Size = 35, Y_Axis_Text_Size = 30,  Y_Axis_Title_Size = 35,
                        Chromosome_Label_Size = 30,
                        Top_Sig_Line_Colour = "red", Bottom_Sig_Line_Colour = "red",
@@ -496,13 +497,17 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   Top_Data$CHROM[Top_Data$CHROM == 23] <- "X"
   print(table(Top_Data$CHROM))
 
+
+  Y_Axis_Title <- paste0(Y_Axis_Title, "\n ") # needs to go left above it to push down opp to above.
+
+
   a <- ggmanh::manhattan_plot(x = Top_Data, preserve.position = T, plot.title = Top_Title,
                               chr.colname = Top_Chromosome_Column, pos.colname = Top_Position_Column, label.colname = NULL,
                               pval.colname = Top_PValue_Column, annotateTop = FALSE,
                               chr.order = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"X"),
                               chr.col = c("transparent"), chrlabs = c(1:22, "X"), rescale = Top_Condense_Scale,
                               signif = Top_Break_Point, rescale.ratio.threshold = 0.0, signif.rel.pos = 0.8,
-                              signif.col = c("transparent"),  point.size = Point_Size, x.label = "" )
+                              signif.col = c("transparent"),  point.size = Point_Size, x.label = "" , y.label = "")
 
   #Significance Line
 
@@ -536,6 +541,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
   #Labelling
 
+  p <- p +  ggplot2::ylab(Y_Axis_Title)
 
 
   if(Top_Label_Index == TRUE)
@@ -651,7 +657,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
                        chr.order = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"X"),
                        chr.col = c("transparent"), chrlabs = c(1:22, "X"), rescale = Bottom_Condense_Scale,
                        signif = Bottom_Break_Point, rescale.ratio.threshold = 0.0, signif.rel.pos = 0.8,
-                       signif.col = c("transparent"),  point.size = Point_Size, x.label = "" )
+                       signif.col = c("transparent"),  point.size = Point_Size, x.label = "", y.label = "" )
 
   #Significance Line
 
@@ -694,6 +700,7 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
   #Labelling
 
 
+  p1 <- p1 +  ggplot2::ylab(Y_Axis_Title)
 
   if(Bottom_Label_Index == TRUE)
   {
