@@ -2824,7 +2824,12 @@ print(string_widths)
   P_Stat_Spaces_Adj <- paste0(P_Stat_Spaces, "ZZZ") #add extra 3 for this
 
 
-  P_Stat_Spaces_Title <- paste0(P_Stat_Spaces, "") #title spaces!
+  if(Display_Test_Stat_CI_Column == TRUE)
+  {
+  P_Stat_Spaces_Title <- paste0(P_Stat_Spaces, " ") #title spaces!
+  }else{
+    P_Stat_Spaces_Title <- paste0(P_Stat_Spaces, "") #title spaces!
+  }
 
 
   RS_condition <- grepl("-a-aaarModel", res$RS)
