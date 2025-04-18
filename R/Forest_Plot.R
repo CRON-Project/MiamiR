@@ -2829,6 +2829,11 @@ print(string_widths)
 
   RS_condition <- grepl("-a-aaarModel", res$RS)
 
+
+  res$P_BETA_SE <- 1 #set standard
+
+  print("stan set")
+
   if(Display_P_Value_Column == T & Display_Test_Stat_Se_Column == T) {
     # Adjust the space padding based on the length of the exponent part
     res$P_BETA_SE <- ifelse(
