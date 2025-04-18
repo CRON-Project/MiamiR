@@ -2154,7 +2154,7 @@ print(string_widths)
 
   #/100 due to massive font size required with this render was 8
 
-  numbar <- ceiling(exact_num_underscores * (SNP_Stat_Text_Size / 19.5))
+  numbar <- ceiling(exact_num_underscores * (SNP_Stat_Text_Size / 23.5))
 
 
 
@@ -2912,7 +2912,7 @@ print(string_widths)
 
 #  numbar <- ceiling(exact_num_underscores)
 
-  numbar <- floor(exact_num_underscores * (SNP_Stat_Text_Size /19.5))
+  numbar <- floor(exact_num_underscores * (SNP_Stat_Text_Size /23.5))
 
  # print(numbar)
 
