@@ -73,7 +73,7 @@ Single_Plot<- function(Data = NULL,
                        Position_Column = NULL, SNP_ID_Column = NULL,
                        PValue_Column = NULL,
                        Reference_Allele_Column = NULL,  Effect_Allele_Column = NULL,
-                       Interactive = TRUE)
+                       Interactive = FALSE)
 
 {
 

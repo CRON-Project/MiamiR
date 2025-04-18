@@ -53,9 +53,9 @@ setwd("C:/Users/callumon/Miami_Package_R/MiamiR/vignettes")
 
 Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
 
-Manhattan_Plot <- run_with_counter(quote({
-  Single_Plot(Data = Intelligence_Sum_Stats)
-}))
+#Manhattan_Plot <- run_with_counter(quote({
+#  Single_Plot(Data = Intelligence_Sum_Stats)
+#}))
 
 
 ggplot2::ggsave("Intelligence_Plot.jpg", plot = Manhattan_Plot, width = 30,
