@@ -2881,7 +2881,7 @@ print(string_widths)
 
     res$P_BETA_SE <- ifelse(
       RS_condition,
-      paste0(res_plot$P, P_Stat_Spaces_Title, res_plot$BETA2),
+      paste0(res_plot$P, "                 ", res_plot$BETA2),
       res$P_BETA_SE  # Keep unchanged if RS does not match
     )
 
