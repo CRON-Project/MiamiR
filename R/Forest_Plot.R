@@ -2830,7 +2830,7 @@ print(string_widths)
   RS_condition <- grepl("-a-aaarModel", res$RS)
 
 
-  res$P_BETA_SE <- 1 #set standard
+#  res$P_BETA_SE <- 1 #set standard
 
   print("stan set")
 
@@ -2845,10 +2845,11 @@ print(string_widths)
 
     if(Display_P_Value_Column == T & Display_Test_Stat_Se_Column == F) {
 
-      res$P_BETA_SE <-  res_plot$P
-
-
-
+      res$P_BETA_SE <- ifelse(
+        nchar(gsub(".*e[\\+\\-]([0-9]+)", "\\1", res_plot$P)) == 3,  # Check if the exponent has 3 digits
+        paste0(res_plot$P),   # paste0(res_plot$P, P_Stat_Spaces, "\u2009",  "\u200a", res_plot$BETA2),  # 9 spaces for three-digit exponents  #titles???? actually leave the same
+        paste0(res_plot$P)  # 10 spaces for shorter exponents
+      )
     }
 
     print("Passed 1")
