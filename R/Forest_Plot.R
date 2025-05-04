@@ -1551,12 +1551,14 @@ if(Model_Reference == F)
 
 
 
-  res$P <- sprintf(paste0("%.", P_Value_Resolution, "e"), res$P)
-
-
   #change non significant values to "NS"
   res$Special_P <- "*"
   res$Special_P[res$P >= 0.05] <- "NS"
+
+  res$P <- sprintf(paste0("%.", P_Value_Resolution, "e"), res$P)
+
+
+
 
   #res$P <- sprintf("%.2e", res$P)
   res$UL <- as.numeric(res$UL)
