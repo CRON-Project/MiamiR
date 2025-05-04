@@ -1421,6 +1421,21 @@ if(Model_Reference == F)
 
   Combined_Processed_Data$Left_Plot_Value <- Combined_Processed_Data$COORD_Uni
 
+
+
+  #If you want change ID to this before stack if needed
+  Combined_Processed_Data <- Combined_Processed_Data %>%
+    dplyr::mutate(
+      Left_Plot_Value = stringr::str_replace(
+        Left_Plot_Value,
+        "^(\\d+):(\\d+):([A-Za-z]):([A-Za-z])$",
+        "\\1:\\2(\\3>\\4)"
+      )
+    )
+
+
+
+
 #  Combined_Processed_Data$Left_Plot_Value <- paste0( Combined_Processed_Data$Left_Plot_Value, "<br>",
  #                                                    Combined_Processed_Data$Backup_ID)
 
@@ -2794,7 +2809,8 @@ print(string_widths)
  # print(res_plot)
 
 
-
+  #change non significant values to "NS"
+  res_plot$P[res_plot$P >= 0.05] <- "NS"
   #formatting
 
 

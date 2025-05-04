@@ -40,8 +40,19 @@ Regional_Plot <- function(Data = NULL,
                           Population = "EUR",
                           Auto_LD_Region_Size = 100,
                           Auto_LD = TRUE,
+                          Reference_Allele_Column = NULL,  Effect_Allele_Column = NULL,
                           Interactive = TRUE,
                           Gene_Tracks = TRUE, ...) {
+
+
+
+
+  #Need genetic data
+
+
+  setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
+
+  gene_data <- jsonlite::read_json("Gene_Data_HG38_Processed.json", simplifyVector = TRUE)
 
 
 
@@ -54,14 +65,16 @@ Regional_Plot <- function(Data = NULL,
 
 
   Data[[Chromosome_Column]] <- as.character(Data[[Chromosome_Column]])
-  Data[[Chromosome_Column]][Data[[Chromosome_Column]] == "23"] <- "X"
+#  Data[[Chromosome_Column]][Data[[Chromosome_Column]] == "23"] <- "X"
 
+  #Don't need that here
 
 
   PValue_Column     <- detect_pvalue_column(Data, PValue_Column)
   Position_Column   <- detect_position_column(Data, Position_Column)
   SNP_ID_Column     <- detect_snp_column(Data, SNP_ID_Column)
-
+  Ref_Allele_Column     <- detect_reference_allele_column(Data, Reference_Allele_Column)
+  Alt_Allele_Column     <- detect_effect_allele_column(Data, Effect_Allele_Column)
 
 
   #Manually assign columns for ease of use
@@ -70,6 +83,11 @@ Regional_Plot <- function(Data = NULL,
   Data$ID <- Data[[SNP_ID_Column]]
   Data$P <- Data[[PValue_Column]]
 
+  Data$ALLELE0 <- Data[[Ref_Allele_Column]]
+  Data$ALLELE1 <- Data[[Alt_Allele_Column]]
+
+  Data$ALLELE0 <- toupper(Data$ALLELE0 )
+  Data$ALLELE1 <- toupper(Data$ALLELE1 )
 
   # Filter to selected chromosome
 
@@ -77,17 +95,50 @@ Regional_Plot <- function(Data = NULL,
 
   filtered_data <- Data  # Default is whole dataset
 
-  if(!is.null(Chromosome)) # may not be specified ; default is NULL
+  # if(!is.null(Chromosome)) # may not be specified ; default is NULL
+  #
+  # {
+  #
+  # filtered_data <- Data[Data[[Chromosome_Column]] == Chromosome, , drop = FALSE]
+  #
+  # }
 
-  {
 
-  filtered_data <- Data[Data[[Chromosome_Column]] == Chromosome, , drop = FALSE]
+  #importnat for shiny
 
-  }
+  print(filtered_data$CHROM)
+
+  print(sum(is.na(filtered_data$CHROM)))
+
+
+
+
+  filtered_data$CHROM <- as.numeric(filtered_data$CHROM)
+
+
+  message(print(sum(is.na(filtered_data$CHROM))))
+
+  # Print rows where CHROM is NA
+ # na_rows <- filtered_data[is.na(filtered_data$CHROM), ]
+#  print(na_rows)
+
+
+  print(filtered_data$CHROM)
+
+  # if (!is.null(Chromosome) && Chromosome != "" && Chromosome != "NULL") {
+  #   Chromosome <- as.character(Chromosome)
+  #   Data[[Chromosome_Column]] <- as.character(Data[[Chromosome_Column]])
+  #   filtered_data <- Data[Data[[Chromosome_Column]] == Chromosome, , drop = FALSE]
+  # } else {
+  #   filtered_data <- Data
+  # }
 
   filtered_data <- filtered_data[filtered_data$CHROM == 3,]
 
-  #print(filtered_data)
+  print(filtered_data$CHROM)
+
+
+
 
 
   find_peaks <- function(data, Separation_Distance = 1e6, P_threshold = 5e-8) {
@@ -130,13 +181,23 @@ Regional_Plot <- function(Data = NULL,
 
   peaks <- find_peaks(filtered_data, Separation_Distance = 1e6, P_threshold = 5e-8)
 
+
+
   print(peaks)
+
+  print(filtered_data)
 
   # Step 1: Create LD_Query column (chr:pos format)
   peaks <- peaks %>%
-    mutate(
-      LD_Query = paste0("chr", CHR, ":", POS)
+   # mutate(
+    #  LD_Query = paste0("chr", CHR, ":", POS)
+  #  )
+    dplyr::mutate(
+      LD_Query = paste0("chr", CHROM, ":", GENPOS)
     )
+
+
+
 
   #query <- peaks$LD_Query[1]
 
@@ -261,6 +322,7 @@ Regional_Plot <- function(Data = NULL,
 
   # Inject required args
   args$Data <- filtered_data
+  args$Point_Size <- 5
 
   if(Interactive == TRUE)
   {
@@ -321,7 +383,7 @@ Regional_Plot <- function(Data = NULL,
     evaluated_defaults <- lapply(default_args, function(x) {
       if (is.symbol(x) || is.language(x)) eval(x) else x
     })
-    user_args <- list(...)
+#    user_args <- list(...)
     args_base <- modifyList(evaluated_defaults, user_args)
 
 
@@ -335,7 +397,11 @@ Regional_Plot <- function(Data = NULL,
       filtered_data <- region_df[region_df$Peak_ID == peak_id, , drop = FALSE]
 
       filtered_data <- filtered_data %>%
-        mutate(Coord = paste0("chr", CHR, ":", as.integer(POS)))
+        dplyr::mutate(Coord = paste0("chr", CHR, ":", as.integer(POS))) %>%
+       dplyr::mutate(
+          LD_Query = paste0("chr", CHROM, ":", GENPOS)
+        )
+
 
 
 
@@ -366,9 +432,12 @@ Regional_Plot <- function(Data = NULL,
           ld_df_clean$R2_LD <- ld_df_clean$R2
          #   rename(Proxy_SNP = RS_Number, R2_LD = R2)
 
+          print(filtered_data)
+          print(ld_df_clean)
+
           # Join with filtered_data
           filtered_data <- filtered_data %>%
-            left_join(ld_df_clean, by = "Coord")
+            dplyr::left_join(ld_df_clean, by = "Coord")
 
         } else {
           filtered_data$R2_LD <- NA
@@ -416,7 +485,23 @@ Regional_Plot <- function(Data = NULL,
       }
 
       if (Interactive == TRUE) {
-        filtered_data$Hover_Info <- paste0("SNP: ", filtered_data$ID, "\nCHR: ", filtered_data$CHROM, "\nPOS: ", filtered_data$GENPOS, "\nP: ", signif(filtered_data$P, 4))
+        # filtered_data$Hover_Info <- paste0("SNP: ", filtered_data$ID, "\nCHR: ", filtered_data$CHROM, "\nPOS: ", filtered_data$GENPOS,
+        #                                    "\nP: ", signif(filtered_data$P, 4),
+        #                                    "\nREF: ", filtered_data$ALLELE0, " ALT: ", filtered_data$ALLELE1,
+        #                                    "\nLD: ", signif(filtered_data$R2_LD, 2))
+        #
+
+        filtered_data$Hover_Info <- paste0(
+          "SNP: ", filtered_data$ID, "\n",
+          "CHR: ", filtered_data$CHROM, "\n",
+          "POS: ", filtered_data$GENPOS, "\n",
+          "P: ", signif(filtered_data$P, 4), "\n",
+          "REF: ", filtered_data$ALLELE0, " ALT: ", filtered_data$ALLELE1, "\n",
+          "LD: ",  signif(filtered_data$R2_LD,2)
+        )
+
+        #match single plot format
+
       } else if (!Interactive) {
         filtered_data$Hover_Info <- NA_character_
       }
@@ -569,8 +654,8 @@ Regional_Plot <- function(Data = NULL,
         {
         p <- p +  ggplot2::geom_point(
             data = filtered_data,
-            ggplot2::aes(x = GENPOS, y = -log10(P), colour = LD_Bin),
-            size = 2
+            ggplot2::aes(x = GENPOS, y = -log10(P), colour = LD_Bin,text = Hover_Info),
+            size = 5
           )
 
 
@@ -677,12 +762,21 @@ Regional_Plot <- function(Data = NULL,
 
           )
 
-        if(Gene_Tracks == TRUE)
+        if(Gene_Tracks == TRUE & Interactive == FALSE)
         {
           p <- p + ggplot2::theme(axis.line.x = ggplot2::element_blank(), plot.margin =  ggplot2::margin(t = 0, b = 0, r = 10, l = 50),
                          axis.ticks.x = ggplot2::element_blank(),
                          axis.title.x =    ggplot2::element_blank(),
                          axis.text.x =    ggplot2::element_blank())
+        }
+
+
+        if(Gene_Tracks == TRUE & Interactive == TRUE)
+        {
+          p <- p + ggplot2::theme(plot.margin =  ggplot2::margin(t = 0, b = 0, r = 10, l = 50),
+                                  axis.ticks.x = ggplot2::element_blank(),
+                                  axis.title.x =    ggplot2::element_blank(),
+                                  axis.text.x =    ggplot2::element_blank())
         }
 
         if(Gene_Tracks == FALSE)
@@ -707,6 +801,9 @@ Regional_Plot <- function(Data = NULL,
       {
         p <- p + ggplot2::theme(legend.position = "none")
       }
+
+
+        p_main_plot <- p
 
       # p <- p +
       #   annotation_custom(
@@ -788,7 +885,7 @@ Regional_Plot <- function(Data = NULL,
         ggplot2::geom_point(
           data = unique(gene_data[c("gene_biotype", "start", "y")]),
           ggplot2::aes(x = start, y = y, color = gene_biotype),
-          shape = 15, size = 0, show.legend = TRUE, inherit.aes = FALSE
+          shape = 15, size = 0, alpha = 0, show.legend = FALSE, inherit.aes = FALSE
         )+
      #   geom_point(
     #      data = unique(gene_data[c("gene_biotype", "start", "y")]),
@@ -850,9 +947,35 @@ Regional_Plot <- function(Data = NULL,
       ),
       legend.text.align = 0,
       legend.key = ggplot2::element_rect(fill = NA)  # ensures square color blocks
-        ) + ggplot2::scale_y_continuous(
-          expand = ggplot2::expansion(add = c(0.5, 0.5))  # bottom, top
         )
+
+      if(Interactive == FALSE)
+
+      {
+
+      p_genes <- p_genes + ggplot2::scale_y_continuous(
+          expand = ggplot2::expansion(add = c(0.5, 0.5))  # bottom, top 0.5, 0.5
+        )
+
+      }else{
+
+
+        y_min <- 1.25 #smaller for bigger gap
+        y_max <- max(gene_data$y, na.rm = TRUE)
+        pad <- 1
+
+        y_lims <- c(y_min - pad, y_max + pad)
+
+
+        p_genes <- p_genes + ggplot2::scale_y_continuous(
+          limits = y_lims,
+          expand = c(0, 0)  # turn off auto-padding
+        )
+
+
+        p_genes <- p_genes + ggplot2::theme(legend.position = "none")
+
+      }
 
 
 #
@@ -902,6 +1025,38 @@ Regional_Plot <- function(Data = NULL,
       }
 
 
+
+      if(Interactive == TRUE)
+
+      {
+
+
+
+       tick_y_base <- max(gene_data$y, na.rm = TRUE)
+       tick_df <- data.frame(
+         x = breaks,
+         y = tick_y_base + 1, #.5 + current 5 expand
+         yend = tick_y_base + 1 - 0.1
+       )
+
+
+       p_genes <- p_genes +
+         ggplot2::geom_segment(
+           data = tick_df,
+           ggplot2::aes(x = x, xend = x, y = y, yend = yend),
+           inherit.aes = FALSE,
+           color = "black",
+           linewidth = 0.2
+         )
+
+
+
+   #   p_genes <- p_genes + ggplot2::coord_cartesian(clip = "off")
+
+
+
+      }
+
     if(Gene_Tracks == FALSE)
     {
       plot <- p
@@ -924,14 +1079,65 @@ Regional_Plot <- function(Data = NULL,
     }
 
 
-        if (Interactive == TRUE) {
-          attr(p_genes, "plot_width") <- 60  # or dynamically calculate based on region width or number of genes
-          attr(p, "dynamic_height") <- total_height
-          attr(p, "interactive_panel") <- p
-          attr(p, "gene_track_panel") <- p_genes
 
-          return(p)
-        }
+
+      if (Interactive == TRUE) {
+
+        # Assume you already made p and p_genes separately (static ggplots)
+#
+#         fig1 <- ggplotly(p, tooltip = "text") %>%
+#           layout(margin = list(t = 50, b = 50, l = 50, r = 50)) %>%
+#           config(displayModeBar = TRUE, responsive = TRUE)
+#
+#         fig2 <- ggplotly(p_genes, tooltip = "text") %>%
+#           layout(margin = list(t = 100, b = 50, l = 50, r = 50)) %>%
+#           config(displayModeBar = TRUE, responsive = TRUE)
+#
+#
+#
+#         interactive_full <- subplot(
+#           fig1, fig2,
+#           nrows = 2,
+#           shareY = TRUE,
+#           shareX = FALSE,
+#           titleY = TRUE,
+#           margin = 0,                # <<<<<< KEY CHANGE
+#           heights = c(0.5, 0.5)       # <<<<<< shrink gene panel
+#         ) %>%
+#           layout(
+#             hovermode = "closest",
+#             margin = list(t = 50, b = 50, l = 50, r = 50)
+#           ) %>%
+#           config(displayModeBar = TRUE, responsive = TRUE)
+#
+#         attr(interactive_full, "dynamic_height") <- total_height
+#         attr(interactive_full, "interactive_panel") <- interactive_full
+#
+#         plot <- interactive_full
+
+
+        # Always do this:
+        attr(p, "main_ggplot") <- p
+        attr(p, "gene_track_plot") <- p_genes
+        attr(p, "dynamic_height") <- total_height
+        plot <- p
+
+        # Do NOT create any plotly or subplot logic here
+     #   return(plot)
+
+
+      }
+
+
+
+        # if (Interactive == TRUE) {
+        #   attr(p_genes, "plot_width") <- 60  # or dynamically calculate based on region width or number of genes
+        #   attr(p, "dynamic_height") <- total_height
+        #   attr(p, "interactive_panel") <- p
+        #   attr(p, "gene_track_panel") <- p_genes
+        #
+        #   return(p)
+        # }
     #  plot <- p
 
 

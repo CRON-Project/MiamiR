@@ -81,7 +81,7 @@ Files can also be fed in for all functions using variables containing file paths
 setwd("C:/Users/callumon/Miami_Package_R/MiamiR/vignettes")
 
 
-Manhattan_Plot <- Single_Plot(Data = "C:/Users/callumon/Miami_Package_R/MiamiR/Intelligence_Sum_Stats_Mini.txt")
+Manhattan_Plot <- Single_Plot(Data = "C:/Users/callumon/Miami_Package_R/MiamiR/Intelligence_Sum_Stats_Mini.txt", Y_Axis_Title = "HI")
 
 
 ggplot2::ggsave("Intelligence_Plot_2.jpg", plot = Manhattan_Plot, width = 30,
@@ -108,7 +108,7 @@ There is also a regional plot function wrapped around this functionality
 setwd("C:/Users/callumon/Miami_Package_R/MiamiR")
 
 library(jsonlite)
-gene_data <- read_json("Gene_Data_HG38_Processed.json", simplifyVector = TRUE)
+gene_data <- jsonlite::read_json("Gene_Data_HG38_Processed.json", simplifyVector = TRUE)
 
 
 
@@ -116,9 +116,11 @@ setwd("C:/Users/callumon/Miami_Package_R/MiamiR/vignettes")
 
 
 
-  Regional_Plots <- Regional_Plot(Data = Intelligence_Sum_Stats, Chromosome = 3 )
+  Regional_Plots <- Regional_Plot(Data = Intelligence_Sum_Stats, Chromosome = 3,  Y_Axis_Title = "HI", Interactive == F )
 
 
+  setwd("C:/Users/callumon/Miami_Package_R/MiamiR/vignettes")
+  
 # # Save each plot using its list name
 # for (plot_name in names(Regional_Plots)) {
 #   plot <- Regional_Plots[[plot_name]]
@@ -137,7 +139,6 @@ setwd("C:/Users/callumon/Miami_Package_R/MiamiR/vignettes")
 #     dpi = 300
 #   )
 #   
-  
   
   for (plot_name in names(Regional_Plots)) {
   plot <- Regional_Plots[[plot_name]]
