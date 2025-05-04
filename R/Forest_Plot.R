@@ -1428,10 +1428,11 @@ if(Model_Reference == F)
     dplyr::mutate(
       Left_Plot_Value = stringr::str_replace(
         Left_Plot_Value,
-        "^(\\d+):(\\d+):([A-Za-z]):([A-Za-z])$",
+        "^(chr\\d+):(\\d+):([A-Za-z]+):([A-Za-z]+)$",
         "\\1:\\2(\\3>\\4)"
       )
     )
+
 
 
 
@@ -1552,6 +1553,10 @@ if(Model_Reference == F)
 
   res$P <- sprintf(paste0("%.", P_Value_Resolution, "e"), res$P)
 
+
+  #change non significant values to "NS"
+  res$Special_P <- "*"
+  res$Special_P[res$P >= 0.05] <- "NS"
 
   #res$P <- sprintf("%.2e", res$P)
   res$UL <- as.numeric(res$UL)
@@ -2787,6 +2792,7 @@ print(string_widths)
 
 
 
+
   # Dynamically construct the string representation for 1.00e+00 and 0.00e+00
   one_string <- sprintf(paste0("%.", P_Value_Resolution, "e"), 1)
   zero_string <- sprintf(paste0("%.", P_Value_Resolution, "e"), 0)
@@ -2809,11 +2815,14 @@ print(string_widths)
  # print(res_plot)
 
 
-  #change non significant values to "NS"
-  res_plot$P[res_plot$P >= 0.05] <- "NS"
+
   #formatting
 
 
+
+  #change non significant values to "NS"
+
+  res_plot$P[res_plot$Special_P == "NS"] <- "NS"
 
 
   # if(Display_P_Value_Column == T)
