@@ -3285,7 +3285,7 @@ p <- res |>
         # Step 4: Append and hide style marker in label
         style_tags <- ifelse(tolower(trimws(styles)) == "bold", "BOLD", "")
 
-        labels <- paste0(labels, "<span style='color:#ffffff00;'>", style_tags, "Z</span>")
+    #    labels <- paste0(labels, "<span style='color:#ffffff00;'>", style_tags, "Z</span>")
 
     #    labels <- rep("Hi", length(x))
 #num prob
