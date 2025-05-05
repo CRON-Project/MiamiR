@@ -3293,7 +3293,7 @@ p <- res |>
         formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
         formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
 
-        print(formatted_labels)
+        print(formatted)
 
         # Step 6: Apply HTML style based on embedded marker
         ifelse(
@@ -3301,8 +3301,8 @@ p <- res |>
           paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
           ifelse(
             grepl("BOLD", formatted_labels),
-            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:black'>", formatted_labels, "</span>"),
-            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:gray15'>", formatted_labels, "</span>")
+            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:blue'>", formatted_labels, "</span>"),
+            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
           )
         )
       }
@@ -3318,7 +3318,7 @@ p <- res |>
       vjust  = 0.642,  # Adjust vertical alignment to center labels on the tick - bigger = more down
       hjust = 1
     ),
-     axis.text.y.right = ggtext::element_markdown(
+     axis.text.y.right = ggplot2::element_text(
        margin = ggplot2::margin(l = 0, r = 0),  # Removes gap to the right of secondary y-axis
        hjust = 0  # Ensures right-alignment
      ),
