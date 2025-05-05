@@ -3287,7 +3287,10 @@ p <- res |>
 
         labels <- paste0(labels, "<span style='color:#ffffff00;'>", style_tags, "Z</span>")
 
-        labels <- rep("Hi", length(x))
+    #    labels <- rep("Hi", length(x))
+#num prob
+        labels <- gsub("^(.{4}).*", "<b>\\1</b>", labels)
+
 
         labels <- glue::glue("<b>{labels}</b>")
 
