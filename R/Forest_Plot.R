@@ -3287,6 +3287,8 @@ p <- res |>
 
         labels <- paste0(labels, "<span style='color:#ffffff00;'>", style_tags, "Z</span>")
 
+        labels <- vapply(nchar(labels), function(n) paste(rep("Hi", n), collapse = ""), character(1))
+
         labels <- glue::glue("<b>{labels}</b>")
 
 
