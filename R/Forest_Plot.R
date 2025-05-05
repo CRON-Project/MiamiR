@@ -3290,7 +3290,8 @@ p <- res |>
     #    labels <- rep("Hi", length(x))
 #num prob
 
-        labels <- gsub("-(?=[^0-9])", "−", labels, perl = TRUE)
+        labels <- gsub("e(.)", "ef", labels)
+
 
         labels <- gsub("^(.{7}).*", "<b>\\1</b>", labels)
 
