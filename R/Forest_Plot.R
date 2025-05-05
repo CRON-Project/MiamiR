@@ -3324,7 +3324,7 @@ p <- res |>
       #  labels <- gsub("(?<=e)f", "</b><span style='font-size:0'>x</span><b>–", labels, perl = TRUE)
 
 
-        labels <- gsub("(?<=e)f", "\u00AD–\u00AD", labels, perl = TRUE)
+        labels <- gsub("(?<=e)f", "⸱–⸱", labels, perl = TRUE)
 
 
         # Step 5: Final invisible formatting replacements
