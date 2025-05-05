@@ -3289,8 +3289,12 @@ p <- res |>
 
     #    labels <- rep("Hi", length(x))
 #num prob
-        labels <- gsub("^(.{6}).*", "<b>\\1</b>", labels)
 
+        labels <- gsub("-(?=[^0-9])", "−", labels, perl = TRUE)
+
+        labels <- gsub("^(.{7}).*", "<b>\\1</b>", labels)
+
+        #- stops bold
 
         labels <- glue::glue("<b>{labels}</b>")
 
