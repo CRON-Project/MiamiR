@@ -3317,7 +3317,7 @@ p <- res |>
         #sometimes combo messes it up - trial - actually space saved it
      #   labels <- gsub("(?<=e)f", " – ", labels, perl = TRUE)  # U+2212 = −
 
-        labels <- gsub("(?<=e)f", "\u200A–\u200A", labels, perl = TRUE)
+        labels <- gsub("(?<=e)f", "\u200B–\u200B", labels, perl = TRUE)
 
 
         # Step 5: Final invisible formatting replacements
