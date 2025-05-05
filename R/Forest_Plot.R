@@ -3285,9 +3285,15 @@ p <- res |>
         style_tags <- ifelse(tolower(trimws(styles)) == "bold", "BOLD", "")
         labels <- paste0(labels, "<span style='color:#ffffff00;'>", style_tags, "Z</span>")
 
+
+        print(style_tags)
+        print(labels)
+
         # Step 5: Final invisible formatting replacements
         formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
         formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
+
+        print(formatted_labels)
 
         # Step 6: Apply HTML style based on embedded marker
         ifelse(
@@ -3295,7 +3301,7 @@ p <- res |>
           paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
           ifelse(
             grepl("BOLD", formatted_labels),
-            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:black'>", formatted_labels, "</span>"),
+            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:blue'>", formatted_labels, "</span>"),
             paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
           )
         )
