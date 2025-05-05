@@ -3315,7 +3315,7 @@ p <- res |>
 
 
         #sometimes combo messes it up - trial - actually space saved it
-        labels <- gsub("(?<=e)f", ".–.", labels, perl = TRUE)  # U+2212 = −
+        labels <- gsub("(?<=e)f", " – ", labels, perl = TRUE)  # U+2212 = −
 
    #     labels <- gsub("(?<=e)f", "\u202F–\u202F", labels, perl = TRUE)
 
