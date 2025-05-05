@@ -3284,7 +3284,10 @@ p <- res |>
 
         # Step 4: Append and hide style marker in label
         style_tags <- ifelse(tolower(trimws(styles)) == "bold", "BOLD", "")
-        labels <- paste0(labels, "<span style='color:#ffffff00;'>", style_tags, "Z</span>")
+     #   labels <- paste0(labels, "<span style='color:#ffffff00;'>", style_tags, "Z</span>")
+
+        labels <- glue::glue("<b>{labels}</b>")
+
 
         # Step 5: Final invisible formatting replacements
         formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
@@ -3296,7 +3299,7 @@ p <- res |>
           paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
           ifelse(
             grepl("BOLD", formatted_labels),
-            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:#222222'>", formatted_labels, "</span>"),
+            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:blue'>", formatted_labels, "</span>"),
             paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
           )
         )
@@ -3313,7 +3316,7 @@ p <- res |>
       vjust  = 0.642,  # Adjust vertical alignment to center labels on the tick - bigger = more down
       hjust = 1
     ),
-     axis.text.y.right = ggplot2::element_text(
+     axis.text.y.right =  ggtext::element_markdown(
        margin = ggplot2::margin(l = 0, r = 0),  # Removes gap to the right of secondary y-axis
        hjust = 0  # Ensures right-alignment
      ),
