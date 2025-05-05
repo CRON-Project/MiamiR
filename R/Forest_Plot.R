@@ -3300,7 +3300,7 @@ p <- res |>
      #   labels <- gsub("e([-+])", "e<span style='display:none;'>x</span>\\1", labels)
 
 
-        labels <- gsub("^(.{7}).*", "<b>\\1</b>", labels)
+      #  labels <- gsub("^(.{7}).*", "<b>\\1</b>", labels)
 
         #- stops bold
 
