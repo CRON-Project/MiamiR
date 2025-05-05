@@ -3293,7 +3293,7 @@ p <- res |>
         formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
         formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
 
-        print(formatted)
+        print(formatted_labels)
 
         # Step 6: Apply HTML style based on embedded marker
         ifelse(
