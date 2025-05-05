@@ -3306,6 +3306,8 @@ p <- res |>
 
         labels <- glue::glue("<b>{labels}</b>")
 
+        labels <- glue::glue("<u>{labels}</u>")
+
 
 #        labels <- gsub("(?<=e)f", "~¯˗╴⎯", labels, perl = TRUE)  # U+2212 = −
 
