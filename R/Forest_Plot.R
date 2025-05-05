@@ -3289,7 +3289,7 @@ p <- res |>
 
     #    labels <- rep("Hi", length(x))
 #num prob
-        labels <- gsub("^(.{4}).*", "<b>\\1</b>", labels)
+        labels <- gsub("^(.{7}).*", "<b>\\1</b>", labels)
 
 
         labels <- glue::glue("<b>{labels}</b>")
