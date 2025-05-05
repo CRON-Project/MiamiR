@@ -3294,7 +3294,10 @@ p <- res |>
       #  labels <- gsub("e(.)", "e−", labels)  # Replaces "e-" with "e−"
 
 
-        labels <- gsub("e.", paste0("e", "\u2013"), labels)
+       # labels <- gsub("e.", paste0("e", "\u2013"), labels)
+
+        # Inject an invisible character between e and the sign to prevent breakage
+        labels <- gsub("e([-+])", "e<span style='display:none;'>x</span>\\1", labels)
 
 
         labels <- gsub("^(.{7}).*", "<b>\\1</b>", labels)
