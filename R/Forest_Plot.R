@@ -3302,7 +3302,7 @@ p <- res |>
           ifelse(
             grepl("BOLD", formatted_labels),
             paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:black'>", formatted_labels, "</span>"),
-            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:lightblack'>", formatted_labels, "</span>")
+            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:gray15'>", formatted_labels, "</span>")
           )
         )
       }
