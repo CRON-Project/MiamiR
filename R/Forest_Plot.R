@@ -3252,18 +3252,20 @@ p <- res |>
     expand = ggplot2::expansion(add = c(1, 0.03)),  # No extra padding
 
     sec.axis = ggplot2::sec_axis(
-      trans = ~.,
+      trans = ~.,  # Keep transformation the same
       breaks = res$Overall_Row_Number,
       labels = function(x) {
-        # Step 1: Base label values
+        # Step 1: Extract base label values and Add_Neg flags
         labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
         add_neg <- res$Add_Neg[match(x, res$Overall_Row_Number)]
+        styles <- res$Style[match(x, res$Overall_Row_Number)]
+
         labels[is.na(labels)] <- ""
 
-        # Step 2: Normalize minus signs
+        # Step 2: Replace ASCII dash with Unicode minus
         labels <- gsub("-", "−", labels)
 
-        # Step 3: Apply Add_Neg visibility rules
+        # Step 3: Hide second minus if Add_Neg is TRUE
         safe_add_neg <- !is.na(add_neg) & add_neg
         labels[safe_add_neg] <- sapply(labels[safe_add_neg], function(lbl) {
           minus_positions <- gregexpr("−", lbl)[[1]]
@@ -3279,29 +3281,28 @@ p <- res |>
           }
         }, USE.NAMES = FALSE)
 
-        # Step 4: Apply invisible characters (spacers)
+        # Step 4: Append and hide style marker in label
+        style_tags <- ifelse(tolower(trimws(styles)) == "bold", "BOLD", "")
+        labels <- paste0(labels, "<span style='color:#ffffff00;'>", style_tags, "Z</span>")
+
+        # Step 5: Final invisible formatting replacements
         formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
         formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
 
-        # Step 5: Get corresponding styles after all modifications
-        styles <- sapply(x, function(val) {
-          idx <- which(res$Overall_Row_Number == val)
-          if (length(idx) > 0) res$Style[idx[1]] else NA
-        })
-
-        # Step 6: Final HTML wrapping
+        # Step 6: Apply HTML style based on embedded marker
         ifelse(
           grepl("\u2501", formatted_labels),
           paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
           ifelse(
-            styles == "bold",
+            grepl("BOLD", formatted_labels),
             paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:black'>", formatted_labels, "</span>"),
             paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
           )
         )
       }
-    )
 
+
+    )
   ) +
 
   ggplot2::theme(
