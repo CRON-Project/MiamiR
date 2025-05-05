@@ -3290,7 +3290,7 @@ p <- res |>
     #    labels <- rep("Hi", length(x))
 #num prob
 
-    #    labels <- gsub("e(.)", "ef", labels)
+       labels <- gsub("e(.)", "ef", labels)
       #  labels <- gsub("e(.)", "e−", labels)  # Replaces "e-" with "e−"
 
 
@@ -3303,17 +3303,8 @@ p <- res |>
         #labels <- gsub("^(.{7}).*", "<b>\\1</b>", labels)
 
         #- stops bold
-# labels <- glue::glue("<b>{labels}</b>")
-        # If it has 'e', split into two parts and wrap both in <b>
-        has_e <- grepl("e", labels)
-        labels[has_e] <- sub(
-          "(.*)e(.*)",
-          "<b>\\1</b><b>e\\2</b>",
-          labels[has_e]
-        )
 
-        # For those without 'e', just wrap the whole thing
-        labels[!has_e] <- glue::glue("<b>{labels[!has_e]}</b>")
+        labels <- glue::glue("<b>{labels}</b>")
 
 
         # Step 5: Final invisible formatting replacements
