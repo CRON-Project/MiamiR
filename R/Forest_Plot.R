@@ -3305,6 +3305,8 @@ p <- res |>
          # Get corresponding styles
          styles <- res$Style[match(x, res$Overall_Row_Number)]
 
+         print(styles)
+
          # Build style flags
          is_bold <- grepl("bold", styles, ignore.case = TRUE)
          is_underline <- grepl("underline", styles, ignore.case = TRUE)
@@ -3318,11 +3320,15 @@ p <- res |>
          }, is_bold, is_underline)
 
          # Final formatted output using your logic
-        ifelse(
-           grepl("\u2501", formatted_labels),
-           paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
-           paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black;", inline_styles, "'>", formatted_labels, "</span>")
-         )
+         formatted_output <- mapply(function(label, style) {
+           if (grepl("\u2501", label)) {
+             sprintf("<span style='font-family: Courier2; font-size:70pt; color:black'>%s</span>", label)
+           } else {
+             sprintf("<span style='font-family: Arial; font-size:%dpt; color:black; %s'>%s</span>",
+                     SNP_Stat_Text_Size, style, label)
+           }
+         }, formatted_labels, inline_styles, USE.NAMES = FALSE)
+
 
        }
 
