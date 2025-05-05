@@ -3311,7 +3311,7 @@ p <- res |>
 
       #  labels <- gsub("(?<=e)f", "╴⎯─", labels, perl = TRUE)  # U+2212 = −
 
-        labels <- gsub("(?<=e)f", "¯", labels, perl = TRUE)  # U+2212 = −
+        labels <- gsub("(?<=e)f", "¯ˍˉ", labels, perl = TRUE)  # U+2212 = −
 
         # Step 5: Final invisible formatting replacements
         formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
