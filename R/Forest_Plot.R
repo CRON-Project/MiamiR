@@ -3297,14 +3297,23 @@ p <- res |>
        # labels <- gsub("e.", paste0("e", "\u2013"), labels)
 
         # Inject an invisible character between e and the sign to prevent breakage
-        labels <- gsub("e([-+])", "e<span style='display:none;'>x</span>\\1", labels)
+     #   labels <- gsub("e([-+])", "e<span style='display:none;'>x</span>\\1", labels)
 
 
-        labels <- gsub("^(.{7}).*", "<b>\\1</b>", labels)
+        #labels <- gsub("^(.{7}).*", "<b>\\1</b>", labels)
 
         #- stops bold
+# labels <- glue::glue("<b>{labels}</b>")
+        # If it has 'e', split into two parts and wrap both in <b>
+        has_e <- grepl("e", labels)
+        labels[has_e] <- sub(
+          "(.*)e(.*)",
+          "<b>\\1</b><b>e\\2</b>",
+          labels[has_e]
+        )
 
-        labels <- glue::glue("<b>{labels}</b>")
+        # For those without 'e', just wrap the whole thing
+        labels[!has_e] <- glue::glue("<b>{labels[!has_e]}</b>")
 
 
         # Step 5: Final invisible formatting replacements
