@@ -3252,87 +3252,56 @@ p <- res |>
     expand = ggplot2::expansion(add = c(1, 0.03)),  # No extra padding
 
     sec.axis = ggplot2::sec_axis(
-      trans = ~.,  # Keep transformation the same
+      trans = ~.,
       breaks = res$Overall_Row_Number,
-         labels = function(x) {
-           labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
-           add_neg <- res$Add_Neg[match(x, res$Overall_Row_Number)]
-           labels[is.na(labels)] <- ""
+      labels = function(x) {
+        # Step 1: Base label values
+        labels <- res$P_BETA_SE[match(x, res$Overall_Row_Number)]
+        add_neg <- res$Add_Neg[match(x, res$Overall_Row_Number)]
+        labels[is.na(labels)] <- ""
 
-           # Identify rows where Add_Neg is TRUE (i.e., artificially added negatives)
+        # Step 2: Normalize minus signs
+        labels <- gsub("-", "−", labels)
 
+        # Step 3: Apply Add_Neg visibility rules
+        safe_add_neg <- !is.na(add_neg) & add_neg
+        labels[safe_add_neg] <- sapply(labels[safe_add_neg], function(lbl) {
+          minus_positions <- gregexpr("−", lbl)[[1]]
+          if (length(minus_positions) >= 2 && minus_positions[1] != -1) {
+            second_pos <- minus_positions[2]
+            paste0(
+              substr(lbl, 1, second_pos - 1),
+              "<span style='color:#ffffff00;'>−</span>",
+              substr(lbl, second_pos + 1, nchar(lbl))
+            )
+          } else {
+            lbl
+          }
+        }, USE.NAMES = FALSE)
 
-           safe_add_neg <- !is.na(add_neg) & add_neg
+        # Step 4: Apply invisible characters (spacers)
+        formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
+        formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
 
-           # Step 1: Replace all standard dashes with Unicode minus
-           labels <- gsub("-", "−", labels)
+        # Step 5: Get corresponding styles after all modifications
+        styles <- sapply(x, function(val) {
+          idx <- which(res$Overall_Row_Number == val)
+          if (length(idx) > 0) res$Style[idx[1]] else NA
+        })
 
-           # Step 2: For Add_Neg == TRUE, make second minus invisible
-           safe_add_neg <- !is.na(add_neg) & add_neg
-
-           labels[safe_add_neg] <- sapply(labels[safe_add_neg], function(lbl) {
-             minus_positions <- gregexpr("−", lbl)[[1]]
-
-             if (length(minus_positions) >= 2 && minus_positions[1] != -1) {
-               second_pos <- minus_positions[2]
-               paste0(
-                 substr(lbl, 1, second_pos - 1),
-                 "<span style='color:#ffffff00;'>−</span>",
-                 substr(lbl, second_pos + 1, nchar(lbl))
-               )
-             } else {
-               lbl  # fallback if no second minus
-             }
-           }, USE.NAMES = FALSE)
-
-
-
-         formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
-         formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
-
-         # Get corresponding styles
-      #   styles <- res$Style[match(x, res$Overall_Row_Number)]
-       #  is_bold <- styles == "bold"
-
-   #      ifelse(
-  #         grepl("\u2501", formatted_labels),
-  #         paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
-  #         paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
-  #       #  paste0("<span style='font-family: Courier2; font-size:180pt; color:black'>", formatted_labels, "</span>")
-  #       )
-
-
-         # Get corresponding styles
-         styles <- res$Style[match(x, res$Overall_Row_Number)]
-
-         print(styles)
-
-         # Build style flags
-         is_bold <- grepl("bold", styles, ignore.case = TRUE)
-         is_underline <- grepl("underline", styles, ignore.case = TRUE)
-
-         # Compose inline CSS style for each label
-         inline_styles <- mapply(function(bold, underline) {
-           paste0(
-             if (bold) "font-weight:bold;" else "",
-             if (underline) "text-decoration:underline;" else ""
-           )
-         }, is_bold, is_underline)
-
-         # Final formatted output using your logic
-         formatted_output <- mapply(function(label, style) {
-           if (grepl("\u2501", label)) {
-             sprintf("<span style='font-family: Courier2; font-size:70pt; color:black'>%s</span>", label)
-           } else {
-             sprintf("<span style='font-family: Arial; font-size:%dpt; color:black; %s'>%s</span>",
-                     SNP_Stat_Text_Size, style, label)
-           }
-         }, formatted_labels, inline_styles, USE.NAMES = FALSE)
-
-
-       }
-
+        # Step 6: Final HTML wrapping
+        ifelse(
+          grepl("\u2501", formatted_labels),
+          paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
+          ifelse(
+            styles == "bold",
+            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:black'>", formatted_labels, "</span>"),
+            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+          )
+        )
+      }
     )
+
   ) +
 
   ggplot2::theme(
