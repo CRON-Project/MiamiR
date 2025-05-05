@@ -85,6 +85,7 @@ Forest_Plot <- function(Data_Sets = c(),
                         Display_Test_Stat_Se_Column = FALSE,
                         Display_Test_Stat_CI_Column = FALSE,
                         Display_P_Value_Column = TRUE,
+                        Styles = NULL,
                         Shapes = NULL,
                         Null_Line_Colour = "red",
                         Null_Line_Type = "dashed",
@@ -116,7 +117,7 @@ Forest_Plot <- function(Data_Sets = c(),
                         Selected_Covariates = c(),
                         Reference_Alleles = c(),  Effect_Alleles = c(),
                         Upper_CI_Columns = c(), Lower_CI_Columns = c(),
-                        File_Name = "Forest_Plot", Width =10, Height = 10, Quality = 600,
+                        File_Name = "Forest_Plot", Width = 10, Height = 10, Quality = 600,
                         File_Type = "jpg"
                         )
 
@@ -344,6 +345,12 @@ if (!is.null(Data_Sets)) {
     Shapes <- rep("square", length(Data_Sets))  # Assign "square" to all
   }
 
+
+
+  if (is.null(Styles)) {
+    Styles <- rep("normal", length(Data_Sets))  # Assign "square" to all
+  }
+
   if (is.null((Test_Statistic))) {
 
     print("No Test Stat Allocated")
@@ -433,6 +440,7 @@ if (!is.null(Data_Sets)) {
 
     corresponding_name <- Names[i]  # Get the corresponding name
     corresponding_shape <- Shapes[i]  # Get the corresponding shape
+    corresponding_style <- Styles[i]  # Get the corresponding shape
 
 
     if(Model_Reference == F)
@@ -793,6 +801,7 @@ if(Test_Statistic == "BETA")
   }
   Data$STUDY <- corresponding_name
   Data$Shape <- corresponding_shape
+  Data$Style <- corresponding_style
   if(Model_Reference == F)
   {
   Data$ALLELE0 <- Data[[Reference_Allele]]
@@ -837,17 +846,17 @@ if(Test_Statistic == "BETA")
 
   if(Model_Reference == F & Double_Label == T)
   {
-  Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, SE, P, STUDY, Shape, !!Lab_Col)
+  Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, SE, P, STUDY, Shape, Style, !!Lab_Col)
   }
 
   if(Model_Reference == F & Double_Label == F)
   {
-    Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, SE, P, STUDY, Shape)
+    Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, SE, P, STUDY, Shape, Style)
   }
 
   if(Model_Reference == T)
   {
-    Data <- Data %>% dplyr::select(ID,  BETA, SE, P, STUDY, Shape, group, Reference)
+    Data <- Data %>% dplyr::select(ID,  BETA, SE, P, STUDY, Shape, Style, group, Reference)
 
     Data$Backup_ID <- Data$ID
   }
@@ -953,6 +962,7 @@ if(Model_Reference == T)
                            P = 1,
                            STUDY = "",
                            Shape = "square",
+                           Style = "normal",
                            group = unique_references_with_group$group,
                            Reference = unique_references_with_group$Reference,
                            stringsAsFactors = FALSE)
@@ -966,6 +976,7 @@ if(Model_Reference == T)
                              P = 1,
                              STUDY = "",
                              Shape = "square",
+                             Style = "normal",
                              group = unique_references_with_group$group,
                              Reference = unique_references_with_group$Reference,
                              stringsAsFactors = FALSE)
@@ -1037,7 +1048,8 @@ if(Model_Reference == T)
       CHROM = stringr::str_extract(ID, "(?<=chr)[^:]+"),                # Extract part after 'chr' and before ':'
       GENPOS = stringr::str_extract(ID, "(?<=:)[^:]+(?=:)"),
       Left_Plot_Value = ID,
-      Shape = "cross"
+      Shape = "cross",
+      Style = "normal"
 
       # Extract part after 1st colon and before 2nd
     )
@@ -3278,12 +3290,40 @@ p <- res |>
          formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
          formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
 
-         ifelse(
+         # Get corresponding styles
+      #   styles <- res$Style[match(x, res$Overall_Row_Number)]
+       #  is_bold <- styles == "bold"
+
+   #      ifelse(
+  #         grepl("\u2501", formatted_labels),
+  #         paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
+  #         paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
+  #       #  paste0("<span style='font-family: Courier2; font-size:180pt; color:black'>", formatted_labels, "</span>")
+  #       )
+
+
+         # Get corresponding styles
+         styles <- res$Style[match(x, res$Overall_Row_Number)]
+
+         # Build style flags
+         is_bold <- grepl("bold", styles, ignore.case = TRUE)
+         is_underline <- grepl("underline", styles, ignore.case = TRUE)
+
+         # Compose inline CSS style for each label
+         inline_styles <- mapply(function(bold, underline) {
+           paste0(
+             if (bold) "font-weight:bold;" else "",
+             if (underline) "text-decoration:underline;" else ""
+           )
+         }, is_bold, is_underline)
+
+         # Final formatted output using your logic
+        ifelse(
            grepl("\u2501", formatted_labels),
            paste0("<span style='font-family: Courier2; font-size:70pt; color:black'>", formatted_labels, "</span>"),
-           paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
-         #  paste0("<span style='font-family: Courier2; font-size:180pt; color:black'>", formatted_labels, "</span>")
+           paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black;", inline_styles, "'>", formatted_labels, "</span>")
          )
+
        }
 
     )
