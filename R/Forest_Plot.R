@@ -3244,14 +3244,60 @@ print(string_widths)
 #
 
   # Define the underline label with a fixed repeat count
-  num_box_chars <- 5
+#  num_box_chars <- 5
 
   # Construct underline rows for Style == "underline"
+#  underline_rows <- res %>%
+#    dplyr::filter(tolower(trimws(Style)) == "underline" & !is.na(Overall_Row_Number)) %>%
+#    dplyr::mutate(
+#      Overall_Row_Number = Overall_Row_Number - 0.5,
+#      P_BETA_SE = paste0(Right_Spaces, paste(rep("\u2501", num_box_chars), collapse = "")),
+#      Plot_Value = NA,
+#      Left_Plot_Value = NA,
+#      Add_Neg = NA,
+#      Style = NA,
+#      RS = "underline-separator",
+#      Shape = NA,
+#      STUDY = NA,
+#      LL = NA,
+#      UL = NA
+#    )
+
+  # Append to the main dataset
+ # res <- dplyr::bind_rows(res, underline_rows)
+
+
+  # Temporarily open a PDF device so grid::stringWidth works
+  grDevices::pdf(file = NULL)
+
+  # 1. Measure width of each label
+  string_widths <- grid::convertWidth(
+    grid::stringWidth(res$P_BETA_SE),
+    unitTo = "npc", valueOnly = TRUE
+  )
+
+  # 2. Measure width of a fixed label e.g., "---"
+  reference_width <- grid::convertWidth(
+    grid::stringWidth("---"),
+    unitTo = "npc", valueOnly = TRUE
+  )
+
+  grDevices::dev.off()
+
+  # 3. Compute ratio per row
+  label_length_ratio <- string_widths / reference_width
+
+  # 4. Scale to match your desired visual font size
+  SNP_Stat_Text_Size <- if (!exists("SNP_Stat_Text_Size")) 10 else SNP_Stat_Text_Size
+  numbars <- floor(label_length_ratio * (SNP_Stat_Text_Size / 21.5))
+
+  # 5. Get the rows to underline (Style == "underline")
   underline_rows <- res %>%
-    dplyr::filter(tolower(trimws(Style)) == "underline" & !is.na(Overall_Row_Number)) %>%
-    dplyr::mutate(
+    filter(tolower(trimws(Style)) == "underline" & !is.na(Overall_Row_Number)) %>%
+    mutate(
       Overall_Row_Number = Overall_Row_Number - 0.5,
-      P_BETA_SE = paste0(Right_Spaces, paste(rep("\u2501", num_box_chars), collapse = "")),
+      numbar = numbars[match(P_BETA_SE, res$P_BETA_SE)],
+      P_BETA_SE = paste0(Right_Spaces, vapply(numbar, function(n) paste(rep("\u2501", n), collapse = ""), character(1))),
       Plot_Value = NA,
       Left_Plot_Value = NA,
       Add_Neg = NA,
@@ -3263,8 +3309,8 @@ print(string_widths)
       UL = NA
     )
 
-  # Append to the main dataset
-  res <- dplyr::bind_rows(res, underline_rows)
+  # 6. Bind to original data
+  res <- bind_rows(res, underline_rows)
 
 
 
