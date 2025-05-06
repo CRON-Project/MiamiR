@@ -3224,6 +3224,25 @@ print(string_widths)
 
   #res$Left_Plot_Value <- trimws(res$Left_Plot_Value)
 
+  res <- res |>
+    dplyr::bind_rows(
+      tibble::tibble(
+        Overall_Row_Number = 4.5,
+        P_BETA_SE = "-----",
+        Plot_Value = NA,       # Add other columns as needed
+        Left_Plot_Value = NA,
+        Add_Neg = NA,
+        Style = NA,
+        BETA = NA,
+        RS = "custom-separator",  # Optional identifier
+        Shape = NA,
+        STUDY = NA,
+        LL = NA,
+        UL = NA
+      )
+    )
+
+
 #THIS IS THE REAL AXIS.
 p <- res |>
   ggplot2::ggplot(ggplot2::aes(y = Overall_Row_Number)) +  # Use Plot_Value for y-axis
