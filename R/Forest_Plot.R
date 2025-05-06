@@ -2953,7 +2953,7 @@ print(string_widths)
 
   #****
 
-    Right_Spaces_One <- Right_Spaces + 1
+    Right_Spaces_One <- Right_Spaces + 2
 
   Right_Spaces <- strrep("Z", Right_Spaces)
 
