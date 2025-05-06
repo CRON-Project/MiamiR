@@ -3382,7 +3382,8 @@ p <- res |>
     #    labels <- rep("Hi", length(x))
 #num prob
 
-       labels <- gsub("e(.)", "ef", labels)
+#       labels <- gsub("e(.)", "ef", labels)
+       labels <- gsub("e[-+]", "ef", labels)
       #  labels <- gsub("e(.)", "e−", labels)  # Replaces "e-" with "e−"
 
 
