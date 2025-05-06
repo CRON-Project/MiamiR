@@ -3396,9 +3396,17 @@ p <- res |>
 
         #- stops bold
 
-        labels <- glue::glue("<b>{labels}</b>")
+   #     labels <- glue::glue("<b>{labels}</b>")
+
+        labels <- ifelse(
+          seq_along(labels) == 5,
+          glue::glue("<b>{labels}</b>"),
+          labels
+        )
 
 
+print(labels)
+print(styles)
 
 #        labels <- glue::glue("<u>{labels}</u>")
 
