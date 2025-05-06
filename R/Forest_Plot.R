@@ -3371,20 +3371,23 @@ p <- res |>
   )
 
 
-underline_data <- res %>%
+
+# Create a new dataframe for the underline segments
+underline_segments <- res %>%
   filter(!is.na(P_BETA_SE)) %>%
   mutate(
     label_len = nchar(P_BETA_SE),
-    x_right = max(res$BETA, na.rm = TRUE) + 0.3,  # adjust to match right axis text
-    x_left = x_right - 0.03 * label_len / 2,
-    x_end = x_right + 0.03 * label_len / 2
+    x_text = max(BETA, na.rm = TRUE) + 0.25,  # approx x position of text
+    x_start = x_text - 0.028 * label_len / 2, # tweak width per character
+    x_end   = x_text + 0.028 * label_len / 2,
+    y_seg   = Overall_Row_Number - 0.07       # vertical offset slightly below text
   )
 
-
+# Add to your existing plot:
 p <- p +
   geom_segment(
-    data = underline_data,
-    aes(x = x_left, xend = x_end, y = Overall_Row_Number - 0.07, yend = Overall_Row_Number - 0.07),
+    data = underline_segments,
+    aes(x = x_start, xend = x_end, y = y_seg, yend = y_seg),
     inherit.aes = FALSE,
     linewidth = 0.4,
     color = "black"
