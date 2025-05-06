@@ -3290,7 +3290,7 @@ print(string_widths)
 
   # 4. Scale to match your desired visual font size
   SNP_Stat_Text_Size <- if (!exists("SNP_Stat_Text_Size")) 10 else SNP_Stat_Text_Size
-  numbars <- floor(label_length_ratio * (SNP_Stat_Text_Size / 40))
+  numbars <- floor(label_length_ratio * (SNP_Stat_Text_Size / 35))
 
   # 5. Get the rows to underline (Style == "underline")
   underline_rows <- res %>%
