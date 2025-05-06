@@ -3396,13 +3396,8 @@ p <- res |>
 
         #- stops bold
 
-  #      labels <- glue::glue("<b>{labels}</b>")
+        labels <- glue::glue("<b>{labels}</b>")
 
-        labels <- ifelse(
-          tolower(trimws(styles)) == "bold",
-          glue::glue("<b>{labels}</b>"),
-          labels
-        )
 
 
 #        labels <- glue::glue("<u>{labels}</u>")
