@@ -3223,24 +3223,49 @@ print(string_widths)
 
 
   #res$Left_Plot_Value <- trimws(res$Left_Plot_Value)
+#
+#   res <- res |>
+#     dplyr::bind_rows(
+#       tibble::tibble(
+#         Overall_Row_Number = 4.5,
+#         P_BETA_SE = "-----",
+#         Plot_Value = NA,       # Add other columns as needed
+#         Left_Plot_Value = NA,
+#         Add_Neg = NA,
+#         Style = NA,
+#         BETA = NA,
+#         RS = "custom-separator",  # Optional identifier
+#         Shape = NA,
+#         STUDY = NA,
+#         LL = NA,
+#         UL = NA
+#       )
+#     )
+#
 
-  res <- res |>
-    dplyr::bind_rows(
-      tibble::tibble(
-        Overall_Row_Number = 4.5,
-        P_BETA_SE = "-----",
-        Plot_Value = NA,       # Add other columns as needed
-        Left_Plot_Value = NA,
-        Add_Neg = NA,
-        Style = NA,
-        BETA = NA,
-        RS = "custom-separator",  # Optional identifier
-        Shape = NA,
-        STUDY = NA,
-        LL = NA,
-        UL = NA
-      )
+  # Define the underline label with a fixed repeat count
+  num_box_chars <- 5
+
+  # Construct underline rows for Style == "underline"
+  underline_rows <- res %>%
+    dplyr::filter(tolower(trimws(Style)) == "underline" & !is.na(Overall_Row_Number)) %>%
+    dplyr::mutate(
+      Overall_Row_Number = Overall_Row_Number - 0.5,
+      P_BETA_SE = paste0(Right_Spaces, paste(rep("\u2501", num_box_chars), collapse = "")),
+      Plot_Value = NA,
+      Left_Plot_Value = NA,
+      Add_Neg = NA,
+      Style = NA,
+      RS = "underline-separator",
+      Shape = NA,
+      STUDY = NA,
+      LL = NA,
+      UL = NA
     )
+
+  # Append to the main dataset
+  res <- dplyr::bind_rows(res, underline_rows)
+
 
 
 #THIS IS THE REAL AXIS.
