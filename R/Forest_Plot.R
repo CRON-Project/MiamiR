@@ -2953,11 +2953,11 @@ print(string_widths)
 
   #****
 
-
+    Right_Spaces_One <- Right_Spaces + 1
 
   Right_Spaces <- strrep("Z", Right_Spaces)
 
-  Right_Spaces_One <- Right_Spaces + 1
+
   Right_Spaces_Two <- strrep("Z", Right_Spaces_One)
 
   res$P_BETA_SE <- ifelse(res$P_BETA_SE == "fake",
