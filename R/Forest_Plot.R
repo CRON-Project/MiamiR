@@ -3322,7 +3322,7 @@ p <- res |>
 
 
 
-        labels <- glue::glue("<span style='font-weight:bold; text-decoration:underline'>{labels}</span>")
+  #      labels <- glue::glue("<span style='font-weight:bold; text-decoration:underline'>{labels}</span>")
 
    #     labels <- gsub("(?<=e)f", "\u202F–\u202F", labels, perl = TRUE)
 
@@ -3369,6 +3369,27 @@ p <- res |>
    axis.ticks.y = ggplot2::element_blank(),  # Remove y-axis tick marks
    axis.ticks.length.y = ggplot2::unit(0, "cm")  # Ensure tick length is 0
   )
+
+
+underline_data <- res %>%
+  filter(!is.na(P_BETA_SE)) %>%
+  mutate(
+    label_len = nchar(P_BETA_SE),
+    x_right = max(res$BETA, na.rm = TRUE) + 0.3,  # adjust to match right axis text
+    x_left = x_right - 0.03 * label_len / 2,
+    x_end = x_right + 0.03 * label_len / 2
+  )
+
+
+p <- p +
+  geom_segment(
+    data = underline_data,
+    aes(x = x_left, xend = x_end, y = Overall_Row_Number - 0.07, yend = Overall_Row_Number - 0.07),
+    inherit.aes = FALSE,
+    linewidth = 0.4,
+    color = "black"
+  )
+
 
 
   # ggplot2::theme(
