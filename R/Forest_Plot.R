@@ -3398,11 +3398,17 @@ p <- res |>
 
    #     labels <- glue::glue("<b>{labels}</b>")
 
-        labels <- ifelse(
-          seq_along(labels) == 5,
-          glue::glue("<b>{labels}</b>"),
-          labels
-        )
+    #    labels <- ifelse(
+    #      seq_along(labels) == 5,
+    #      glue::glue("<b>{labels}</b>"),
+    #      labels
+    #    )
+
+        # Clean style entries (trim + lowercase) and find which are "bold"
+        bold_indices <- which(tolower(trimws(styles)) == "bold")
+
+        # Bold only those indices in labels
+        labels[bold_indices] <- glue::glue("<b>{labels[bold_indices]}</b>")
 
 
 print(labels)
