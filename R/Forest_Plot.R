@@ -2953,7 +2953,7 @@ print(string_widths)
 
   #****
 
-    Right_Spaces_One <- Right_Spaces
+    Right_Spaces_One <- Right_Spaces + 2
 
   Right_Spaces <- strrep("Z", Right_Spaces)
 
@@ -3298,7 +3298,7 @@ print(string_widths)
     mutate(
       Overall_Row_Number = Overall_Row_Number - 0.5,
       numbar = numbars[match(P_BETA_SE, res$P_BETA_SE)],
-      P_BETA_SE = paste0( "zzzz", vapply(numbar, function(n) paste(rep("\u2501", n), collapse = ""), character(1))),
+      P_BETA_SE = paste0( Right_Spaces_Two, vapply(numbar, function(n) paste(rep("\u2501", n), collapse = ""), character(1))),
       Plot_Value = NA,
       Left_Plot_Value = NA,
       Add_Neg = NA,
