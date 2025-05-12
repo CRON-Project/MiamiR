@@ -293,13 +293,18 @@ Regional_Plot <- function(Data = NULL,
   print(filtered_data)
 
 
+  print("here2")
+
   # Capture user arguments (e.g. Condense_Scale, Title, etc.)
   # Capture user arguments
   user_args <- list(...)  # all user-provided inputs
 
+  print("here3")
+
   # Remove the '...' key if it's there
   user_args$... <- NULL
 
+  print("here")
 
   # Pull defaults from Single_Plot
   default_args <- formals(Single_Plot)

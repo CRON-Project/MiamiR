@@ -3496,9 +3496,9 @@ underline_segments <- res %>%
 
 # Add to your existing plot:
 p <- p +
-  geom_segment(
+  ggplot2::geom_segment(
     data = underline_segments,
-    aes(x = x_start, xend = x_end, y = y_seg, yend = y_seg),
+    ggplot2::aes(x = x_start, xend = x_end, y = y_seg, yend = y_seg),
     inherit.aes = FALSE,
     linewidth = 0.4,
     color = "black"
