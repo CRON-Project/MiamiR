@@ -3310,6 +3310,12 @@ print(string_widths)
       UL = NA
     )
 
+
+  print(res)
+  print(underline_rows)
+
+  print("error below bind")
+
   # 6. Bind to original data
   res <- bind_rows(res, underline_rows)
 
