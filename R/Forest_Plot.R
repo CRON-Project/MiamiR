@@ -3316,9 +3316,14 @@ print(string_widths)
 
   print("error below bind")
 
+
+  #Sometines no underline specified
+  if(nrow(underline_rows) >= 1)
+  {
   # 6. Bind to original data
   res <- bind_rows(res, underline_rows)
 
+  }
 
   print(res$P_BETA_SE)
 
