@@ -3348,7 +3348,7 @@ p <- res |>
 
       ifelse(#this bit also controls left
         grepl("\u2501", formatted_labels),
-        paste0("<span style='font-family: Courier2; font-size:7pt; color:black'>", formatted_labels, "</span>"),
+        paste0("<span style='font-family: Courier2; font-size:6pt; color:black'>", formatted_labels, "</span>"),
         paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
 
       )
@@ -3462,7 +3462,7 @@ print(styles)
         # Step 6: Apply HTML style based on embedded marker
         ifelse(
           grepl("\u2501", formatted_labels),
-          paste0("<span style='font-family: Courier2; font-size:7pt; color:black'>", formatted_labels, "</span>"),
+          paste0("<span style='font-family: Courier2; font-size:6pt; color:black'>", formatted_labels, "</span>"),
           ifelse(
             grepl("BOLD", formatted_labels),
             paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:blue'>", formatted_labels, "</span>"),
@@ -3479,7 +3479,7 @@ print(styles)
     axis.text.y = ggtext::element_markdown(
    family = "Arial", #this bit controls left, above controls right!
       margin = ggplot2::margin(l = 0, r = 0),  # No space between labels and axis
-      vjust  = 0.642,  # Adjust vertical alignment to center labels on the tick - bigger = more down
+      vjust  = 0.542,  # Adjust vertical alignment to center labels on the tick - bigger = more down 0.642
       hjust = 1
     ),
      axis.text.y.right =  ggtext::element_markdown(
@@ -3487,7 +3487,7 @@ print(styles)
        hjust = 0  # Ensures right-alignment
      ),
    axis.text.y.left = ggplot2::element_text(
-     margin = ggplot2::margin(l = 0, r = -1.2),  # Removes gap to the right of secondary y-axis r= -0.4
+     margin = ggplot2::margin(l = 0, r = 0),  #-1.2 # Removes gap to the right of secondary y-axis r= -0.4
      hjust = 1  # Ensures right-alignment
    ),
    axis.ticks.y = ggplot2::element_blank(),  # Remove y-axis tick marks
