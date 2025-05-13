@@ -802,8 +802,8 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 
 #programme in bitmap and other adjustments which are annoying in future.
 
-  ggplot2::ggsave(Overall_Name, plot = combined_grob, width = Width,
-         height = Height, units = "in", dpi = Quality)
+#  ggplot2::ggsave(Overall_Name, plot = combined_grob, width = Width,
+ #        height = Height, units = "in", dpi = Quality)
 
 
   return(combined_grob) # has to be at end

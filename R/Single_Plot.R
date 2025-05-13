@@ -44,7 +44,7 @@
 
 Single_Plot<- function(Data = NULL,
                        Random_Selection = 10000,
-                       Draft_Plot = TRUE,
+                       Draft_Plot = FALSE,
                        Chromosome_Labels = c(1:22, "X"),
                        Chromosome_Index = c(1:22, "X"),
                        Title = NULL,

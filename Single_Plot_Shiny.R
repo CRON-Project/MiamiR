@@ -141,7 +141,13 @@
       tabPanel("Automated Batch Mode",
                sidebarLayout(
                  sidebarPanel(
-                   fileInput("batchData", "Upload Data (applies to all selected functions)", accept = ".csv"),
+                   fileInput("batchData", "Upload Top Data (for Single_Plot, Regional_Plot, Miami_Plot)", accept = ".csv"),
+
+                   conditionalPanel(
+                     condition = "input.selectedFunctions.includes('Miami_Plot')",
+                     fileInput("bottomBatchData", "Upload Bottom Data (only for Miami_Plot)", accept = ".csv")
+                   ),
+
 
                    checkboxGroupInput("selectedFunctions", "Select Functions to Run:",
                                       choices = c("Single_Plot", "Regional_Plot", "Miami_Plot", "Forest_Plot", "Annotate_Data", "Model_Munge"),
@@ -361,11 +367,11 @@
 
 
     # Helper function to build Single_Plot arguments for batch
-    build_single_plot_args_batch <- function(batch_data) {
+    build_single_plot_args_batch <- function(batch_top_data) {
       args <- formals(Single_Plot)
       args <- lapply(args, function(x) if (is.call(x)) eval(x) else x)
 
-      args$Data <- batch_data
+      args$Data <- batch_top_data
 
       # Custom fixes matching tab logic
       if (is.null(args$Title) || args$Title == "") {
@@ -386,45 +392,38 @@
     }
 
     # Helper function to build Regional_Plot arguments for batch
-    build_regional_plot_args_batch <- function(batch_data) {
+    safe_eval <- function(x) {
+      if (missing(x)) return(NULL)
+      if (is.symbol(x)) return(NULL)
+      if (is.call(x)) return(eval(x))
+      return(x)
+    }
+
+    build_regional_plot_args_batch <- function(batch_top_data) {
+      # Get arguments
       args_primary <- formals(Regional_Plot)
       args_inherited <- formals(Single_Plot)
 
-      args_combined <- modifyList(lapply(args_inherited, function(x) if (is.call(x)) eval(x) else x),
-                                  lapply(args_primary, function(x) if (is.call(x)) eval(x) else x))
+      # Merge Regional_Plot (priority) over Single_Plot
+      all_args <- modifyList(as.list(args_inherited), as.list(args_primary))
 
-      args_combined$Data <- batch_data
+      # Evaluate all defaults safely
+      user_args <- lapply(names(all_args), function(arg_name) {
+        value <- all_args[[arg_name]]
+        safe_eval(value)
+      })
+      names(user_args) <- names(all_args)
 
-      # 🔥 Regional_Plot-specific fixes
-      if (is.null(args_combined$Chromosome) || args_combined$Chromosome == "") {
-        args_combined$Chromosome <- 1
-      }
+      # Force-set the absolutely required values for batch mode
+      user_args$Data <- batch_top_data
+      user_args$Chromosome <- 1         # 🔵 Default Chromosome 1
+ #     user_args$Width <- 30             # 🔵 Standard Width
+#      user_args$Height <- 15            # 🔵 Standard Height
+      user_args$Condense_Scale <- TRUE  # 🔵 Condense by default
 
-      # 🔥 Single_Plot-specific inherited fixes
-      if (is.null(args_combined$Title) || args_combined$Title == "") {
-        if (!is.null(input$batchData$name)) {
-          args_combined$Title <- tools::file_path_sans_ext(input$batchData$name)
-        } else {
-          args_combined$Title <- "Auto Regional Plot"
-        }
-      }
-      if (is.null(args_combined$Interactive) || args_combined$Interactive == "") {
-        args_combined$Interactive <- FALSE
-      }
-
-      # 🧹 Important: Remove any arguments not actually expected by Regional_Plot
-      expected_args <- names(formals(Regional_Plot))
-      all_args <- args_combined
-
-      all_args <- c(all_args, list(... = args_combined[setdiff(names(args_combined), expected_args)]))
-
-      # Keep only expected top-level Regional_Plot args and ... (extra passed separately)
-      args_final <- all_args[expected_args]
-
-      args_final$... <- all_args$...
-
-      return(args_final)
+      return(user_args)
     }
+
 
 
     # # Helper function to build Miami_Plot arguments for batch
@@ -622,28 +621,121 @@ setTimeout(() => {
       req(input$batchData)
       req(input$selectedFunctions)
 
-      batch_data <- vroom(input$batchData$datapath)
+      # 🛡 SAFE spot to pull formals:
+      default_single_plot_args <- formals(Single_Plot)
+      default_regional_plot_args <- formals(Regional_Plot)
+      default_miami_plot_args <- formals(Miami_Plot)
+      default_annotate_data_args <- formals(Annotate_Data)
+
+      batch_top_data <- vroom(input$batchData$datapath)
+
+      batch_bottom_data <- NULL
+      if (!is.null(input$bottomBatchData)) {
+        batch_bottom_data <- vroom(input$bottomBatchData$datapath)
+      }
+
 
       results <- list()
 
       ### 🏗 1. Run all selected functions correctly with preprocessing ###
       if ("Single_Plot" %in% input$selectedFunctions) {
-        args <- build_single_plot_args_batch(batch_data)
+        args <- build_single_plot_args_batch(batch_top_data)
         results$Single_Plot <- run_with_counter(Single_Plot, args = args, session = session)
       }
 
       if ("Regional_Plot" %in% input$selectedFunctions) {
-        args <- build_regional_plot_args_batch(batch_data)
+        args <- build_regional_plot_args_batch(batch_top_data)
+        # regional_formals <- names(formals(Regional_Plot))
+        # args_formals <- args[names(args) %in% regional_formals]
+        # args_dots <- args[!(names(args) %in% regional_formals)]
+
+
         results$Regional_Plot <- do.call(Regional_Plot, args)
+
+
+        current_plot_index_batch <- reactiveVal(1)
+
+        observeEvent(input$nextBatchPlot, {
+          req(results$Regional_Plot)
+          new_index <- current_plot_index_batch() + 1
+          if (new_index > length(results$Regional_Plot)) new_index <- 1
+          current_plot_index_batch(new_index)
+        })
+
+        observeEvent(input$prevBatchPlot, {
+          req(results$Regional_Plot)
+          new_index <- current_plot_index_batch() - 1
+          if (new_index < 1) new_index <- length(results$Regional_Plot)
+          current_plot_index_batch(new_index)
+        })
+
+        output$autoRegional_dynamic <- renderUI({
+          req(results$Regional_Plot)
+          idx <- current_plot_index_batch()
+          plot_list <- results$Regional_Plot
+          plot_names <- names(plot_list)
+          this_plot <- plot_list[[idx]]
+
+          if (!is.null(attr(this_plot, "interactive_panel"))) {
+            plotlyOutput("autoRegionalPlotly")
+          } else {
+            imageOutput("autoRegionalStatic")
+          }
+        })
+
+        output$autoRegionalPlotly <- renderPlotly({
+          req(results$Regional_Plot)
+          idx <- current_plot_index_batch()
+          plot_list <- results$Regional_Plot
+          this_plot <- plot_list[[idx]]
+
+          p <- attr(this_plot, "interactive_panel", exact = TRUE)
+          if (is.null(p)) p <- this_plot
+
+          render_interactive_plot(p)
+        })
+
+        output$autoRegionalStatic <- renderImage({
+          req(results$Regional_Plot)
+          idx <- current_plot_index_batch()
+          plot_list <- results$Regional_Plot
+          temp_file <- tempfile(fileext = ".jpg")
+          ggsave(temp_file, plot = plot_list[[idx]], width = 30, height = 15, units = "in", dpi = 300)
+
+          list(
+            src = temp_file,
+            contentType = "image/jpeg",
+            width = "100%",
+            height = "auto",
+            alt = "Static Regional Plot"
+          )
+        }, deleteFile = TRUE)
+
+        output$batchPlotCounter <- renderText({
+          req(results$Regional_Plot)
+          paste(current_plot_index_batch(), "of", length(results$Regional_Plot))
+        })
+
+
+    #    results$Regional_Plot <- do.call(Regional_Plot, c(args_formals, args_dots))
+
       }
 
       if ("Miami_Plot" %in% input$selectedFunctions) {
-        args <- build_miami_plot_args_batch(batch_data)
+        req(batch_bottom_data)  # Make sure bottom data is uploaded
+
+        args <- formals(Miami_Plot)
+        args <- lapply(args, function(x) if (is.call(x)) eval(x) else x)
+
+        args$Top_Data <- batch_top_data
+        args$Bottom_Data <- batch_bottom_data
+
         results$Miami_Plot <- do.call(Miami_Plot, args)
       }
 
+
       if ("Annotate_Data" %in% input$selectedFunctions) {
-        args <- build_annotate_data_args_batch(batch_data)
+        args <- build_annotate_data_args_batch(batch_top_data)
         results$Annotate_Data <- do.call(Annotate_Data, args)
       }
 
@@ -673,29 +765,29 @@ setTimeout(() => {
       }
 
       # Regional_Plot output
-      if (!is.null(results$Regional_Plot)) {
-        first_plot <- results$Regional_Plot[[1]]
-
-        if (!is.null(attr(first_plot, "interactive_panel"))) {
-          output$autoRegional <- renderPlotly({
-            attr(first_plot, "interactive_panel")
-          })
-        } else {
-          output$autoRegional <- renderImage({
-            temp_file <- tempfile(fileext = ".jpg")
-            ggsave(temp_file, plot = first_plot,
-                   width = 30, height = 15, units = "in", dpi = 300)
-
-            list(
-              src = temp_file,
-              contentType = "image/jpeg",
-              width = "100%",
-              height = "auto",
-              alt = "Static Regional plot"
-            )
-          }, deleteFile = FALSE)
-        }
-      }
+      # if (!is.null(results$Regional_Plot)) {
+      #   first_plot <- results$Regional_Plot[[1]]
+      #
+      #   if (!is.null(attr(first_plot, "interactive_panel"))) {
+      #     output$autoRegional <- renderPlotly({
+      #       attr(first_plot, "interactive_panel")
+      #     })
+      #   } else {
+      #     output$autoRegional <- renderImage({
+      #       temp_file <- tempfile(fileext = ".jpg")
+      #       ggsave(temp_file, plot = first_plot,
+      #              width = 30, height = 15, units = "in", dpi = 300)
+      #
+      #       list(
+      #         src = temp_file,
+      #         contentType = "image/jpeg",
+      #         width = "100%",
+      #         height = "auto",
+      #         alt = "Static Regional plot"
+      #       )
+      #     }, deleteFile = FALSE)
+      #   }
+      # }
 
       # Miami_Plot output (always static)
       if (!is.null(results$Miami_Plot)) {
@@ -725,24 +817,42 @@ setTimeout(() => {
       output$batchResults <- renderUI({
         tagList(
           if (!is.null(results$Single_Plot)) {
-            if (inherits(results$Single_Plot, "plotly") || isTRUE(attr(results$Single_Plot, "Interactive"))) {
-              plotlyOutput("autoSingle")
-            } else {
-              imageOutput("autoSingle")
-            }
+            tagList(
+              if (inherits(results$Single_Plot, "plotly") || isTRUE(attr(results$Single_Plot, "Interactive"))) {
+                plotlyOutput("autoSingle")
+              } else {
+                imageOutput("autoSingle")
+              },
+              tags$br(), tags$hr(style = "border-top: 2px dashed #bbb; margin-top: 30px; margin-bottom: 150px;")
+            )
           },
           if (!is.null(results$Regional_Plot)) {
-            first_plot <- results$Regional_Plot[[1]]
-            if (!is.null(attr(first_plot, "interactive_panel"))) {
-              plotlyOutput("autoRegional")
-            } else {
-              imageOutput("autoRegional")
-            }
+            tagList(
+              fluidRow(
+                column(4, actionButton("prevBatchPlot", "<< Previous")),
+                column(4, align = "center", h5(textOutput("batchPlotCounter"))),
+                column(4, align = "right", actionButton("nextBatchPlot", "Next >>"))
+              ),
+              tags$br(),
+              uiOutput("autoRegional_dynamic")  # <--- NOT autoRegional
+            )
+          }
+          ,
+          if (!is.null(results$Miami_Plot)) {
+            tagList(
+              imageOutput("autoMiami"),
+              tags$br(), tags$hr(style = "border-top: 2px dashed #bbb; margin-top: 150px; margin-bottom: 20px;")
+            )
           },
-          if (!is.null(results$Miami_Plot)) imageOutput("autoMiami"),
-          if (!is.null(results$Annotate_Data)) tableOutput("autoAnno")
+          if (!is.null(results$Annotate_Data)) {
+            tagList(
+              tableOutput("autoAnno"),
+              tags$br(), tags$hr(style = "border-top: 2px dashed #bbb; margin-top: 20px; margin-bottom: 20px;")
+            )
+          }
         )
       })
+
     })
 
 

@@ -41,7 +41,7 @@ Regional_Plot <- function(Data = NULL,
                           Auto_LD_Region_Size = 100,
                           Auto_LD = TRUE,
                           Reference_Allele_Column = NULL,  Effect_Allele_Column = NULL,
-                          Interactive = TRUE,
+                          Interactive = F,
                           Gene_Tracks = TRUE, ...) {
 
 
@@ -63,6 +63,8 @@ Regional_Plot <- function(Data = NULL,
   # Normalize "23" to "X"
 
 
+  print(Chromosome_Column)
+  print("Hi")
 
   Data[[Chromosome_Column]] <- as.character(Data[[Chromosome_Column]])
 #  Data[[Chromosome_Column]][Data[[Chromosome_Column]] == "23"] <- "X"
@@ -187,6 +189,10 @@ Regional_Plot <- function(Data = NULL,
 
   print(filtered_data)
 
+
+  print(peaks$CHROM)
+  print(peaks$GENPOS)
+
   # Step 1: Create LD_Query column (chr:pos format)
   peaks <- peaks %>%
    # mutate(
@@ -198,6 +204,8 @@ Regional_Plot <- function(Data = NULL,
 
 
 
+  print("a")
+
 
   #query <- peaks$LD_Query[1]
 
@@ -208,8 +216,14 @@ Regional_Plot <- function(Data = NULL,
   # Step 2: Loop through each row and query LDproxy()
   ld_results_list <- list()
 
+
+  Auto_LD <- TRUE
+  print(Auto_LD)
+
   if(Auto_LD == TRUE)
   {
+
+    print(nrow(peaks))
 
   for (i in seq_len(nrow(peaks))) {
     message("Calculating LD for lead SNP from peak ", i, " ...")
@@ -218,6 +232,14 @@ Regional_Plot <- function(Data = NULL,
 
 
     token <- "a3a5b2b4d4c5"
+
+
+    print(query)
+    print(Population)
+    print(token)
+    print(Auto_LD_Region_Size)
+    print(Genome_Build)
+
 
 
     result <- LDlinkR::LDproxy(
@@ -243,6 +265,8 @@ Regional_Plot <- function(Data = NULL,
 
   }
 
+
+  print("Hi Again")
 
  # return(result)
 
@@ -308,11 +332,15 @@ Regional_Plot <- function(Data = NULL,
 
   # Pull defaults from Single_Plot
   default_args <- formals(Single_Plot)
+  print("hereaoh")
 
   # Evaluate any symbols (like language objects)
   evaluated_defaults <- lapply(default_args, function(x) {
     if (is.symbol(x) || is.language(x)) eval(x) else x
   })
+
+
+  print("hereaoh1.2")
 
   # Merge user args over defaults (user overrides default)
   args <- modifyList(evaluated_defaults, user_args)
@@ -324,10 +352,19 @@ Regional_Plot <- function(Data = NULL,
 
     args$X_Axis_Title <- "Genomic Position (Mb)"
 
+    print("hereaoh2")
 
   # Inject required args
   args$Data <- filtered_data
   args$Point_Size <- 5
+
+  print("hereaoh3")
+
+  Interactive <- TRUE
+
+  print(Interactive)
+
+
 
   if(Interactive == TRUE)
   {
@@ -452,10 +489,19 @@ Regional_Plot <- function(Data = NULL,
 
       }
 
+      print("hi4")
+
       if (nrow(filtered_data) == 0) return(NULL)  # skip empty
+
+
+      print("hi5")
+
 
       # Merge args and inject filtered data
       args <- args_base
+
+      print("hi6")
+
 
       if(Auto_LD == TRUE)
 
@@ -488,6 +534,10 @@ Regional_Plot <- function(Data = NULL,
 
 
       }
+
+
+      print("hi4")
+
 
       if (Interactive == TRUE) {
         # filtered_data$Hover_Info <- paste0("SNP: ", filtered_data$ID, "\nCHR: ", filtered_data$CHROM, "\nPOS: ", filtered_data$GENPOS,
@@ -545,15 +595,17 @@ Regional_Plot <- function(Data = NULL,
       # }
 
 
-
+      print("hi7")
 
       # Generate plot safely
-      plot <- tryCatch({
+   #   plot <- tryCatch({
 
+
+      #will fail if draft plot included as TRUE!
 
         p <- do.call(Single_Plot, args)
 
-
+        print("hi8")
 #
 #         if(Interactive == TRUE)
 #
@@ -585,6 +637,8 @@ Regional_Plot <- function(Data = NULL,
         # Filter gene_data to only genes within the region of interest
         gene_data <- gene_data[gene_data$start <= max(pos_range) & gene_data$end >= min(pos_range), , drop = FALSE]
 
+
+        print("Hihalf")
 
         # Minimum gap (in base pairs) to allow genes on the same line
         min_gene_gap <- MIN_GENE_GAP  # 100 kb
@@ -623,22 +677,26 @@ Regional_Plot <- function(Data = NULL,
         # Assign each gene a y-axis position
     #    gene_data$y <- factor(gene_data$gene_name, levels = rev(unique(gene_data$gene_name)))
 
+        print("Hiz")
 
         # Sort genes by position
         gene_data <- gene_data[order((gene_data$start + gene_data$end) / 2), ]
 
 
 
-
+print("HiA")
 
         # Assign tiered y-positions to spread overlapping genes apart
     #    gene_data$y <- rep(seq(1, length.out = nrow(gene_data)), length.out = nrow(gene_data))
 
 
-      }, error = function(e) {
-        warning(paste("Skipping", peak_id, "due to error:", e$message))
-        NULL
-      })
+  #    }, error = function(e) {
+  #      warning(paste("Skipping", peak_id, "due to error:", e$message))
+   #     NULL
+    #  })
+
+
+
 
       #edit at end works
 
