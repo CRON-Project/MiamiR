@@ -3471,7 +3471,7 @@ print(styles)
 
         print(formatted_labels)
 
-        SNP_Stat_Text_Size_Bol <- SNP_Stat_Text_Size * 0.925
+        SNP_Stat_Text_Size_Bol <- SNP_Stat_Text_Size * 0.9275
 
         # Step 6: Apply HTML style based on embedded marker
         ifelse(
