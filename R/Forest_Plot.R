@@ -3395,21 +3395,57 @@ p <- res |>
     #    labels <- rep("Hi", length(x))
 #num prob
 
-        # Find bold indices
+   #    labels <- gsub("e(.)", "ef", labels)
+       labels <- gsub("e(\\S)", "ef", labels, perl = TRUE)
+
+
+      #  labels <- gsub("e(.)", "e−", labels)  # Replaces "e-" with "e−"
+
+
+       # labels <- gsub("e.", paste0("e", "\u2013"), labels)
+
+        # Inject an invisible character between e and the sign to prevent breakage
+     #   labels <- gsub("e([-+])", "e<span style='display:none;'>x</span>\\1", labels)
+
+
+      #  labels <- gsub("^(.{7}).*", "<b>\\1</b>", labels)
+
+        #- stops bold
+
+   #     labels <- glue::glue("<b>{labels}</b>")
+
+    #    labels <- ifelse(
+    #      seq_along(labels) == 5,
+    #      glue::glue("<b>{labels}</b>"),
+    #      labels
+    #    )
+
+        # Clean style entries (trim + lowercase) and find which are "bold"
         bold_indices <- which(tolower(trimws(styles)) == "bold")
 
-        # 1. Bold labels first
+        # Bold only those indices in labels
         labels[bold_indices] <- glue::glue("<b>{labels[bold_indices]}</b>")
 
-        # 2. Then ONLY non-bold: inject invisible formatting
-        normal_indices <- setdiff(seq_along(labels), bold_indices)
 
-        labels[normal_indices] <- gsub(
-          "e–",
-          "e<span style='font-size:0.1pt; font-weight:normal;'> </span>–<span style='font-size:0.1pt; font-weight:normal;'> </span>",
-          labels[normal_indices],
-          fixed = TRUE
-        )
+print(labels)
+print(styles)
+
+#        labels <- glue::glue("<u>{labels}</u>")
+
+
+#        labels <- gsub("(?<=e)f", "~¯˗╴⎯", labels, perl = TRUE)  # U+2212 = −
+
+      #  labels <- gsub("(?<=e)f", "╴⎯─", labels, perl = TRUE)  # U+2212 = −
+
+      #  labels <- gsub("(?<=e)f", "ˉ", labels, perl = TRUE)  # U+2212 = −
+
+
+        #sometimes combo messes it up - trial - actually space saved it
+        labels <- gsub("(?<=e)f", "–", labels, perl = TRUE)  # U+2212 = −
+        labels <- gsub("e–", "e<span style='font-size:0.1pt'> </span>–<span style='font-size:0.1pt'> </span>", labels, fixed = TRUE)
+
+
+    #    labels <- gsub("e–", "e<span style='font-size:0.1pt; font-weight:normal;'> </span>–<span style='font-size:0.1pt; font-weight:normal;'> </span>", labels, fixed = TRUE)
 
 
 #0.1 original
@@ -3431,6 +3467,9 @@ p <- res |>
         # Step 5: Final invisible formatting replacements
         formatted_labels <- gsub("Z", "<span style='color:#ffffff00;'>Z</span>", labels)
         formatted_labels <- gsub("\\.\\.", "<span style='color:#ffffff00;'>..</span>", formatted_labels)
+
+
+        print(formatted_labels)
 
         # Step 6: Apply HTML style based on embedded marker
         ifelse(
