@@ -3471,7 +3471,7 @@ print(styles)
 
         print(formatted_labels)
 
-        SNP_Stat_Text_Size_Bol <- SNP_Stat_Text_Size * 0.95
+        SNP_Stat_Text_Size_Bol <- SNP_Stat_Text_Size * 0.925
 
         # Step 6: Apply HTML style based on embedded marker
         ifelse(
@@ -3479,7 +3479,7 @@ print(styles)
           paste0("<span style='font-family: Courier2; font-size:6.5pt; color:black'>", formatted_labels, "</span>"),
           ifelse(
             grepl("<b>", formatted_labels),
-            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size_Bol , "pt; font-weight:bold; color:blue'>", formatted_labels, "</span>"),
+            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size_Bol , "pt; font-weight:bold; color:black'>", formatted_labels, "</span>"),
             paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
           )
         )
