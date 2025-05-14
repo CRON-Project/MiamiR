@@ -3476,8 +3476,8 @@ print(styles)
           grepl("\u2501", formatted_labels),
           paste0("<span style='font-family: Courier2; font-size:6.5pt; color:black'>", formatted_labels, "</span>"),
           ifelse(
-            grepl("BOLD", formatted_labels),
-            paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:blue'>", formatted_labels, "</span>"),
+            grepl("<b>", formatted_labels),
+            paste0("<span style='font-family: Arial; font-size:", 0.1, "pt; font-weight:bold; color:blue'>", formatted_labels, "</span>"),
             paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
           )
         )
