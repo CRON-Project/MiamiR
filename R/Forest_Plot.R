@@ -3479,7 +3479,7 @@ print(styles)
     axis.text.y = ggtext::element_markdown(
    family = "Arial", #this bit controls left, above controls right!
       margin = ggplot2::margin(l = 0, r = 0),  # No space between labels and axis
-      vjust  = 0.48,  # Adjust vertical alignment to center labels on the tick - bigger = more down 0.642
+      vjust  = 0.475,  # Adjust vertical alignment to center labels on the tick - bigger = more down 0.642
       hjust = 1
     ),
      axis.text.y.right =  ggtext::element_markdown(
