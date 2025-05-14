@@ -3348,7 +3348,7 @@ p <- res |>
 
       ifelse(#this bit also controls left
         grepl("\u2501", formatted_labels),
-        paste0("<span style='font-family: Courier2; font-size:16.5pt; color:black'>", formatted_labels, "</span>"),
+        paste0("<span style='font-family: Courier2; font-size:6.5pt; color:black'>", formatted_labels, "</span>"),
         paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; color:black'>", formatted_labels, "</span>")
 
       )
@@ -3465,7 +3465,7 @@ print(styles)
         # Step 6: Apply HTML style based on embedded marker
         ifelse(
           grepl("\u2501", formatted_labels),
-          paste0("<span style='font-family: Courier2; font-size:6.5pt; color:black'>", formatted_labels, "</span>"),
+          paste0("<span style='font-family: Courier2; font-size:16.5pt; color:black'>", formatted_labels, "</span>"),
           ifelse(
             grepl("BOLD", formatted_labels),
             paste0("<span style='font-family: Arial; font-size:", SNP_Stat_Text_Size, "pt; font-weight:bold; color:blue'>", formatted_labels, "</span>"),
