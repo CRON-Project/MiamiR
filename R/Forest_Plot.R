@@ -3447,7 +3447,7 @@ print(styles)
 
 
         print(labels)
-        z
+        print("here")
 
   #      labels <- glue::glue("<span style='font-weight:bold; text-decoration:underline'>{labels}</span>")
 
