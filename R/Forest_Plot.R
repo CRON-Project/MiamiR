@@ -3442,7 +3442,10 @@ print(styles)
 
         #sometimes combo messes it up - trial - actually space saved it
         labels <- gsub("(?<=e)f", "–", labels, perl = TRUE)  # U+2212 = −
-        labels <- gsub("e–", "e<span style='font-size:0.0pt'> </span>–<span style='font-size:0.0pt'> </span>", labels, fixed = TRUE)
+    #    labels <- gsub("e–", "e<span style='font-size:0.0pt'> </span>–<span style='font-size:0.0pt'> </span>", labels, fixed = TRUE)
+
+
+        labels <- gsub("e–", "e<span style='font-size:0.1pt; font-weight:normal;'> </span>–<span style='font-size:0.1pt; font-weight:normal;'> </span>", labels, fixed = TRUE)
 
 
 #0.1 original
