@@ -3396,7 +3396,7 @@ p <- res |>
 #num prob
 
    #    labels <- gsub("e(.)", "ef", labels)
-       labels <- gsub("e(\\S)", "e", labels, perl = TRUE)
+       labels <- gsub("e(\\S)", "ef", labels, perl = TRUE)
 
 
       #  labels <- gsub("e(.)", "e−", labels)  # Replaces "e-" with "e−"
@@ -3441,10 +3441,13 @@ print(styles)
 
 
         #sometimes combo messes it up - trial - actually space saved it
-        labels <- gsub("(?<=e)", "–", labels, perl = TRUE)  # U+2212 = −
+        labels <- gsub("(?<=e)f", "–", labels, perl = TRUE)  # U+2212 = −
         labels <- gsub("e–", "e<span style='font-size:0.1pt'> </span>–<span style='font-size:0.1pt'> </span>", labels, fixed = TRUE)
 
 
+
+        print(labels)
+        z
 
   #      labels <- glue::glue("<span style='font-weight:bold; text-decoration:underline'>{labels}</span>")
 
