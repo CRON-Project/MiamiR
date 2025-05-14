@@ -3395,62 +3395,29 @@ p <- res |>
     #    labels <- rep("Hi", length(x))
 #num prob
 
-   #    labels <- gsub("e(.)", "ef", labels)
-       labels <- gsub("e(\\S)", "ef", labels, perl = TRUE)
-
-
-      #  labels <- gsub("e(.)", "e−", labels)  # Replaces "e-" with "e−"
-
-
-       # labels <- gsub("e.", paste0("e", "\u2013"), labels)
-
-        # Inject an invisible character between e and the sign to prevent breakage
-     #   labels <- gsub("e([-+])", "e<span style='display:none;'>x</span>\\1", labels)
-
-
-      #  labels <- gsub("^(.{7}).*", "<b>\\1</b>", labels)
-
-        #- stops bold
-
-   #     labels <- glue::glue("<b>{labels}</b>")
-
-    #    labels <- ifelse(
-    #      seq_along(labels) == 5,
-    #      glue::glue("<b>{labels}</b>"),
-    #      labels
-    #    )
-
-        # Clean style entries (trim + lowercase) and find which are "bold"
+        # Find bold indices
         bold_indices <- which(tolower(trimws(styles)) == "bold")
 
-        # Bold only those indices in labels
+        # 1. Bold labels first
         labels[bold_indices] <- glue::glue("<b>{labels[bold_indices]}</b>")
 
+        # 2. Then ONLY non-bold: inject invisible formatting
+        normal_indices <- setdiff(seq_along(labels), bold_indices)
 
-print(labels)
-print(styles)
-
-#        labels <- glue::glue("<u>{labels}</u>")
-
-
-#        labels <- gsub("(?<=e)f", "~¯˗╴⎯", labels, perl = TRUE)  # U+2212 = −
-
-      #  labels <- gsub("(?<=e)f", "╴⎯─", labels, perl = TRUE)  # U+2212 = −
-
-      #  labels <- gsub("(?<=e)f", "ˉ", labels, perl = TRUE)  # U+2212 = −
-
-
-        #sometimes combo messes it up - trial - actually space saved it
-        labels <- gsub("(?<=e)f", "–", labels, perl = TRUE)  # U+2212 = −
-    #    labels <- gsub("e–", "e<span style='font-size:0.0pt'> </span>–<span style='font-size:0.0pt'> </span>", labels, fixed = TRUE)
-
-
-        labels <- gsub("e–", "e<span style='font-size:0.1pt; font-weight:normal;'> </span>–<span style='font-size:0.1pt; font-weight:normal;'> </span>", labels, fixed = TRUE)
+        labels[normal_indices] <- gsub(
+          "e–",
+          "e<span style='font-size:0.1pt; font-weight:normal;'> </span>–<span style='font-size:0.1pt; font-weight:normal;'> </span>",
+          labels[normal_indices],
+          fixed = TRUE
+        )
 
 
 #0.1 original
         print(labels)
         print("here")
+
+
+
 
   #      labels <- glue::glue("<span style='font-weight:bold; text-decoration:underline'>{labels}</span>")
 
