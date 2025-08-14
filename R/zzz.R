@@ -1,4 +1,6 @@
 .onAttach <- function(libname, pkgname) {
+
+
   manhattan_plot_diagram <- "
 
     +-------------------------------------+
@@ -25,8 +27,7 @@
   packageStartupMessage("Visit www.theCRONproject.com for more data visualisation examples.")
   packageStartupMessage("\n")
 
-    }
-
+}
 
 #Need non-CRAN ggmanh first
 

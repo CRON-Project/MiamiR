@@ -6,7 +6,7 @@
 #' \itemize{
 #'   \item Age = Age (in years)
 #'   \item Sex = Genetic Sex
-#'   \item BMI = Continous body mass index
+#'   \item BMI = Continuous body mass index
 #'   \item Ethnicity = Broad self-report ethnicity
 #'   \item Dementia = Diagnosis of dementia, with 1 representing a case
 #'   \item Location = Sample site, grouped by dwelling type
