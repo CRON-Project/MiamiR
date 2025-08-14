@@ -27,7 +27,16 @@ Imports:
     viridis,
     patchwork,
     jsonlite,
-    ggarchery
+    ggarchery,
+    plotly,
+    devtools,
+    profvis,
+    rtracklayer,
+    purrr,
+    tidyr,
+    tibble,
+    stringr,
+    gtable
 biocViews: Visualization, Software
 Depends: 
     R (>= 2.10)
