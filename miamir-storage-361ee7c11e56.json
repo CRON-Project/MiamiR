@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "miamir-storage",
+  "private_key_id": "361ee7c11e56d23b668ec9cbe7a1cc7a7af5a1d9",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCqQxVXZ+OJoRh7\n1UCiBGMuvp4CsqR47psxlFXMDk06yT8Wy7J82/BUyPr+eKpa99j3uXS40zeZ6iZb\nXSFFBAWh6vZ/Kf3+PQfBb3wBfwOnd3p2vWHfocoqHhnMXV48TSbsMvhsd8sSp8H4\ndS3Ya7WT94Az1pG17R7+prJoQJQBHIs1YDFLIZj5jQrQ2YgfzRylteU6zfk6US9l\nqrWCAS3wKRVmOAmg9FiEM/9yDI5NyjeGeIpr/GZ0kCTHkF8Gf54Id24Tg2ACSVSM\nOOdkEpCFL1/jmxh/DOBa0Q6V9JRczZ8p2DY0eh3N4ggoqMxznPHRV91xe0LSPGOj\nY11wszGLAgMBAAECggEAGqsBN7yM9iymYhcH1ZisVFEE/NUwT8THyB88xQZkcFW/\nLPngzg/A9/a24Y7S2AbEFCEXOC/VIKV9NohCwsWbgD4GN+rC3sR+Z3znxnA3iU58\nfwawws9bk/c9ATaKoRVQiGR/ZrXot9ZQ2nK4KJLOUQvOJ9Bu6DjoxugjP5MF25p0\nfq24DIeXNPLk1wPQU0uGq52HtlxTALW775iqiKyzmM9bBoLBCFuWllMntXQqqLvh\nrYRIErX7wJ0LDs6WR2KpN+wfD56OTpM7SB2CKYEZdmcZ11r5Z6s7+wpK/2OAZoud\nYcV60poqVmLpErA4yvpNH1BNrdVntxKpKcy298CreQKBgQDYHrMPXL6BIliHcABg\nNzJG4E1qvtdZ2mPuB+1cG3hu+ERcAW0OSK+4LTSovBwCqTbfR0clWyDs2F8rhI+e\nMo/TjLIy4MfEGi6+KaVrWg71G9V787U0oMXygpLJopbnrEUpCfoooha+h/9yBjw9\nZ6ZyHvYhVoptaTE4eMkhwAgAzwKBgQDJrhnsewC3A3g0Bjpo8nWgcqFU2pTaJ8U8\npPnGAHo5gaIkD8fs+iHjNCn1dTnJ8XlsNpClwhLA5WrqWhSaRc9nqQBjIdVsPqdy\nds6VU7pDEI3IV9Lq3DDxB7IPifxXq8TwylRmNBGZKvg430fWHkQOlSR8CII3CPgC\nbeqK/B5ahQKBgGUuwlCP8FUPGnmWc2aYkP5j53rxjGtx9tUrevJjnhf+PisBM+i7\nGSHWcFALeeW5CYqxmVqg9qJMjwoVzxOWwoWd2pQ9bumeBIJdhyfiixwwgtu8dvsD\nxolKnqSubY5btimHlUpO0O01SOA+kReCnofRfRSQqtCcrkGtMyWM/XI7AoGAYLiU\nSis7Tonlbd3GyWnuK4KOCKnDVVRZbRoZh3HXLBkVb4H5+ZaEBfiQXt1XV5ftCY6p\nlDUc1VGxEq8czlfIfgg43VHujrkFiQmdTVQYMe2QcZJc3rG27wEnzff5Avqnumru\nSw2RmwlWfb/nLbLaJLw2AR37hPVSK6gXIYyD6hkCgYBr/5W96IGDS935Qib90zX6\nCXbIyFK5WuCbTe7Buc5XsW5/9HKfk2LuxGKgKorCBgFQIemPPGRXhYms0bQrbnVh\n6gPkUOLZu6gfFe1IClLE3/tCfgaEUENEc3NquFEkf3yhCj4n3AO2dPQRAnfKo2PH\nnUOxd0Jw+fPy8HPX4meVVg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "miamir-upload@miamir-storage.iam.gserviceaccount.com",
+  "client_id": "111291912238211549889",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/miamir-upload%40miamir-storage.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -810,4 +810,28 @@ Miami_Plot <- function(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househol
 }
 
 
+# 2. Save the original under a new name
+.Miami_Plot_original <- Miami_Plot
+
+
+#progress wrapper, shiny proof
+
+Miami_Plot <- function(..., session = NULL) {
+  dots <- list(...)
+  fn_formals <- formals(.Miami_Plot_original)
+
+  # Only pass in the arguments that match the formal arguments
+  valid_args <- names(fn_formals)
+  clean_args <- dots[names(dots) %in% valid_args]
+
+  # Check for any missing *required* args (i.e., those with no default)
+  required_args <- names(fn_formals)[sapply(fn_formals, is.symbol)]
+  missing_required <- setdiff(required_args, names(clean_args))
+
+  if (length(missing_required) > 0) {
+    stop("Missing required argument(s): ", paste(missing_required, collapse = ", "))
+  }
+
+  run_with_counter(.Miami_Plot_original, args = clean_args, session = session)
+}
 

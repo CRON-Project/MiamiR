@@ -76,36 +76,82 @@ detect_effect_allele_column <- function(Data, Effect_Allele_Column = NULL) {
   )
   detect_column(Data, Effect_Allele_Column, allowed, column_type = "effect allele")
 }
-run_with_counter <- function(func, args = list(), session = NULL) {
+
+
+#' @noRd
+get_name_fast <- function(x) {
+  name <- substitute(x)
+  if (is.symbol(name)) {
+    # Very fast
+    as.character(name)
+  } else {
+    # Fallback for complex expressions
+    deparse(name)
+  }
+}
+
+
+#' @noRd
+run_with_counter <- function(func, args = list(), session = NULL, default_val = NULL) {
   exprs <- as.list(body(func))[-1]
   total <- length(exprs)
   env <- new.env(parent = environment(func))
 
-  # Inject all formals including defaults
+  # Inject arguments and defaults
+  # Inject arguments and defaults
   defaults <- formals(func)
   for (name in names(defaults)) {
-    # Use value from args if provided, otherwise from defaults
-    if (name %in% names(args)) {
+    if (!is.null(args[[name]])) {
       assign(name, args[[name]], envir = env)
-    } else {
+    } else if (!is.symbol(defaults[[name]]) && !is.language(defaults[[name]])) {
       assign(name, eval(defaults[[name]], envir = env), envir = env)
     }
   }
 
   result <- NULL
-  for (i in seq_along(exprs)) {
-    pct <- round(100 * i / total)
-    message(sprintf("Progress: %d%% (Line %d of %d)", pct, i, total))
 
-    if (!is.null(session)) {
-      session$sendCustomMessage("plot_progress", list(
-        pct = pct,
-        msg = paste("Line", i, "of", total)
-      ))
+  tryCatch({
+    for (i in seq_along(exprs)) {
+      pct <- round(100 * i / total)
+      bar_length <- 30
+      filled_len <- round(bar_length * pct / 100)
+      bar <- paste0("[", strrep("=", filled_len), strrep(" ", bar_length - filled_len), "] ", sprintf("%3d%%", pct))
+
+      expr_text <- paste(deparse(exprs[[i]]), collapse = " ")
+      is_vroom_line <- grepl("vroom", expr_text)
+
+      if (!is_vroom_line) cat("\r", bar)
+
+      # Evaluate each line and only assign to result if it's the last line
+      if (i == length(exprs)) {
+        result <- eval(exprs[[i]], envir = env)
+      } else {
+        suppressMessages(suppressWarnings(
+          capture.output(eval(exprs[[i]], envir = env), type = "output")
+        ))
+      }
+
+      if (!is.null(session)) {
+        session$sendCustomMessage("plot_progress", list(
+          pct = pct,
+          msg = paste("Line", i, "of", total)
+        ))
+      }
+
+      flush.console()
     }
 
-    result <- eval(exprs[[i]], envir = env)
-  }
-
-  return(result)
+    cat("\r[", strrep("=", 30), "] 100%\n", sep = "")
+    invisible(result)
+  }, error = function(e) {
+    message("run_with_counter(): error in line ", i, " - ", e$message)
+    if (!is.null(session)) {
+      session$sendCustomMessage("plot_progress", list(
+        pct = NA,
+        msg = paste("Error on line", i, ":", e$message)
+      ))
+    }
+    return(default_val)
+  })
 }
+
