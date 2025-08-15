@@ -1,0 +1,578 @@
+---
+title: "Introduction To MiamiR"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    theme: readable   # try cosmo, cerulean, journal, lumen, paper, sandstone, simplex, spacelab, united, yeti
+vignette: >
+  %\VignetteIndexEntry{Introduction_To_MiamiR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{css, echo=FALSE}
+pre {
+  background-color: #f8f9fa !important; /* light grey background */
+  color: #000000 !important;            /* pure black text */
+}
+```
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+# in setup: library(htmltools); library(ggplot2) if you pass ggplots
+carousel <- function(plots,
+                     save_dir = knitr::fig_path(),   # where to write images if ggplots
+                     file_prefix = "slide",
+                     device = "png",
+                     dpi = 144,
+                     width_in = 8,
+                     height_in = 5) {
+
+  if (!requireNamespace("htmltools", quietly = TRUE)) {
+    stop("Please install 'htmltools'")
+  }
+
+  # Coerce to file paths (accepts either file paths or ggplot objects)
+  to_path <- function(x, i) {
+    if (is.character(x) && length(x) == 1 && file.exists(x)) {
+      return(x)
+    }
+    if (!inherits(x, "gg")) {
+      stop("Each element of 'plots' must be a file path or a ggplot object.")
+    }
+    dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
+    f <- file.path(save_dir, sprintf("%s-%02d.%s", file_prefix, i, device))
+    ggplot2::ggsave(filename = f, plot = x, dpi = dpi,
+                    width = width_in, height = height_in, units = "in", device = device)
+    f
+  }
+
+  files <- vapply(seq_along(plots), function(i) to_path(plots[[i]], i), character(1))
+
+  # Unique id so multiple carousels can coexist
+  id <- paste0("carousel-", paste(sample(c(letters, 0:9), 8, TRUE), collapse = ""))
+
+  slides_html <- paste0(
+    vapply(seq_along(files), function(i) {
+      style <- if (i == 1) "" else ' style="display:none;"'
+      sprintf('<img class="carousel-slide" src="%s" alt="Plot %d"%s/>',
+              files[i], i, style)
+    }, character(1)),
+    collapse = "\n"
+  )
+
+  css <- sprintf('
+#%1$s { position: relative; max-width: 100%%; text-align: center; }
+#%1$s .carousel-slide { max-width: 100%%; height: auto; }
+#%1$s .carousel-arrow {
+  position: absolute; top: 50%%; transform: translateY(-50%%);
+  background: rgba(0,0,0,0.5); color: #fff; border: none;
+  padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; font-size: 1.5rem;
+}
+#%1$s .carousel-arrow.left { left: 10px; }
+#%1$s .carousel-arrow.right { right: 10px; }', id)
+
+  html <- sprintf('
+<div id="%1$s">
+  %2$s
+  <button class="carousel-arrow left" aria-label="Previous">&#10094;</button>
+  <button class="carousel-arrow right" aria-label="Next">&#10095;</button>
+</div>
+<script>
+(function(){
+  var root = document.getElementById("%1$s");
+  var slides = root.querySelectorAll(".carousel-slide");
+  var left = root.querySelector(".carousel-arrow.left");
+  var right = root.querySelector(".carousel-arrow.right");
+  var current = 0;
+  function showSlide(idx){
+    slides[current].style.display = "none";
+    current = (idx + slides.length) %% slides.length;
+    slides[current].style.display = "";
+  }
+  left.addEventListener("click", function(){ showSlide(current - 1); });
+  right.addEventListener("click", function(){ showSlide(current + 1); });
+})();
+</script>', id, slides_html)
+
+  htmltools::HTML(paste0("<style>", css, "</style>", html))
+}
+```
+## Setup and Installation
+
+Welcome to the MiamiR software package introductory tutorial, for all yourGWAS and wider genetic data visualisation needs!
+
+Firstly, the recommended installation for this package is as follows: 
+
+Standard Method: remotes::install_github("CRON-Project/MiamiR")
+
+Alternative Method: BiocManager::install("CRON-Project/MiamiR")
+
+If you have any issues please raise issues through GitHub or contact me at: spet5590@ox.ac.uk with subject heading indicating issue.
+
+Once installed, load in the MiamiR package (lib.loc may need to be specified), This package is complete with extensive documentation and functionality. A web app version will also be available soon (TBC).
+```{r setup, message=TRUE}
+library(MiamiR)
+```
+
+## Single_Plot()
+
+Here's how to create a Manhattan plot of the included exemplar 'Intelligence_Sum_Stats' summary statistics data set using the Single_Plot() function included in the package.
+
+This function will return a plot object which we'll manually save to a .jpg file in the vignettes/Plots directory of the package for future use and user access. Initially, all automated, default settings will be used.
+
+A progress bar will display as the function runs. This UI is the default for all MiamiR functions. More detailed outputs can be viewed via setting the Verbose argument to TRUE for any MiamiR function. 
+```{r, results="hide", warning = FALSE, message = TRUE}
+ library(here)
+ plots_dir <- here("vignettes", "Plots")
+# 
+# 
+# Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
+# 
+# setwd(plots_dir)
+# ggplot2::ggsave("Intelligence_Plot.jpg", plot = Manhattan_Plot, width = 30,
+#                  height = 15, units = "in", dpi = 300)
+```
+Let's inspect our saved Manhattan Plot.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=300, out.width="100%"}
+# knitr::include_graphics(paste0(plots_dir,"/Intelligence_Plot.jpg"))
+```
+
+The Single_Plot() function also allows for a range of customisation. Here is a small example of such functionality.
+
+It is also worth noting that running ?Single_Plot() or ? for any function or component in MiamiR will provide documentation on all functionality available and any relevant information on in-house data sets used.
+```{r, results="hide", warning = FALSE, message = TRUE}
+# Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats, X_Axis_Title = "Region", Title = "Custom Plot", Label_Height = 15, Anchor_Label = "centre", Label_Angle = 90, Chromosome_Colours = c("red", "orange"), Colour_Of_Index = "blue", Diamond_Index = T, Diamond_Index_Size = 10)
+# 
+# setwd(plots_dir)
+# ggplot2::ggsave("Intelligence_Plot_Custom.jpg", plot = Manhattan_Plot, width = 30,
+#                  height = 15, units = "in", dpi = 300)
+```
+Let's inspect our customised Manhattan Plot.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=300, out.width="100%"}
+# knitr::include_graphics(paste0(plots_dir,"/Intelligence_Plot_Custom.jpg"))
+```
+
+Files can also be fed in for all MiamiR functions using variables containing a file path or a raw file path itself, in addition to multiple files or current environment objects, whilst allowing for varied customisation.
+
+Here, raw file paths for the above summary statistics are used alongside another included data set called 'Household_Income_Sum_Stats', with alternative customisation demonstrated as well.
+
+Automated and unspecified defaults are also subtly adjust for different inputs across all functions.
+```{r, results="hide", warning = FALSE, message = TRUE}
+# data_dir <- here::here("inst", "extdata", "Example_Data_Raw")
+# setwd(data_dir)
+# Sum_Stats <- c(paste0(data_dir, "/Intelligence_Sum_Stats.txt"), paste0(data_dir, "/Household_Income_Sum_Stats.txt"))
+# 
+# Manhattan_Plot <- Single_Plot(Data = Sum_Stats, Label_Angle = 60, Label_Colour = "grey", Sig_Line_Type = "solid", Condense_Scale = F )
+# 
+# #Save names as looping to display later
+# setwd(plots_dir)
+# output_files <- c()
+# for (plot_name in names(Manhattan_Plot)) {
+#   file_path <- paste0(plot_name, ".jpg")
+#   ggplot2::ggsave(
+#     filename = file_path,
+#     plot = Manhattan_Plot[[plot_name]],
+#     width = 30, height = 15, units = "in", dpi = 300
+#   )
+#   output_files <- c(output_files, file_path)
+# }
+```
+Let's inspect our saved, customised Manhattan Plots
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+# imgs <- file.path(plots_dir, output_files)
+# carousel(imgs)
+```
+
+## Regional_Plot()
+
+There is also a Regional_Plot() function built around the above functionality, which has unique features in addition to seamlessly inheriting the Single_Plot() arguments to produce annotated regional plots. 
+
+Here is how to run the function, which automatically ascertains regions of interest, with this example focusing on key regions in chromosomes 10 and 22 of the intelligence GWAS summary statistics.
+
+We will also save all generated objects as correctly sized images with guide measures also returned by the function and supplied as part of the plot objects. 
+
+Although defaults are suitable it is very important to specify the correct genome build (in this case HG19) for accurate recombination and gene annotation tracks/overlays, in addition to queried LD, where needed.
+```{r,  results="hide",  warning = FALSE, message = TRUE}
+  # Regional_Plots <- Regional_Plot(Data = Intelligence_Sum_Stats,  Genome_Build = "grch37", Chromosomes = c(10,22))
+  # 
+  # for (plot_name in names(Regional_Plots)) {
+  # plot <- Regional_Plots[[plot_name]]
+  # file_safe <- gsub("[^A-Za-z0-9]", "_", plot_name)
+  # filename <- paste0(file_safe, ".jpg")
+  # height_to_use <- attr(plot, "dynamic_height")
+  # if (is.null(height_to_use)) height_to_use <- 30
+  # 
+  # setwd(plots_dir)
+  # ggplot2::ggsave(
+  #   filename = filename,
+  #   plot = plot,
+  #   width = 30,
+  #   height = height_to_use,  
+  #   units = "in",
+  #   dpi = 300,
+  #   limitsize = FALSE
+  # )
+  # 
+#}
+```
+Let's inspect our Regional Plots for the aforementioned chromosomes.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+# img_dir <- plots_dir
+# 
+# # Gather jpgs
+# img_paths <- list.files(
+#   path = img_dir,
+#   pattern = "Regional_Plot\\.jpg$",
+#   recursive = FALSE,
+#   full.names = TRUE
+# )
+# 
+# img_paths <- img_paths[order(file.info(img_paths)$mtime)]
+# carousel(img_paths)
+```
+
+One key customisation of the Regional_Plot() function is the ability to query for LD values around the lead SNP (with settings available for build, population etc.) and colour points in the top panel accordingly. 
+
+For simplicity and speed let's focus on the single chromosome 22 peak. Please bear in mind that querying an API is slow and may not always contain data pertaining to your particular set of SNPs or may be unavailable within certain system paramaters. 
+
+It is often better to produce your own LD matrix using tools such as PLINK1.9/2, the results of which can also be fed in to this package (FUTURE/TBC).
+```{r, results="hide", warning = FALSE, message = TRUE}
+#   Regional_Plots <- Regional_Plot(Data = Sum_Stats[1], Auto_LD = TRUE, Chromosomes = c(22), Genome_Build = "grch37", 
+#                                   Gene_Biotype = c("coding", "snorna"),  Gene_Biotype_Colour = c("red", "green" ),
+#                                   Sense_Arrow_Colour = "darkorange", Gene_Structure_Size_Exons = 20, Gene_Legend_Location = "Top Left",
+#                                   Gene_Legend_Title = "Categories", Y_Axis_Title = "LOG10Pvalue", Diamond_Index_Size = 20)
+# 
+#   for (plot_name in names(Regional_Plots)) {
+#   plot <- Regional_Plots[[plot_name]]
+#   file_safe <- gsub("[^A-Za-z0-9]", "_", plot_name)
+#   filename <- paste0(file_safe, "_LD", ".jpg")
+#   height_to_use <- attr(plot, "dynamic_height")
+#   if (is.null(height_to_use)) height_to_use <- 30
+# 
+#   setwd(plots_dir)
+#   ggplot2::ggsave(
+#     filename = filename,
+#     plot = plot,
+#     width = 30,
+#     height = height_to_use,   #nice divide by exon size to get ratio
+#     units = "in",
+#     dpi = 300,
+#     limitsize = FALSE
+#   )
+#   
+# }
+```
+Let's have a look at our heavily customised and LD annotated Regional Plot
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+ # img_dir <- plots_dir
+ #  
+ #  # List files that end with 'Regional_Plot.jpg'
+ #  img_paths <- list.files(
+ #    path = img_dir,
+ #    pattern = "Regional_Plot_LD\\.jpg$",  # exact match
+ #    recursive = FALSE,
+ #    full.names = TRUE
+ #  )
+ #  
+ #  # Sort by modification time (oldest first)
+ #  img_paths <- img_paths[order(file.info(img_paths)$mtime)]
+ #  
+ #  # Display all matching plots
+ #  knitr::include_graphics(img_paths)
+```
+
+Let's now pass both sets of summary statistics we used in the earlier example to show how regional plots can be constructed on distinct data sets simultaneously.
+
+Both Intelligence_Sum_Stats and Household_Income_Sum_Stats seem to have a single significant association on chromosome 9 - let's see if they are in similar genomic locations...
+
+For single vector arguments like Point_Colour, a list can be allocated in the order of customisation of data required. 
+
+Point_Colour = c("blue", "red") will allocate blue to the points in Intelligence_Sum_Stats and red to the points in Household_Income_Sum_Stats. Any singularly specified arguments will apply globally.
+ 
+Arguments which require a nested list structure, like Gene_Biotype can have two separate listed arguments passed by allotting e.g. Gene_Biotype = list( c(), c("coding", "processed_pseudogene" )).
+
+This will allocate NULL/default settings to Intelligence_Sum_Stats and stratify the Household_Income_Sum_Stats plot by only "coding" and "processed_pseudogene" regions.
+
+Please note that HG19 is passed as the genome build for Intelligence_Sum_Stats but HG38 for Household_Income_Sum_Stats due to differences in the data sets' references.
+```{r, results="hide", warning = FALSE, message = TRUE}
+# Regional_Plots <- Regional_Plot(Data = c(Intelligence_Sum_Stats, Household_Income_Sum_Stats),  Chromosomes = c(9),  Genome_Build =  c("grch37", "grch38"), Recombination_Line_Colour = c("darkgrey", "pink"),  Point_Colour = c("blue", "red"), Y_Axis_Title =  c("SigVal"), Gene_Biotype = list( c(), c("coding", "processed_pseudogene" )), Gene_Biotype_Colour = list( c(), c("blue", "green")) )
+# 
+#   Regional_Plots <- do.call(c, Regional_Plots)
+#   
+#   for (plot_name in names(Regional_Plots)) {
+#   plot <- Regional_Plots[[plot_name]]
+#   file_safe <- gsub("[^A-Za-z0-9]", "_", plot_name)
+#   filename <- paste0(file_safe, "_LmultiD", ".jpg")
+#   height_to_use <- attr(plot, "dynamic_height")
+#   if (is.null(height_to_use)) height_to_use <- 30
+# 
+#   setwd(plots_dir)
+#   ggplot2::ggsave(
+#     filename = filename,
+#     plot = plot,
+#     width = 30,
+#     height = height_to_use,   #nice divide by exon size to get ratio
+#     units = "in",
+#     dpi = 300,
+#     limitsize = FALSE
+#   )
+#   
+# }
+```
+Let's have a look at both chromosome 9 Regional Plots for our exemplar data sets.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+# img_dir <- plots_dir
+# 
+# # List files that end with 'Regional_Plot_LmultiD.jpg'
+# img_paths <- list.files(
+#   path = img_dir,
+#   pattern = "Regional_Plot_LmultiD\\.jpg$",  # exact match
+#   recursive = FALSE,
+#   full.names = TRUE
+# )
+# 
+# # Sort by modification time (oldest first)
+# img_paths <- img_paths[order(file.info(img_paths)$mtime)]
+# 
+# # Show as carousel
+# carousel(img_paths)
+```
+
+Single_Plot() also accepts a similar logic when creating multiple plots with separate customisation simultaneously - let's have a look at a small example.
+```{r, results="hide", warning = FALSE, message = TRUE}
+# Manhattan_Plot <- Single_Plot(Data = Sum_Stats, X_Axis_Title = "Region", Label_Height = 15, Anchor_Label = "centre", 
+# Label_Angle = c(90,45), Colour_Of_Index = "blue",  Chromosome_Colours = list( c("red", "orange"),   c("purple", "orange")  ))
+# 
+# setwd(plots_dir)
+# output_files <- c()
+# for (plot_name in names(Manhattan_Plot)) {
+#   file_path <- paste0(plot_name, "_Complex_Single", ".jpg")
+#   ggplot2::ggsave(
+#     filename = file_path,
+#     plot = Manhattan_Plot[[plot_name]],
+#     width = 30, height = 15, units = "in", dpi = 300
+#   )
+#   output_files <- c(output_files, file_path)
+# }
+```
+Let's inspect our set of multiple, customised Manhattan Plots.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+# full_paths <- file.path(plots_dir, output_files)
+# carousel(full_paths)
+```
+
+## Miami_Plot()
+
+We can also use the MiamiR package to create a Miami plot (mirrored, paired Manhattan Plot) using two sets of summary statistics using the Miami_Plot() function.
+
+We will be using the same pair of data as above; 'Intelligence_Sum_Stats' and 'Household_Income_Sum_Stats', included in the MiamiR package.
+
+This function automatically aligns and buffers coordinates across different data sets and genomic builds to create a neat visualisation. Let's look at a default plot, specifying both data sets where needed.
+```{r, results="hide", warning = FALSE, message = TRUE}
+# Miami_Plot <- Miami_Plot(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Household_Income_Sum_Stats)
+# 
+# setwd(plots_dir)
+# ggplot2::ggsave("Test_Miami.jpg", plot = Miami_Plot, width = 30,
+#                 height = 20, units = "in", dpi = 300)
+```
+Let's inspect our Miami Plot.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+# knitr::include_graphics(paste0(plots_dir,"/Test_Miami.jpg"))
+```
+
+Miami_Plot(), similarly to Regional_Plot() is based on and inherits the functionality of Single_Plot() and it can be customised using applicable arguments from previous examples.
+
+However, it also allows for segregated and overall inheritance. If an inherited argument like Point_Size is modified, then it will apply to the top and bottom plots within the Miami Plot.
+
+If the argument is prefixed with Top_ or Bottom_ then these customisations will be allocated accordingly. Let's start with an example of overall customisation.
+```{r, results="hide", warning = FALSE, message = TRUE}
+# Miami_Plot <- Miami_Plot(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Household_Income_Sum_Stats, Chromosome_Colours = c("limegreen", "darkorange"), Chromosome_Label_Drops = c(15,19,22), Diamond_Index = TRUE, Chromosome_Label_Size = 12)
+# 
+# setwd(plots_dir)
+# ggplot2::ggsave("Custom_Test_Miami.jpg", plot = Miami_Plot, width = 30,
+#                 height = 20, units = "in", dpi = 300)
+```
+Let's inspect our customised Miami Plot.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+# knitr::include_graphics(paste0(plots_dir,"/Custom_Test_Miami.jpg"))
+```
+
+Let's now use built in argument prefixing to modify the top and bottom plots independently within the Miami_Plot() function, whilst simultaneously applying global customisation.
+```{r, results="hide", warning = FALSE, message = TRUE}
+# Miami_Plot <- Miami_Plot(Top_Data = Sum_Stats[1], Bottom_Data = Sum_Stats[2], Top_Chromosome_Colours = c("purple", "grey"),
+# Top_Diamond_Index = TRUE, Bottom_Chromosome_Colours = c("pink", "red"), Chromosome_Label_Size = 30, Label_Size = 7 )
+# 
+# setwd(plots_dir)
+# ggplot2::ggsave("Split_Custom_Test_Miami.jpg", plot = Miami_Plot, width = 30,
+#                 height = 20, units = "in", dpi = 300)  
+```
+Let's inspect our split customisation within our new Miami Plot.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+# knitr::include_graphics(paste0(plots_dir,"/Split_Custom_Test_Miami.jpg"))
+```
+
+## Forest_Plot()
+
+The MiamiR package can also be used to inspect key SNPs in single or multiple sets of GWAS summary statistics by using the Forest_Plot() function. This function carefully aligns and manages SNP differences automatically and allows for much customisation.
+
+Here's how to create a Forest Plot centered around effect values of key SNPs on chromosome 4 from the previously described 'Intelligence_Sum_Stats' dataset.
+
+The Forest_Plot() function will decipher everything from the test statistic type and suitable defaults to ascertainment of the lead SNP in each independent region, which can be defined similarly to the arguments used in Regional_Plot().
+```{r, results="hide", warning = FALSE, message = TRUE}
+devtools::load_all("C:/Users/callumon/Miami_Package_R/MiamiR")
+
+Forest_Plot <- Forest_Plot(Data = Intelligence_Sum_Stats, Chromosomes = 4)
+
+setwd(plots_dir)
+ggplot2::ggsave(
+  filename = "Initial_Forest.jpg",
+  plot = Forest_Plot,
+  height = attr(Forest_Plot, "dynamic_height", exact = TRUE),
+  width = 10,
+  dpi = 300,
+  units = "in"
+)
+```
+Let's inspect our Chromosome 4 lead SNPs Forest Plot.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+knitr::include_graphics(paste0(plots_dir,"/Initial_Forest.jpg"))
+```
+
+We can also specify particular SNPs of interest to examine, in the desired plot order. Let's look at specific, select SNPs across both 'Intelligence_Sum_Stats' and 'Household_Income_Sum_Stats', whilst also demonstrating some of the customisation offered through MiamiR.
+```{r, results="hide", warning = FALSE, message = TRUE}
+# Forest_Plot <- Forest_Plot(Data = Sum_Stats, order = c("P_Label", "BETA_CI_Label"), Right_Size = 12,
+#                            Selected_SNPs = c("rs2014952", "rs759550", "rs72832626", "rs6682851",                                              "rs142764139"), Data_Set_Colours = c("blue", "green"), Shapes = c("triangle", "circle"), 
+#                            Names = c("Intel", "Income"), Double_Label = T, Left_Fill = "lightblue")
+#                               
+# setwd(plots_dir)
+# ggplot2::ggsave(
+#   filename = "Selected_Custom_Forest.jpg",
+#   plot = Forest_Plot,
+#   height = attr(Forest_Plot, "dynamic_height", exact = TRUE),
+#   width = 10,
+#   dpi = 300,
+#   units = "in"
+# )
+```
+Let's inspect our selective Forest_Plot.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+# knitr::include_graphics(paste0(plots_dir,"/Selected_Custom_Forest.jpg"))
+```
+
+The Fores_Plot() function also allows for the same figures to be produced but for covariate effects from the raw outputs of base R statistical models, particularly useful for GWAS sensitivity analyses and epidemiological profiling. 
+
+By specifying Model_Reference = T within Forest_Plot() function and passing such model objects as the Data argument, a helper function named Model_Munge() will be called internally and automatically allocated to process such data. 
+
+Let's create two models using a dataset included in the MiamiR package called 'Fake_Demo_Data' and pass them to the Forest_Plot() function whilst also demonstrating further customisation.
+```{r, results="hide", warning = FALSE, message = TRUE}
+# Model_One <- lm(BMI ~ Age + Sex + Ethnicity + Location, data = Fake_Demo_Data)
+# Model_Two <- lm(Dementia ~ Age + Sex + Ethnicity + Location, data = Fake_Demo_Data)
+# 
+# Forest_Plot <- Forest_Plot(Data = c(Model_One, Model_Two), order = c("P_Label", "CI_Label"),                                       Right_Size = 12, Left_Size = 13, Model_Reference = T, Axis_Buffer = 0.05,
+#                Names = c("BMI", "Dementia"), Right_Fill = "lightgreen", Left_Fill = "turquoise" ,
+#                Strips = F, Styles = c("bold", "underline"), Null_Line_Type = "solid")
+#                               
+# setwd(plots_dir)
+# ggplot2::ggsave(
+#   filename = "Model_Custom_Forest.jpg",
+#   plot = Forest_Plot,
+#   height = attr(Forest_Plot, "dynamic_height", exact = TRUE),
+#   width = 10,
+#   dpi = 300,
+#   units = "in"
+# )
+```
+Let's inspect our model based Forest_Plot.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+# knitr::include_graphics(paste0(plots_dir,"/Model_Custom_Forest.jpg"))
+```
+
+# Model_Munge() {.tabset} 
+
+## Model_Munge1()
+Model_Munge() can also be used independently of Forest_Plot() on such Model Objects. Let's investigate its use with "Model_One".
+```{r, results="hide", warning = FALSE, message = TRUE}
+# Model_Munged <- Model_Munge(Model_Object = "Model_One")
+```
+## Model_Munge2()
+Let's inspect our output from Model_Munge()
+```{r,  warning = FALSE, message = FALSE}
+# print(head(Model_Munged))
+```
+
+# Annotate_Data()
+
+Another helper function which is integrated in to the Single_Plot() function under the Auto_Lab argument is Annotate_Data() which uses the coordinates of supplied data and enables annotation with RSIDs for the index SNPs on each chromosome - these will be added to the data frame in a new column called Lab. This is particularly useful when creating plots from coordinate-only files.
+
+This queries an API in a similar way to the Auto_LD functionality in Reigonal_Plot() and as such it is important to bear in mind time constraints and requisite reference genome builds.
+
+Here is how to use Labelled_Data() in isolation.
+```{r, results="hide", warning = FALSE, message = TRUE}
+# Annotated_Data <- Annotate_Data(Data = Intelligence_Sum_Stats, Genome_Build = "grch37")
+```
+Let's inspect our annotated data frame
+```{r,  warning = FALSE, message = FALSE}
+# print(Annotated_Data[!is.na(Annotated_Data$Lab), c("CHR", "POS", "A1", "A2", "Lab")])
+```
+
+## Tube_Alloys()
+
+Last, but not least within the MiamiR package main functions is the Tube_Alloys() function. This function combines Single_Plot(), Regional_Plot() and Forest_Plot() functionality in a blunt fashion to output overall plots, regions of interest and SNP and GWAS modelling information. 
+
+The user must simply pass GWAS Summary Statistic(s) via any of the aforementioned routes in addition to either combined Phenotype/Covariate files or separate Phenotype and Covariate files if sensitivity analysis is desired. 
+
+Here is how to run Tube_Alloys(), focusing on chromosome 9 on both 'Intelligence_Sum_Stats' and 'Household_Income_Sum_Stats' in addition to supplying 'Fake_PHENOS_Binary' & 'Fake_COVARS datasets' included in MiamiR for modelling information. The function will automatically apply defaults and auto-adjustments whilst applying focused arguments to relevant functions, where supplied data allows.
+
+A special saving, helper function called save_all_plots is also included to facilitate easy output of results.
+```{r, results="hide", warning = FALSE, message = TRUE}
+# Plots <- Tube_Alloys(Data = c(Intelligence_Sum_Stats, Household_Income_Sum_Stats), Phenos = Fake_PHENOS_Binary, 
+#                              Covars = Fake_COVARS, Chromosomes = 1)
+# 
+# Tube_Alloys_Plots <- invisible(
+#   save_all_plots(
+#     Plots,
+#     base_dir = file.path(plots_dir, "Tube_Alloys_Plots"),
+#     dpi = 300
+#   )
+# )
+```
+Let's inspect all Tube_Alloys() outputs.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
+# all_files <- unlist(Tube_Alloys_Plots, use.names = FALSE)
+# carousel(all_files)
+```
+
+## METASOFT_File_Gen()
+
+A utility function also included in the MiamiR package is the METASOFT_File_Gen() function which takes multiple datasets as inputs and munges them by default to the METASOFT meta-analysis format (wrapper FUTURE/TBC). 
+
+Other formats may be specified and allele matching is automatically taken care of, similarly to the Forest_Plot() function, with outputs maintaining all SNPs which match the backbone dataset. Here is how to use this simple function using our usual data sets.
+```{r, results="hide", warning = FALSE, message = TRUE}
+METASOFT <- METASOFT_File_Gen(Data = c("Intelligence_Sum_Stats", "Household_Income_Sum_Stats"))
+```
+Let's preview the METASOFT_File_Gen() output. 
+```{r,  warning = FALSE, message = FALSE}
+library(knitr)
+library(kableExtra)
+
+na.omit(METASOFT) |>
+  head(5) |>   # show only first 5 rows
+  kable(format = "html", digits = 3, caption = "") |>
+  kable_styling(
+    full_width = FALSE,
+    position = "center",
+    bootstrap_options = c("striped", "hover", "condensed")
+  ) |>
+  scroll_box(width = "100%")  # keeps table from spanning full page
+```
+Thank you for reading the tutorial! More functions and functionality coming soon :)
