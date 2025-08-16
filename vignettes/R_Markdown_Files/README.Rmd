@@ -1,0 +1,152 @@
+---
+title: "Introduction To MiamiR"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    theme: readable   #e.g. cosmo, cerulean, journal, lumen, paper, sandstone, simplex, spacelab, united, yeti
+    self_contained: true
+vignette: >
+  %\VignetteIndexEntry{Introduction_To_MiamiR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{css, echo=FALSE}
+/* Make page wider but not full edge-to-edge */
+body .main-container {
+  max-width: 1400px !important; /* adjust to taste: 1200–1600 works well */
+  width: 100% !important;
+}
+
+/* Make code chunks keep spacing and avoid line breaks */
+pre {
+  background-color: #f8f9fa !important;
+  color: #000000 !important;
+  white-space: pre !important;
+  overflow-x: auto;
+}
+```
+
+```{r, include = FALSE}
+
+library(knitr)
+library(kableExtra)
+library(here)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+carousel <- function(plots,
+                     save_dir = knitr::fig_path(), 
+                     file_prefix = "slide",
+                     device = "png",
+                     dpi = 144,
+                     width_in = 8,
+                     height_in = 5) {
+
+  if (!requireNamespace("htmltools", quietly = TRUE)) {
+    
+    stop("Please install 'htmltools'")
+    
+  }
+
+  # Coerce to file paths (accepts either file paths or ggplot objects)
+  to_path <- function(x, i) {
+    if (is.character(x) && length(x) == 1 && file.exists(x)) {
+      
+      return(x)
+      
+    }
+    if (!inherits(x, "gg")) {
+      
+      stop("Each element of 'plots' must be a file path or a ggplot object.")
+      
+    }
+    dir.create(save_dir, showWarnings = FALSE, recursive = TRUE)
+    f <- file.path(save_dir, sprintf("%s-%02d.%s", file_prefix, i, device))
+    ggplot2::ggsave(filename = f, plot = x, dpi = dpi,
+                    width = width_in, height = height_in, units = "in", device = device)
+    f
+  }
+
+  files <- vapply(seq_along(plots), function(i) to_path(plots[[i]], i), character(1))
+
+  # Unique id so multiple carousels can coexist
+  id <- paste0("carousel-", paste(sample(c(letters, 0:9), 8, TRUE), collapse = ""))
+
+  slides_html <- paste0(
+    vapply(seq_along(files), function(i) {
+      
+      style <- if (i == 1) "" else ' style="display:none;"'
+      
+      sprintf('<img class="carousel-slide" src="%s" alt="Plot %d"%s/>',
+              files[i], i, style)
+      
+    }, character(1)),
+    collapse = "\n"
+  )
+
+  css <- sprintf('
+#%1$s { position: relative; max-width: 100%%; text-align: center; }
+#%1$s .carousel-slide { max-width: 100%%; height: auto; }
+#%1$s .carousel-arrow {
+  position: absolute; top: 50%%; transform: translateY(-50%%);
+  background: rgba(0,0,0,0.5); color: #fff; border: none;
+  padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; font-size: 1.5rem;
+}
+#%1$s .carousel-arrow.left { left: 10px; }
+#%1$s .carousel-arrow.right { right: 10px; }', id)
+
+  html <- sprintf('
+<div id="%1$s">
+  %2$s
+  <button class="carousel-arrow left" aria-label="Previous">&#10094;</button>
+  <button class="carousel-arrow right" aria-label="Next">&#10095;</button>
+</div>
+<script>
+(function(){
+  var root = document.getElementById("%1$s");
+  var slides = root.querySelectorAll(".carousel-slide");
+  var left = root.querySelector(".carousel-arrow.left");
+  var right = root.querySelector(".carousel-arrow.right");
+  var current = 0;
+  function showSlide(idx){
+    slides[current].style.display = "none";
+    current = (idx + slides.length) %% slides.length;
+    slides[current].style.display = "";
+  }
+  left.addEventListener("click", function(){ showSlide(current - 1); });
+  right.addEventListener("click", function(){ showSlide(current + 1); });
+})();
+</script>', id, slides_html)
+
+  htmltools::HTML(paste0("<style>", css, "</style>", html))
+}
+```
+
+# Setup and Installation {.tabset} 
+
+- Welcome to the MiamiR software package introductory tutorial, for all yourGWAS and wider genetic data visualisation needs!
+
+- Firstly, the recommended installation for this package is as follows: 
+
+  * Standard Method: remotes::install_github("CRON-Project/MiamiR")
+
+  * Alternative Method: BiocManager::install("CRON-Project/MiamiR")
+
+- If you have any issues please raise issues through GitHub or contact me at: spet5590@ox.ac.uk with subject heading indicating issue.
+
+- Once installed, load in the MiamiR package (lib.loc may need to be specified), This package is complete with extensive documentation and functionality. 
+
+- A web app version will also be available soon (TBC).
+```{r setup, message=FALSE}
+library(MiamiR)
+```
+👉 **Full MiamiR Tutorial (interactive HTML)**  
+https://CRON-Project.github.io/MiamiR/

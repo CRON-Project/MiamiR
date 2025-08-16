@@ -8,6 +8,7 @@ output:
       collapsed: true
       smooth_scroll: true
     theme: readable   #e.g. cosmo, cerulean, journal, lumen, paper, sandstone, simplex, spacelab, united, yeti
+    self_contained: true
 vignette: >
   %\VignetteIndexEntry{Introduction_To_MiamiR}
   %\VignetteEngine{knitr::rmarkdown}
@@ -168,7 +169,7 @@ Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
 
 setwd(plots_dir)
 ggplot2::ggsave("Intelligence_Plot.jpg", plot = Manhattan_Plot, width = 30,
-                 height = 15, units = "in", dpi = 300)
+                 height = 15, units = "in", dpi = 100)
 ```
 Let's inspect our saved Manhattan Plot.
 ```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=300, out.width="100%"}
@@ -190,7 +191,7 @@ Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats, X_Axis_Title = "Reg
 
 setwd(plots_dir)
 ggplot2::ggsave("Intelligence_Plot_Custom.jpg", plot = Manhattan_Plot, width = 30,
-                 height = 15, units = "in", dpi = 300)
+                 height = 15, units = "in", dpi = 100)
 ```
 Let's inspect our customised Manhattan Plot.
 ```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=300, out.width="100%"}
@@ -220,7 +221,7 @@ for (plot_name in names(Manhattan_Plot)) {
   ggplot2::ggsave(
     filename = file_path,
     plot = Manhattan_Plot[[plot_name]],
-    width = 30, height = 15, units = "in", dpi = 300
+    width = 30, height = 15, units = "in", dpi = 100
   )
   output_files <- c(output_files, file_path)
 }
@@ -261,7 +262,7 @@ carousel(imgs)
     width = 30,
     height = height_to_use,  
     units = "in",
-    dpi = 300,
+    dpi = 100,
     limitsize = FALSE
   )
 }
@@ -314,7 +315,7 @@ carousel(img_paths)
     width = 30,
     height = height_to_use,   
     units = "in",
-    dpi = 300,
+    dpi = 100,
     limitsize = FALSE
   )
   
@@ -375,7 +376,7 @@ Let's have a look at our heavily customised and LD annotated Regional Plot.
     width = 30,
     height = height_to_use,  
     units = "in",
-    dpi = 300,
+    dpi = 100,
     limitsize = FALSE
   )
 }
@@ -414,7 +415,7 @@ for (plot_name in names(Manhattan_Plot)) {
   ggplot2::ggsave(
     filename = file_path,
     plot = Manhattan_Plot[[plot_name]],
-    width = 30, height = 15, units = "in", dpi = 300
+    width = 30, height = 15, units = "in", dpi = 100
   )
   output_files <- c(output_files, file_path)
 }
@@ -439,7 +440,7 @@ Miami_Plot <- Miami_Plot(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househ
 
 setwd(plots_dir)
 ggplot2::ggsave("Test_Miami.jpg", plot = Miami_Plot, width = 30,
-                height = 20, units = "in", dpi = 300)
+                height = 20, units = "in", dpi = 100)
 ```
 Let's inspect our Miami Plot.
 ```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
@@ -463,7 +464,7 @@ Miami_Plot <- Miami_Plot(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Househ
 
 setwd(plots_dir)
 ggplot2::ggsave("Custom_Test_Miami.jpg", plot = Miami_Plot, width = 30,
-                height = 20, units = "in", dpi = 300)
+                height = 20, units = "in", dpi = 100)
 ```
 Let's inspect our customised Miami Plot.
 ```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
@@ -481,7 +482,7 @@ Miami_Plot <- Miami_Plot(Top_Data = Sum_Stats[1], Bottom_Data = Sum_Stats[2],
 
 setwd(plots_dir)
 ggplot2::ggsave("Split_Custom_Test_Miami.jpg", plot = Miami_Plot, width = 30,
-                height = 20, units = "in", dpi = 300)  
+                height = 20, units = "in", dpi = 100)  
 ```
 Let's inspect our split customisation within our new Miami Plot.
 ```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=100, out.width="100%"}
@@ -510,7 +511,7 @@ ggplot2::ggsave(
   plot = Forest_Plot,
   height = attr(Forest_Plot, "dynamic_height", exact = TRUE),
   width = 10,
-  dpi = 300,
+  dpi = 100,
   units = "in"
 )
 ```
@@ -537,7 +538,7 @@ ggplot2::ggsave(
   plot = Forest_Plot,
   height = attr(Forest_Plot, "dynamic_height", exact = TRUE),
   width = 10,
-  dpi = 300,
+  dpi = 100,
   units = "in"
 )
 ```
@@ -567,7 +568,7 @@ ggplot2::ggsave(
   plot = Forest_Plot,
   height = attr(Forest_Plot, "dynamic_height", exact = TRUE),
   width = 10,
-  dpi = 300,
+  dpi = 100,
   units = "in"
 )
 ```
@@ -652,7 +653,7 @@ Tube_Alloys_Plots <- invisible(
   save_all_plots(
     Plots,
     base_dir = file.path(plots_dir, "Tube_Alloys_Plots"),
-    dpi = 300
+    dpi = 100
   )
 )
 ```
