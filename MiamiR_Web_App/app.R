@@ -1,327 +1,330 @@
-  library(shiny)
 
-  library(ggplot2)
-  library(vroom)
-  library(dplyr)
-  library(plotly)
-  library(htmlwidgets)
-  library(shinyBS)
-  library(mailR)
-  library(googledrive)
-
-
-
-  # Fallback operator: use 'a' if not NULL, otherwise 'b'
-  `%||%` <- function(a, b) {
-    if (!is.null(a)) a else b
-  }
+library(shiny)
+library(ggplot2)
+library(vroom)
+library(dplyr)
+library(plotly)
+library(htmlwidgets)
+library(shinyBS)
+library(mailR)
+library(googledrive)
 
 
 
-  # Authenticate once (automatically)
-  drive_auth(path = "C:/Users/callumon/Miami_Package_R/MiamiR/miamir-storage-361ee7c11e56.json")
+# Fallback operator: use 'a' if not NULL, otherwise 'b'
+`%||%` <- function(a, b) {
+  if (!is.null(a)) a else b
+}
 
 
-  if (!googledrive::drive_has_token()) {
-    googledrive::drive_auth(path = "C:/Users/callumon/Miami_Package_R/MiamiR/miamir-storage-361ee7c11e56.json")
-  }
+
+# Authenticate once (automatically)
+#drive_auth(path = "C:/Users/callumon/Miami_Package_R/MiamiR/miamir-460301-415cd1f1760e.json")
 
 
-  # Increase file upload limit to 10 GB
-  options(shiny.maxRequestSize = 10 * 1024^3)
-  options(shiny.http.timeout = 300)  # Timeout increased to 5 minutes
-  options(shiny.maxRequestSize = 10 * 1024^3)  # 30 MB
+#if (!googledrive::drive_has_token()) {
+#  googledrive::drive_auth(path = "C:/Users/callumon/Miami_Package_R/MiamiR/miamir-460301-415cd1f1760e.json")
+#}
+
+drive_auth(cache = ".secrets", email = "kingofthepotatoescron@gmail.com")
 
 
-  # Helper function to generate dynamic UI inputs, specifically handling list inputs
-  generate_inputs_with_defaults <- function(func, saved_values = list()) {
-    arg_list <- formals(func)
 
-    inputs <- lapply(names(arg_list), function(arg_name) {
-      if (arg_name %in% c("Data", "Top_Data", "Bottom_Data")) return(NULL)
+# Increase file upload limit to 10 GB
+options(shiny.maxRequestSize = 10 * 1024^3)
+options(shiny.http.timeout = 300)  # Timeout increased to 5 minutes
+options(shiny.maxRequestSize = 10 * 1024^3)  # 30 MB
 
-      arg_value <- arg_list[[arg_name]]
-      if (is.symbol(arg_value) || missing(arg_value)) return(NULL)
-      if (is.call(arg_value)) arg_value <- eval(arg_value)
 
-      # Use saved value if present
-      value_to_use <- saved_values[[arg_name]] %||% arg_value
+# Helper function to generate dynamic UI inputs, specifically handling list inputs
+generate_inputs_with_defaults <- function(func, saved_values = list()) {
+  arg_list <- formals(func)
 
-      if (is.numeric(value_to_use) && length(value_to_use) > 1) {
-        textInput(arg_name, label = arg_name, value = paste(value_to_use, collapse = ","))
-      } else if (is.character(value_to_use) && length(value_to_use) > 1) {
-        textInput(arg_name, label = arg_name, value = paste(value_to_use, collapse = ","))
-      } else if (is.numeric(value_to_use)) {
-        numericInput(arg_name, label = arg_name, value = value_to_use)
-      } else if (is.character(value_to_use)) {
-        textInput(arg_name, label = arg_name, value = value_to_use)
-      } else if (is.logical(value_to_use)) {
-        checkboxInput(arg_name, label = arg_name, value = value_to_use)
+  inputs <- lapply(names(arg_list), function(arg_name) {
+    if (arg_name %in% c("Data", "Top_Data", "Bottom_Data")) return(NULL)
+
+    arg_value <- arg_list[[arg_name]]
+    if (is.symbol(arg_value) || missing(arg_value)) return(NULL)
+    if (is.call(arg_value)) arg_value <- eval(arg_value)
+
+    # Use saved value if present
+    value_to_use <- saved_values[[arg_name]] %||% arg_value
+
+    if (is.numeric(value_to_use) && length(value_to_use) > 1) {
+      textInput(arg_name, label = arg_name, value = paste(value_to_use, collapse = ","))
+    } else if (is.character(value_to_use) && length(value_to_use) > 1) {
+      textInput(arg_name, label = arg_name, value = paste(value_to_use, collapse = ","))
+    } else if (is.numeric(value_to_use)) {
+      numericInput(arg_name, label = arg_name, value = value_to_use)
+    } else if (is.character(value_to_use)) {
+      textInput(arg_name, label = arg_name, value = value_to_use)
+    } else if (is.logical(value_to_use)) {
+      checkboxInput(arg_name, label = arg_name, value = value_to_use)
+    } else {
+      textInput(arg_name, label = arg_name, value = as.character(value_to_use))
+    }
+  })
+
+  return(Filter(Negate(is.null), inputs))
+}
+
+
+
+
+
+generate_combined_inputs_with_defaults <- function(primary_func, inherited_func, saved_values = list()) {
+  # Preserve all args, including NULL, by using pairlist merging
+  args_combined <- as.list(c(formals(inherited_func), formals(primary_func)))
+  args_combined <- args_combined[!names(args_combined) %in% c("Data", "Top_Data", "Bottom_Data")]
+
+  inputs <- lapply(names(args_combined), function(arg_name) {
+    val <- args_combined[[arg_name]]
+
+    # Safely evaluate each default value
+    arg_value <- tryCatch({
+      if (is.symbol(val)) {
+        if (deparse(val) == "NULL") NULL else return(NULL)  # Accept NULL, skip ...
+      } else if (is.call(val)) {
+        eval(val)
       } else {
-        textInput(arg_name, label = arg_name, value = as.character(value_to_use))
+        val
       }
-    })
+    }, error = function(e) NULL)
 
-    return(Filter(Negate(is.null), inputs))
-  }
-
-
+    # Use saved value if available
+    value_to_use <- saved_values[[arg_name]] %||% arg_value
 
 
+    # UI rendering
+    if (is.null(value_to_use)) {
+      return(textInput(arg_name, label = arg_name, value = "", placeholder = "NULL (default)"))
+    } else if (is.numeric(value_to_use) && length(value_to_use) > 1) {
+      textInput(arg_name, label = arg_name, value = paste(value_to_use, collapse = ","))
+    } else if (is.character(value_to_use) && length(value_to_use) > 1) {
+      textInput(arg_name, label = arg_name, value = paste(value_to_use, collapse = ","))
+    } else if (is.numeric(value_to_use)) {
+      numericInput(arg_name, label = arg_name, value = value_to_use)
+    } else if (is.character(value_to_use)) {
+      textInput(arg_name, label = arg_name, value = value_to_use)
+    } else if (is.logical(value_to_use)) {
+      checkboxInput(arg_name, label = arg_name, value = value_to_use)
+    } else {
+      textInput(arg_name, label = arg_name, value = as.character(value_to_use))
+    }
+  })
 
-  generate_combined_inputs_with_defaults <- function(primary_func, inherited_func, saved_values = list()) {
-    # Preserve all args, including NULL, by using pairlist merging
-    args_combined <- as.list(c(formals(inherited_func), formals(primary_func)))
-    args_combined <- args_combined[!names(args_combined) %in% c("Data", "Top_Data", "Bottom_Data")]
-
-    inputs <- lapply(names(args_combined), function(arg_name) {
-      val <- args_combined[[arg_name]]
-
-      # Safely evaluate each default value
-      arg_value <- tryCatch({
-        if (is.symbol(val)) {
-          if (deparse(val) == "NULL") NULL else return(NULL)  # Accept NULL, skip ...
-        } else if (is.call(val)) {
-          eval(val)
-        } else {
-          val
-        }
-      }, error = function(e) NULL)
-
-      # Use saved value if available
-      value_to_use <- saved_values[[arg_name]] %||% arg_value
+  Filter(Negate(is.null), inputs)
+}
 
 
-      # UI rendering
-      if (is.null(value_to_use)) {
-        return(textInput(arg_name, label = arg_name, value = "", placeholder = "NULL (default)"))
-      } else if (is.numeric(value_to_use) && length(value_to_use) > 1) {
-        textInput(arg_name, label = arg_name, value = paste(value_to_use, collapse = ","))
-      } else if (is.character(value_to_use) && length(value_to_use) > 1) {
-        textInput(arg_name, label = arg_name, value = paste(value_to_use, collapse = ","))
-      } else if (is.numeric(value_to_use)) {
-        numericInput(arg_name, label = arg_name, value = value_to_use)
-      } else if (is.character(value_to_use)) {
-        textInput(arg_name, label = arg_name, value = value_to_use)
-      } else if (is.logical(value_to_use)) {
-        checkboxInput(arg_name, label = arg_name, value = value_to_use)
-      } else {
-        textInput(arg_name, label = arg_name, value = as.character(value_to_use))
-      }
-    })
 
+
+
+generate_combined_inputs <- function(primary_func, inherited_func) {
+  # Combine arguments from both
+  args_primary <- formals(primary_func)
+  args_inherited <- formals(inherited_func)
+
+  # Remove duplicates from inherited that exist in primary
+  args_combined <- modifyList(as.list(args_inherited), as.list(args_primary))
+
+  # Remove "Data" or any disallowed ones
+  args_combined <- args_combined[!names(args_combined) %in% c("Data", "Top_Data", "Bottom_Data")]
+
+  # Render inputs
+  inputs <- lapply(names(args_combined), function(arg_name) {
+    arg_value <- args_combined[[arg_name]]
+    if (missing(arg_value) || is.symbol(arg_value)) return(NULL)
+    if (is.call(arg_value)) arg_value <- eval(arg_value)
+
+    if (is.numeric(arg_value) && length(arg_value) > 1) {
+      textInput(arg_name, label = arg_name, value = paste(arg_value, collapse = ","))
+    } else if (is.character(arg_value) && length(arg_value) > 1) {
+      textInput(arg_name, label = arg_name, value = paste(arg_value, collapse = ","))
+    } else if (is.numeric(arg_value)) {
+      numericInput(arg_name, label = arg_name, value = arg_value)
+    } else if (is.character(arg_value)) {
+      textInput(arg_name, label = arg_name, value = arg_value)
+    } else if (is.logical(arg_value)) {
+      checkboxInput(arg_name, label = arg_name, value = arg_value)
+    } else {
+      textInput(arg_name, label = arg_name, value = as.character(arg_value))
+    }
+  })
+
+  # Download options
+  file_type_input <- textInput("File_Type", label = "File Type", value = "jpg")
+  width_input <- numericInput("Width", label = "Plot Width (in)", value = 30)
+  height_input <- numericInput("Height", label = "Plot Height (in)", value = 15)
+  dpi_input <- numericInput("Quality", label = "Plot DPI", value = 300)
+
+  return(c(
+    list(file_type_input, width_input, height_input, dpi_input),
     Filter(Negate(is.null), inputs)
-  }
+  ))
+}
+
+
+# Define UI for the Shiny app
+# Define UI for the Shiny app
+# Define UI for the Shiny app
+# Define UI for the Shiny app
+# Define UI for the Shiny app
+
+ui <- fluidPage(
+  uiOutput("mainUI"),     # This will hold your full tabbed app — only shown after "Continue"
+  uiOutput("landingUI")   # This will show first, as the overlay screen
+)
 
 
 
 
 
-  generate_combined_inputs <- function(primary_func, inherited_func) {
-    # Combine arguments from both
-    args_primary <- formals(primary_func)
-    args_inherited <- formals(inherited_func)
 
-    # Remove duplicates from inherited that exist in primary
-    args_combined <- modifyList(as.list(args_inherited), as.list(args_primary))
+server <- function(input, output, session) {
 
-    # Remove "Data" or any disallowed ones
-    args_combined <- args_combined[!names(args_combined) %in% c("Data", "Top_Data", "Bottom_Data")]
+  batch_settings <- reactiveValues()
 
-    # Render inputs
-    inputs <- lapply(names(args_combined), function(arg_name) {
-      arg_value <- args_combined[[arg_name]]
-      if (missing(arg_value) || is.symbol(arg_value)) return(NULL)
-      if (is.call(arg_value)) arg_value <- eval(arg_value)
 
-      if (is.numeric(arg_value) && length(arg_value) > 1) {
-        textInput(arg_name, label = arg_name, value = paste(arg_value, collapse = ","))
-      } else if (is.character(arg_value) && length(arg_value) > 1) {
-        textInput(arg_name, label = arg_name, value = paste(arg_value, collapse = ","))
-      } else if (is.numeric(arg_value)) {
-        numericInput(arg_name, label = arg_name, value = arg_value)
-      } else if (is.character(arg_value)) {
-        textInput(arg_name, label = arg_name, value = arg_value)
-      } else if (is.logical(arg_value)) {
-        checkboxInput(arg_name, label = arg_name, value = arg_value)
+  # Place at the top of server()
+  batch_pdfs <- reactiveVal(list())
+
+  batch_regional_indices <- reactiveValues()
+  batch_regional_plots <- reactiveValues()
+
+
+  show_landing <- reactiveVal(TRUE)
+
+  show_menu <- reactiveVal(FALSE)
+  selectedTab <- reactiveVal("Home")
+
+  observeEvent(input$goMenu, {
+    show_menu(TRUE)
+  })
+
+
+
+  output$functionSelectionUI <- renderUI({
+    tagList(
+      checkboxGroupInput("selectedFunctions", "Select Functions to Run:",
+                         choices = c("Single_Plot", "Regional_Plot", "Miami_Plot", "Forest_Plot", "Annotate_Data", "Model_Munge"),
+                         selected = input$selectedFunctions),
+      lapply(input$selectedFunctions, function(fn) {
+        actionButton(paste0("edit_", fn), paste("⚙️ Settings for", fn), class = "btn-info", style = "margin-bottom: 10px;")
+      })
+    )
+  })
+
+
+
+  observe({
+    lapply(c("Single_Plot", "Regional_Plot", "Miami_Plot", "Forest_Plot", "Annotate_Data", "Model_Munge"), function(fn) {
+      observeEvent(input[[paste0("edit_", fn)]], {
+        showModal(modalDialog(
+          title = paste("Configure Settings for", fn),
+          size = "l",
+          easyClose = FALSE,
+          footer = tagList(
+            actionButton(paste0("save_", fn), "Save Settings", class = "btn-primary"),
+            modalButton("Cancel")
+          ),
+          uiOutput(paste0("batch_settings_ui_", fn))
+        ))
+      })
+    })
+  })
+
+
+
+  lapply(c("Single_Plot", "Regional_Plot", "Miami_Plot", "Forest_Plot", "Annotate_Data", "Model_Munge"), function(fn) {
+    output[[paste0("batch_settings_ui_", fn)]] <- renderUI({
+      saved <- batch_settings[[fn]] %||% list()
+
+      content <- if (fn == "Regional_Plot") {
+        generate_combined_inputs_with_defaults(.Regional_Plot_original, .Single_Plot_original, saved_values = saved)
+      } else if (fn == "Single_Plot") {
+        generate_inputs_with_defaults(.Single_Plot_original, saved_values = saved)
       } else {
-        textInput(arg_name, label = arg_name, value = as.character(arg_value))
+        generate_inputs_with_defaults(get(fn), saved_values = saved)
       }
-    })
-
-    # Download options
-    file_type_input <- textInput("File_Type", label = "File Type", value = "jpg")
-    width_input <- numericInput("Width", label = "Plot Width (in)", value = 30)
-    height_input <- numericInput("Height", label = "Plot Height (in)", value = 15)
-    dpi_input <- numericInput("Quality", label = "Plot DPI", value = 300)
-
-    return(c(
-      list(file_type_input, width_input, height_input, dpi_input),
-      Filter(Negate(is.null), inputs)
-    ))
-  }
 
 
-  # Define UI for the Shiny app
-  # Define UI for the Shiny app
-  # Define UI for the Shiny app
-  # Define UI for the Shiny app
-  # Define UI for the Shiny app
-
-  ui <- fluidPage(
-    uiOutput("mainUI"),     # This will hold your full tabbed app — only shown after "Continue"
-    uiOutput("landingUI")   # This will show first, as the overlay screen
-  )
-
-
-
-
-
-
-  server <- function(input, output, session) {
-
-    batch_settings <- reactiveValues()
-
-
-    # Place at the top of server()
-    batch_pdfs <- reactiveVal(list())
-
-    batch_regional_indices <- reactiveValues()
-    batch_regional_plots <- reactiveValues()
-
-
-    show_landing <- reactiveVal(TRUE)
-
-    show_menu <- reactiveVal(FALSE)
-    selectedTab <- reactiveVal("Home")
-
-    observeEvent(input$goMenu, {
-      show_menu(TRUE)
-    })
-
-
-
-    output$functionSelectionUI <- renderUI({
       tagList(
-        checkboxGroupInput("selectedFunctions", "Select Functions to Run:",
-                           choices = c("Single_Plot", "Regional_Plot", "Miami_Plot", "Forest_Plot", "Annotate_Data", "Model_Munge"),
-                           selected = input$selectedFunctions),
-        lapply(input$selectedFunctions, function(fn) {
-          actionButton(paste0("edit_", fn), paste("⚙️ Settings for", fn), class = "btn-info", style = "margin-bottom: 10px;")
-        })
+        actionButton(paste0("restore_", fn), "Restore Defaults", class = "btn-danger", style = "margin-bottom: 15px;"),
+        content
       )
     })
 
 
 
-    observe({
-      lapply(c("Single_Plot", "Regional_Plot", "Miami_Plot", "Forest_Plot", "Annotate_Data", "Model_Munge"), function(fn) {
-        observeEvent(input[[paste0("edit_", fn)]], {
-          showModal(modalDialog(
-            title = paste("Configure Settings for", fn),
-            size = "l",
-            easyClose = FALSE,
-            footer = tagList(
-              actionButton(paste0("save_", fn), "Save Settings", class = "btn-primary"),
-              modalButton("Cancel")
-            ),
-            uiOutput(paste0("batch_settings_ui_", fn))
-          ))
-        })
-      })
-    })
+
+  })
 
 
 
-    lapply(c("Single_Plot", "Regional_Plot", "Miami_Plot", "Forest_Plot", "Annotate_Data", "Model_Munge"), function(fn) {
-      output[[paste0("batch_settings_ui_", fn)]] <- renderUI({
-        saved <- batch_settings[[fn]] %||% list()
+  lapply(c("Single_Plot", "Regional_Plot", "Miami_Plot", "Forest_Plot", "Annotate_Data", "Model_Munge"), function(fn) {
+    observeEvent(input[[paste0("save_", fn)]], {
+      args <- if (fn == "Regional_Plot") {
+        modifyList(as.list(formals(.Single_Plot_original)), as.list(formals(.Regional_Plot_original)))
+      }else if (fn == "Single_Plot") {
+        formals(.Single_Plot_original)
+      }
+      else {
+        formals(get(fn))
+      }
 
-        content <- if (fn == "Regional_Plot") {
-          generate_combined_inputs_with_defaults(.Regional_Plot_original, .Single_Plot_original, saved_values = saved)
-        } else if (fn == "Single_Plot") {
-          generate_inputs_with_defaults(.Single_Plot_original, saved_values = saved)
-        } else {
-          generate_inputs_with_defaults(get(fn), saved_values = saved)
-        }
+      user_values <- list()
 
+      for (arg in names(args)) {
+        val <- input[[arg]]
+        if (!is.null(val)) {
+          val <- if (is.character(val) && val == "") NULL else val
 
-        tagList(
-          actionButton(paste0("restore_", fn), "Restore Defaults", class = "btn-danger", style = "margin-bottom: 15px;"),
-          content
-        )
-      })
-
-
-
-
-    })
-
-
-
-    lapply(c("Single_Plot", "Regional_Plot", "Miami_Plot", "Forest_Plot", "Annotate_Data", "Model_Munge"), function(fn) {
-      observeEvent(input[[paste0("save_", fn)]], {
-        args <- if (fn == "Regional_Plot") {
-          modifyList(as.list(formals(.Single_Plot_original)), as.list(formals(.Regional_Plot_original)))
-        }else if (fn == "Single_Plot") {
-          formals(.Single_Plot_original)
-        }
-        else {
-          formals(get(fn))
-        }
-
-        user_values <- list()
-
-        for (arg in names(args)) {
-          val <- input[[arg]]
-          if (!is.null(val)) {
-            val <- if (is.character(val) && val == "") NULL else val
-
-            if (!is.null(val) && is.character(val) && grepl(",", val)) {
-              val_split <- strsplit(val, ",")[[1]]
-              val_split <- trimws(val_split)
-              user_values[[arg]] <- if (all(val_split == "")) NULL else val_split
-            } else {
-              user_values[[arg]] <- val
-            }
+          if (!is.null(val) && is.character(val) && grepl(",", val)) {
+            val_split <- strsplit(val, ",")[[1]]
+            val_split <- trimws(val_split)
+            user_values[[arg]] <- if (all(val_split == "")) NULL else val_split
+          } else {
+            user_values[[arg]] <- val
           }
         }
+      }
 
 
-        batch_settings[[fn]] <- user_values
-        removeModal()
+      batch_settings[[fn]] <- user_values
+      removeModal()
 
-        # Optional: Save to user profile if signed in
-        if (!user_session$is_guest) {
-          saveRDS(batch_settings, file = paste0("user_settings_", user_session$username, ".rds"))
-        }
-      })
+      # Optional: Save to user profile if signed in
+      if (!user_session$is_guest) {
+        saveRDS(batch_settings, file = paste0("user_settings_", user_session$username, ".rds"))
+      }
     })
+  })
 
 
-    lapply(c("Single_Plot", "Regional_Plot", "Miami_Plot", "Forest_Plot", "Annotate_Data", "Model_Munge"), function(fn) {
-      observeEvent(input[[paste0("restore_", fn)]], {
-        batch_settings[[fn]] <- list()  # Wipe saved settings
+  lapply(c("Single_Plot", "Regional_Plot", "Miami_Plot", "Forest_Plot", "Annotate_Data", "Model_Munge"), function(fn) {
+    observeEvent(input[[paste0("restore_", fn)]], {
+      batch_settings[[fn]] <- list()  # Wipe saved settings
 
-        # Optional: update user file on disk if signed in
-        if (!user_session$is_guest) {
-          saveRDS(batch_settings, file = paste0("user_settings_", user_session$username, ".rds"))
-        }
+      # Optional: update user file on disk if signed in
+      if (!user_session$is_guest) {
+        saveRDS(batch_settings, file = paste0("user_settings_", user_session$username, ".rds"))
+      }
 
-        showModal(modalDialog(
-          title = "✅ Defaults Restored",
-          paste0(fn, " settings have been reset to defaults."),
-          easyClose = TRUE
-        ))
-      })
+      showModal(modalDialog(
+        title = "✅ Defaults Restored",
+        paste0(fn, " settings have been reset to defaults."),
+        easyClose = TRUE
+      ))
     })
+  })
 
 
 
 
-    output$dashboardMenuUI <- renderUI({
-      fluidPage(
-        tags$style(HTML("
+  output$dashboardMenuUI <- renderUI({
+    fluidPage(
+      tags$style(HTML("
         .tile-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -356,120 +359,120 @@
 
 
       ")),
-        h2("Select a Module", style = "text-align:center; padding-top: 20px;"),
-        div(class = "tile-grid",
-            actionButton("goHome", "Information", class = "tile-button"),
-            actionButton("goSingle", "Single_Plot()", class = "tile-button"),
-            actionButton("goRegional", "Regional_Plot()", class = "tile-button"),
-            actionButton("goMiami", "Miami_Plot()", class = "tile-button"),
-            actionButton("goForest", "Forest_Plot()", class = "tile-button"),
-            actionButton("goAnnotate", "Annotate_Data()", class = "tile-button"),
-            actionButton("goModel", "Model_Munge()", class = "tile-button"),
-            actionButton("goBatch", "Batch Mode", class = "tile-button")
-        )
+      h2("Select a Module", style = "text-align:center; padding-top: 20px;"),
+      div(class = "tile-grid",
+          actionButton("goHome", "Information", class = "tile-button"),
+          actionButton("goSingle", "Single_Plot()", class = "tile-button"),
+          actionButton("goRegional", "Regional_Plot()", class = "tile-button"),
+          actionButton("goMiami", "Miami_Plot()", class = "tile-button"),
+          actionButton("goForest", "Forest_Plot()", class = "tile-button"),
+          actionButton("goAnnotate", "Annotate_Data()", class = "tile-button"),
+          actionButton("goModel", "Model_Munge()", class = "tile-button"),
+          actionButton("goBatch", "Batch Mode", class = "tile-button")
       )
-    })
+    )
+  })
 
 
 
-    # User authentication reactive storage
-    credentials <- reactiveVal(data.frame(username = character(), password = character(), stringsAsFactors = FALSE))
-    user_session <- reactiveValues(logged_in = FALSE, username = NULL, is_guest = FALSE)
+  # User authentication reactive storage
+  credentials <- reactiveVal(data.frame(username = character(), password = character(), stringsAsFactors = FALSE))
+  user_session <- reactiveValues(logged_in = FALSE, username = NULL, is_guest = FALSE)
 
-    # Load stored credentials from file if exists
-    if (file.exists("user_credentials.rds")) {
-      credentials(readRDS("user_credentials.rds"))
-    }
+  # Load stored credentials from file if exists
+  if (file.exists("user_credentials.rds")) {
+    credentials(readRDS("user_credentials.rds"))
+  }
 
-    observeEvent(input$goHome, {
-      selectedTab("Home")
-      show_menu(FALSE)
-    })
-    observeEvent(input$goSingle, {
-      selectedTab("Single_Plot()")
-      show_menu(FALSE)
-    })
-    observeEvent(input$goRegional, {
-      selectedTab("Regional_Plot()")
-      show_menu(FALSE)
-    })
-    observeEvent(input$goMiami, {
-      selectedTab("Miami_Plot()")
-      show_menu(FALSE)
-    })
-    observeEvent(input$goForest, {
-      selectedTab("Forest_Plot()")
-      show_menu(FALSE)
-    })
-    observeEvent(input$goAnnotate, {
-      selectedTab("Annotate_Data()")
-      show_menu(FALSE)
-    })
-    observeEvent(input$goModel, {
-      selectedTab("Model_Munge()")
-      show_menu(FALSE)
-    })
-    observeEvent(input$goBatch, {
-      selectedTab("Automated Batch Mode")
-      show_menu(FALSE)
-    })
+  observeEvent(input$goHome, {
+    selectedTab("Home")
+    show_menu(FALSE)
+  })
+  observeEvent(input$goSingle, {
+    selectedTab("Single_Plot()")
+    show_menu(FALSE)
+  })
+  observeEvent(input$goRegional, {
+    selectedTab("Regional_Plot()")
+    show_menu(FALSE)
+  })
+  observeEvent(input$goMiami, {
+    selectedTab("Miami_Plot()")
+    show_menu(FALSE)
+  })
+  observeEvent(input$goForest, {
+    selectedTab("Forest_Plot()")
+    show_menu(FALSE)
+  })
+  observeEvent(input$goAnnotate, {
+    selectedTab("Annotate_Data()")
+    show_menu(FALSE)
+  })
+  observeEvent(input$goModel, {
+    selectedTab("Model_Munge()")
+    show_menu(FALSE)
+  })
+  observeEvent(input$goBatch, {
+    selectedTab("Automated Batch Mode")
+    show_menu(FALSE)
+  })
 
 
-    observeEvent(input$auth_submit, {
-      if (input$auth_choice == "Continue as Guest") {
+  observeEvent(input$auth_submit, {
+    if (input$auth_choice == "Continue as Guest") {
+      user_session$logged_in <- TRUE
+      show_landing(FALSE)
+      show_menu(TRUE)
+
+      user_session$is_guest <- TRUE
+
+
+    } else if (input$auth_choice == "Login") {
+      users <- credentials()
+      match <- users %>%
+        filter(username == input$auth_username, password == input$auth_password)
+
+      if (nrow(match) == 1) {
         user_session$logged_in <- TRUE
+        user_session$is_guest <- FALSE
+        user_session$username <- input$auth_username
         show_landing(FALSE)
-        show_menu(TRUE)
-
-        user_session$is_guest <- TRUE
-
-
-      } else if (input$auth_choice == "Login") {
-        users <- credentials()
-        match <- users %>%
-          filter(username == input$auth_username, password == input$auth_password)
-
-        if (nrow(match) == 1) {
-          user_session$logged_in <- TRUE
-          user_session$is_guest <- FALSE
-          user_session$username <- input$auth_username
-          show_landing(FALSE)
-        } else {
-          showModal(modalDialog("❌ Invalid login credentials", easyClose = TRUE))
-        }
+      } else {
+        showModal(modalDialog("❌ Invalid login credentials", easyClose = TRUE))
+      }
 
 
-        if (!user_session$is_guest && file.exists(paste0("user_settings_", input$auth_username, ".rds"))) {
-          batch_settings_loaded <- readRDS(paste0("user_settings_", input$auth_username, ".rds"))
-          for (name in names(batch_settings_loaded)) {
-            batch_settings[[name]] <- batch_settings_loaded[[name]]
-          }
-        }
-
-
-      } else if (input$auth_choice == "Register") {
-        users <- credentials()
-        if (input$auth_username %in% users$username) {
-          showModal(modalDialog("❌ Username already exists", easyClose = TRUE))
-        } else {
-          new_user <- data.frame(username = input$auth_username,
-                                 password = input$auth_password,
-                                 stringsAsFactors = FALSE)
-          all_users <- rbind(users, new_user)
-          credentials(all_users)
-          saveRDS(all_users, "user_credentials.rds")  # Persist between sessions
-          showModal(modalDialog("✅ Registered successfully. You can now login.", easyClose = TRUE))
+      if (!user_session$is_guest && file.exists(paste0("user_settings_", input$auth_username, ".rds"))) {
+        batch_settings_loaded <- readRDS(paste0("user_settings_", input$auth_username, ".rds"))
+        for (name in names(batch_settings_loaded)) {
+          batch_settings[[name]] <- batch_settings_loaded[[name]]
         }
       }
-    })
 
 
-    output$landingUI <- renderUI({
-      req(show_landing())
+    } else if (input$auth_choice == "Register") {
+      users <- credentials()
+      if (input$auth_username %in% users$username) {
+        showModal(modalDialog("❌ Username already exists", easyClose = TRUE))
+      } else {
+        new_user <- data.frame(username = input$auth_username,
+                               password = input$auth_password,
+                               stringsAsFactors = FALSE)
+        all_users <- rbind(users, new_user)
+        credentials(all_users)
+        saveRDS(all_users, "user_credentials.rds")  # Persist between sessions
+        showModal(modalDialog("✅ Registered successfully. You can now login.", easyClose = TRUE))
+      }
+    }
+  })
 
-      fluidPage(
-        tags$head(
-          tags$style(HTML("
+
+  output$landingUI <- renderUI({
+    req(show_landing())
+
+    fluidPage(
+      tags$head(
+        tags$style(HTML("
 
 
     .login-container {
@@ -588,274 +591,274 @@
 
   "))
 
-        ),
-        div(class = "login-container",
-            div(class = "login-inner",
-                tags$h2("Welcome to the MiamiR App"),
-                radioButtons("auth_choice", label = NULL,
-                             choices = c("Login", "Register", "Continue as Guest"),
-                             selected = "Login",
-                             inline = TRUE),
-                conditionalPanel(
-                  condition = "input.auth_choice != 'Continue as Guest'",
-                  textInput("auth_username", "Username"),
-                  passwordInput("auth_password", "Password")
-                ),
-                actionButton("auth_submit", "Continue", class = "btn"),
+      ),
+      div(class = "login-container",
+          div(class = "login-inner",
+              tags$h2("Welcome to the MiamiR App"),
+              radioButtons("auth_choice", label = NULL,
+                           choices = c("Login", "Register", "Continue as Guest"),
+                           selected = "Login",
+                           inline = TRUE),
+              conditionalPanel(
+                condition = "input.auth_choice != 'Continue as Guest'",
+                textInput("auth_username", "Username"),
+                passwordInput("auth_password", "Password")
+              ),
+              actionButton("auth_submit", "Continue", class = "btn"),
 
-                div(class = "manhattan-wrapper",
-                    div(class = "manhattan-preview",
-                        div(class = "chrom up h90", style = "left: 0px;"),
-                        div(class = "chrom down h110", style = "left: 15px;"),
-                        div(class = "chrom up h70", style = "left: 30px;"),
-                        div(class = "chrom down h90", style = "left: 45px;"),
-                        div(class = "chrom up h50", style = "left: 60px;"),
-                        div(class = "chrom down h130", style = "left: 75px;"),
-                        div(class = "chrom up h110", style = "left: 90px;"),
-                        div(class = "chrom down h70", style = "left: 105px;"),
-                        div(class = "chrom up h130", style = "left: 120px;"),
-                        div(class = "chrom down h50", style = "left: 135px;")
-                    )
-                )
-            )
-        )
-
+              div(class = "manhattan-wrapper",
+                  div(class = "manhattan-preview",
+                      div(class = "chrom up h90", style = "left: 0px;"),
+                      div(class = "chrom down h110", style = "left: 15px;"),
+                      div(class = "chrom up h70", style = "left: 30px;"),
+                      div(class = "chrom down h90", style = "left: 45px;"),
+                      div(class = "chrom up h50", style = "left: 60px;"),
+                      div(class = "chrom down h130", style = "left: 75px;"),
+                      div(class = "chrom up h110", style = "left: 90px;"),
+                      div(class = "chrom down h70", style = "left: 105px;"),
+                      div(class = "chrom up h130", style = "left: 120px;"),
+                      div(class = "chrom down h50", style = "left: 135px;")
+                  )
+              )
+          )
       )
 
-
-    })
-
+    )
 
 
+  })
 
-    observeEvent(input$continueBtn, {
-      show_landing(FALSE)
-    })
 
-    output$mainUI <- renderUI({
-      req(user_session$logged_in)
-      req(!show_landing())
 
-      if (show_menu()) {
-        return(uiOutput("dashboardMenuUI"))
-      }
 
-      fluidPage(
-        tags$head(
-          tags$style(HTML("body { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; }")),
-          tags$style(HTML(".shiny-input-container { color: black; }"))
-        ),
+  observeEvent(input$continueBtn, {
+    show_landing(FALSE)
+  })
 
-        fluidRow(
-          column(9, titlePanel("MiamiR User Web App", windowTitle = "MiamiR Web App")),
-          column(3, align = "right", br(), actionButton("goMenu", "Menu", class = "btn-warning", style = "margin-top: 10px;"))
-        ),
+  output$mainUI <- renderUI({
+    req(user_session$logged_in)
+    req(!show_landing())
 
-        switch(selectedTab(),
+    if (show_menu()) {
+      return(uiOutput("dashboardMenuUI"))
+    }
 
-               "Home" = tabPanel("Home",
-                                 mainPanel(
-                                   h2("Welcome to the MiamiR package Shiny App"),
-                                   p("This application allows you to process data and generate different types of plots, including Manhattan, Miami and Forest Plots."),
-                                   p("To get started, select one of the tabs above:"),
-                                   tags$ul(
-                                     tags$li("Single_Plot() for generating Manhattan Plots"),
-                                     tags$li("Miami_Plot() for generating Miami Plots"),
-                                     tags$li("Forest_Plot() for generating Forest Plots"),
-                                     tags$li("Annotate_Data() for annotating data with RS codes for index SNPs"),
-                                     tags$li("Model_Munge() for creating and munging LM and GLM models ahead of plotting")
-                                   ),
-                                   p("Click on a tab to get started!"),
-                                   tags$img(src = "https://i.redd.it/l5sfjf60tclc1.gif", width = "500px", height = "auto")
-                                 )
-               ),
+    fluidPage(
+      tags$head(
+        tags$style(HTML("body { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; }")),
+        tags$style(HTML(".shiny-input-container { color: black; }"))
+      ),
 
-               "Single_Plot()" = tabPanel("Single_Plot()",
+      fluidRow(
+        column(9, titlePanel("MiamiR User Web App", windowTitle = "MiamiR Web App")),
+        column(3, align = "right", br(), actionButton("goMenu", "Menu", class = "btn-warning", style = "margin-top: 10px;"))
+      ),
+
+      switch(selectedTab(),
+
+             "Home" = tabPanel("Home",
+                               mainPanel(
+                                 h2("Welcome to the MiamiR package Shiny App"),
+                                 p("This application allows you to process data and generate different types of plots, including Manhattan, Miami and Forest Plots."),
+                                 p("To get started, select one of the tabs above:"),
+                                 tags$ul(
+                                   tags$li("Single_Plot() for generating Manhattan Plots"),
+                                   tags$li("Miami_Plot() for generating Miami Plots"),
+                                   tags$li("Forest_Plot() for generating Forest Plots"),
+                                   tags$li("Annotate_Data() for annotating data with RS codes for index SNPs"),
+                                   tags$li("Model_Munge() for creating and munging LM and GLM models ahead of plotting")
+                                 ),
+                                 p("Click on a tab to get started!"),
+                                 tags$img(src = "https://i.redd.it/l5sfjf60tclc1.gif", width = "500px", height = "auto")
+                               )
+             ),
+
+             "Single_Plot()" = tabPanel("Single_Plot()",
+                                        style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
+                                        sidebarLayout(
+                                          sidebarPanel(
+                                            fileInput("file1", "Upload Any File Type (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+                                            fluidRow(
+                                              column(6, uiOutput("generateBtn1")),
+                                              column(6, uiOutput("downloadBtn1"))
+                                            ),
+                                            tags$br(), tags$br(),
+                                            uiOutput("dynamic_inputs_1")
+                                          ),
+                                          mainPanel(
+                                            h4("Data Preview:"),
+                                            tableOutput("dataPreview1"),
+                                            h4("Rendered Plot:"),
+                                            uiOutput("fullscreenButton1"),
+                                            tags$div(
+                                              id = "plotProgressContainer",
+                                              style = "background-color: white; padding: 30px; text-align: center; font-family: 'Courier New', monospace;",
+                                              tags$pre(id = "plotProgressStatus", " ")  # leave blank initially
+                                            ),
+
+                                            uiOutput("interactivePlot1_ui")
+                                          )
+                                        )
+             ),
+
+             "Regional_Plot()" = tabPanel("Regional_Plot()",
                                           style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
                                           sidebarLayout(
                                             sidebarPanel(
-                                              fileInput("file1", "Upload Any File Type (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+                                              fileInput("file6", "Upload Data (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+                                              numericInput("Chromosome", "Chromosome", value = 1, min = 1),
                                               fluidRow(
-                                                column(6, uiOutput("generateBtn1")),
-                                                column(6, uiOutput("downloadBtn1"))
+                                                column(6, actionButton("submit6", "Generate Regional Plot")),
+                                                column(6, downloadButton("downloadPlot6", "Download All Plots"))
                                               ),
                                               tags$br(), tags$br(),
-                                              uiOutput("dynamic_inputs_1")
+                                              uiOutput("dynamic_inputs_6")
                                             ),
                                             mainPanel(
                                               h4("Data Preview:"),
-                                              tableOutput("dataPreview1"),
-                                              h4("Rendered Plot:"),
-                                              uiOutput("fullscreenButton1"),
-                                              tags$div(
-                                                id = "plotProgressContainer",
-                                                style = "background-color: white; padding: 30px; text-align: center; font-family: 'Courier New', monospace;",
-                                                tags$pre(id = "plotProgressStatus", " ")  # leave blank initially
-                                              ),
-
-                                              uiOutput("interactivePlot1_ui")
+                                              tableOutput("dataPreview6"),
+                                              h4("Rendered Regional Plots:"),
+                                              uiOutput("renderedPlot6")
                                             )
                                           )
-               ),
+             ),
 
-               "Regional_Plot()" = tabPanel("Regional_Plot()",
-                                            style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
-                                            sidebarLayout(
-                                              sidebarPanel(
-                                                fileInput("file6", "Upload Data (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
-                                                numericInput("Chromosome", "Chromosome", value = 1, min = 1),
-                                                fluidRow(
-                                                  column(6, actionButton("submit6", "Generate Regional Plot")),
-                                                  column(6, downloadButton("downloadPlot6", "Download All Plots"))
-                                                ),
-                                                tags$br(), tags$br(),
-                                                uiOutput("dynamic_inputs_6")
-                                              ),
-                                              mainPanel(
-                                                h4("Data Preview:"),
-                                                tableOutput("dataPreview6"),
-                                                h4("Rendered Regional Plots:"),
-                                                uiOutput("renderedPlot6")
-                                              )
-                                            )
-               ),
-
-               "Miami_Plot()" = tabPanel("Miami_Plot()",
-                                         style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
-                                         sidebarLayout(
-                                           sidebarPanel(
-                                             fileInput("topData", "Upload Top Data (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
-                                             fileInput("bottomData", "Upload Bottom Data (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
-                                             fluidRow(
-                                               column(6, actionButton("submit2", "Generate Miami Plot")),
-                                               column(6, downloadButton("downloadPlot2", "Download Miami Plot"))
-                                             ),
-                                             tags$br(),
-                                             uiOutput("dynamic_inputs_2")
+             "Miami_Plot()" = tabPanel("Miami_Plot()",
+                                       style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
+                                       sidebarLayout(
+                                         sidebarPanel(
+                                           fileInput("topData", "Upload Top Data (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+                                           fileInput("bottomData", "Upload Bottom Data (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+                                           fluidRow(
+                                             column(6, actionButton("submit2", "Generate Miami Plot")),
+                                             column(6, downloadButton("downloadPlot2", "Download Miami Plot"))
                                            ),
-                                           mainPanel(
-                                             h4("Top Data Preview:"),
-                                             tableOutput("topDataPreview"),
-                                             h4("Bottom Data Preview:"),
-                                             tableOutput("bottomDataPreview"),
-                                             h4("Rendered Miami Plot:"),
-                                             plotOutput("renderedPlot2")
-                                           )
+                                           tags$br(),
+                                           uiOutput("dynamic_inputs_2")
+                                         ),
+                                         mainPanel(
+                                           h4("Top Data Preview:"),
+                                           tableOutput("topDataPreview"),
+                                           h4("Bottom Data Preview:"),
+                                           tableOutput("bottomDataPreview"),
+                                           h4("Rendered Miami Plot:"),
+                                           plotOutput("renderedPlot2")
                                          )
-               ),
+                                       )
+             ),
 
-               "Forest_Plot()" = tabPanel("Forest_Plot()",
+             "Forest_Plot()" = tabPanel("Forest_Plot()",
+                                        style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
+                                        sidebarLayout(
+                                          sidebarPanel(
+                                            numericInput("numDatasets", "How many datasets do you want to upload?", value = 1, min = 1, max = 10),
+                                            uiOutput("dynamic_uploads"),
+                                            fluidRow(
+                                              column(6, actionButton("submit3", "Generate Forest Plot")),
+                                              column(6, downloadButton("downloadPlot3", "Download Forest Plot"))
+                                            ),
+                                            tags$br(), tags$br(),
+                                            uiOutput("dynamic_inputs_3")
+                                          ),
+                                          mainPanel(
+                                            h4("Data Preview:"),
+                                            uiOutput("dataPreview3"),
+                                            h4("Rendered Forest Plot:"),
+                                            plotOutput("renderedPlot3")
+                                          )
+                                        )
+             ),
+
+             "Annotate_Data()" = tabPanel("Annotate_Data()",
                                           style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
                                           sidebarLayout(
                                             sidebarPanel(
-                                              numericInput("numDatasets", "How many datasets do you want to upload?", value = 1, min = 1, max = 10),
-                                              uiOutput("dynamic_uploads"),
+                                              fileInput("file4", "Upload Data File (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
                                               fluidRow(
-                                                column(6, actionButton("submit3", "Generate Forest Plot")),
-                                                column(6, downloadButton("downloadPlot3", "Download Forest Plot"))
+                                                column(6, actionButton("submit4", "Annotate Data")),
+                                                column(6, downloadButton("downloadData", "Download Annotated Data"))
                                               ),
                                               tags$br(), tags$br(),
-                                              uiOutput("dynamic_inputs_3")
+                                              uiOutput("dynamic_inputs_4")
                                             ),
                                             mainPanel(
                                               h4("Data Preview:"),
-                                              uiOutput("dataPreview3"),
-                                              h4("Rendered Forest Plot:"),
-                                              plotOutput("renderedPlot3")
+                                              tableOutput("dataPreview4"),
+                                              h4("Annotated SNPs:"),
+                                              tableOutput("annotatedSNPs")
                                             )
                                           )
-               ),
+             ),
 
-               "Annotate_Data()" = tabPanel("Annotate_Data()",
-                                            style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
-                                            sidebarLayout(
-                                              sidebarPanel(
-                                                fileInput("file4", "Upload Data File (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
-                                                fluidRow(
-                                                  column(6, actionButton("submit4", "Annotate Data")),
-                                                  column(6, downloadButton("downloadData", "Download Annotated Data"))
-                                                ),
-                                                tags$br(), tags$br(),
-                                                uiOutput("dynamic_inputs_4")
-                                              ),
-                                              mainPanel(
-                                                h4("Data Preview:"),
-                                                tableOutput("dataPreview4"),
-                                                h4("Annotated SNPs:"),
-                                                tableOutput("annotatedSNPs")
-                                              )
-                                            )
-               ),
-
-               "Model_Munge()" = tabPanel("Model_Munge()",
-                                          style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
-                                          sidebarLayout(
-                                            sidebarPanel(
-                                              fileInput("file5", "Upload Data File (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
-                                              textAreaInput("modelCode", "Write Your Model Code (e.g., lm(Var1 ~ Var2 + Var3))", value = "lm(Var1 ~ Var2 + Var3)", rows = 3),
-                                              fluidRow(
-                                                column(6, actionButton("submit5", "Run Model")),
-                                                column(6, actionButton("mungeButton", "Munge Data"))
-                                              ),
-                                              tags$br(), tags$br(),
-                                              uiOutput("dynamic_inputs_5"),
-                                              downloadButton("downloadMunge", "Download Munged Data")
+             "Model_Munge()" = tabPanel("Model_Munge()",
+                                        style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
+                                        sidebarLayout(
+                                          sidebarPanel(
+                                            fileInput("file5", "Upload Data File (up to 10GB)", accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+                                            textAreaInput("modelCode", "Write Your Model Code (e.g., lm(Var1 ~ Var2 + Var3))", value = "lm(Var1 ~ Var2 + Var3)", rows = 3),
+                                            fluidRow(
+                                              column(6, actionButton("submit5", "Run Model")),
+                                              column(6, actionButton("mungeButton", "Munge Data"))
                                             ),
-                                            mainPanel(
-                                              h4("Data Preview:"),
-                                              tableOutput("dataPreview5"),
-                                              h4("Model Summary:"),
-                                              verbatimTextOutput("modelSummary"),
-                                              h4("Munged Data:"),
-                                              tableOutput("mungedData")
-                                            )
+                                            tags$br(), tags$br(),
+                                            uiOutput("dynamic_inputs_5"),
+                                            downloadButton("downloadMunge", "Download Munged Data")
+                                          ),
+                                          mainPanel(
+                                            h4("Data Preview:"),
+                                            tableOutput("dataPreview5"),
+                                            h4("Model Summary:"),
+                                            verbatimTextOutput("modelSummary"),
+                                            h4("Munged Data:"),
+                                            tableOutput("mungedData")
                                           )
-               ),
+                                        )
+             ),
 
-               "Automated Batch Mode" = tabPanel("Automated Batch Mode",
-                                                 style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
-                                                 sidebarLayout(
-                                                   sidebarPanel(
-                                                     fileInput("batchData", "Upload Top Data (for Single_Plot, Regional_Plot, Miami_Plot)", accept = ".csv", multiple = TRUE),
-                                                     conditionalPanel(
-                                                       condition = "input.selectedFunctions.includes('Miami_Plot')",
-                                                       fileInput("bottomBatchData", "Upload Bottom Data (only for Miami_Plot)", accept = ".csv")
-                                                     ),
-                                                     uiOutput("functionSelectionUI")
-
-                                                     ,
-                                                     actionButton("runBatch", "Run Selected Functions", class = "btn-success"),
-                                                     checkboxInput("sendEmail", "Email me the results?", value = FALSE),
-                                                     conditionalPanel(
-                                                       condition = "input.sendEmail == true",
-                                                       textInput("userEmail", "Enter your email address:", placeholder = "your@email.com")
-                                                     ),
-                                                     tags$br(),
-                                                     downloadButton("downloadBatchPDF", "Download All Batch Plots as PDF", class = "btn-primary"),
-                                                     tags$br(),  # Add spacing before this section
-
-                                                     tags$div(style = "margin-top: 15px;",  # Push everything down a bit
-                                                              fluidRow(
-                                                                column(8,
-                                                                       textInput("manualEmailInput", "Enter your email address:",
-                                                                                 placeholder = "name@example.com", width = "100%")
-                                                                ),
-                                                                column(4,
-                                                                       tags$br(),  # ⬅️ Aligns the button with input box
-                                                                       actionButton("manualResendEmail", "📧 Resend Email",
-                                                                                    class = "btn-info", style = "width: 100%;")
-                                                                )
-                                                              )
-                                                     )
+             "Automated Batch Mode" = tabPanel("Automated Batch Mode",
+                                               style = "background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;",
+                                               sidebarLayout(
+                                                 sidebarPanel(
+                                                   fileInput("batchData", "Upload Top Data (for Single_Plot, Regional_Plot, Miami_Plot)", accept = ".csv", multiple = TRUE),
+                                                   conditionalPanel(
+                                                     condition = "input.selectedFunctions.includes('Miami_Plot')",
+                                                     fileInput("bottomBatchData", "Upload Bottom Data (only for Miami_Plot)", accept = ".csv")
                                                    ),
-                                                   mainPanel(
-                                                     h4("Batch Execution Results:"),
-                                                     uiOutput("batchResults")
+                                                   uiOutput("functionSelectionUI")
+
+                                                   ,
+                                                   actionButton("runBatch", "Run Selected Functions", class = "btn-success"),
+                                                   checkboxInput("sendEmail", "Email me the results?", value = FALSE),
+                                                   conditionalPanel(
+                                                     condition = "input.sendEmail == true",
+                                                     textInput("userEmail", "Enter your email address:", placeholder = "your@email.com")
+                                                   ),
+                                                   tags$br(),
+                                                   downloadButton("downloadBatchPDF", "Download All Batch Plots as PDF", class = "btn-primary"),
+                                                   tags$br(),  # Add spacing before this section
+
+                                                   tags$div(style = "margin-top: 15px;",  # Push everything down a bit
+                                                            fluidRow(
+                                                              column(8,
+                                                                     textInput("manualEmailInput", "Enter your email address:",
+                                                                               placeholder = "name@example.com", width = "100%")
+                                                              ),
+                                                              column(4,
+                                                                     tags$br(),  # ⬅️ Aligns the button with input box
+                                                                     actionButton("manualResendEmail", "📧 Resend Email",
+                                                                                  class = "btn-info", style = "width: 100%;")
+                                                              )
+                                                            )
                                                    )
+                                                 ),
+                                                 mainPanel(
+                                                   h4("Batch Execution Results:"),
+                                                   uiOutput("batchResults")
                                                  )
-               )
-        ),
-        tags$script(HTML("
+                                               )
+             )
+      ),
+      tags$script(HTML("
     Shiny.addCustomMessageHandler('plot_progress', function(message) {
       const totalBars = 30;
       const filled = Math.round((message.pct / 100) * totalBars);
@@ -872,203 +875,203 @@
   "))
 
 
-      )
-    })
+    )
+  })
 
 
-    # library(blastula)
+  # library(blastula)
 
 
-    #  email_credentials <- blastula::creds_anonymous(
-    #    host = "smtp.mail.yahoo.com",
-    #    port = 465,
-    #    username = "callum.oneill@rocketmail.com",
-    #    password = "vyfnwlbnfqckumuh",
-    #    use_ssl = TRUE
-    #  )
+  #  email_credentials <- blastula::creds_anonymous(
+  #    host = "smtp.mail.yahoo.com",
+  #    port = 465,
+  #    username = "callum.oneill@rocketmail.com",
+  #    password = "vyfnwlbnfqckumuh",
+  #    use_ssl = TRUE
+  #  )
 
-    #email_credentials <- blastula::creds(
-    #  host = "smtp.mail.yahoo.com",
-    #  port = 465,
-    #  user = "callum.oneill@rocketmail.com",
-    #  pass = "vyfnwlbnfqckumuh",  # paste the 16-char app password here (no spaces)
-    #  use_ssl = TRUE
-    #  )
-
-
+  #email_credentials <- blastula::creds(
+  #  host = "smtp.mail.yahoo.com",
+  #  port = 465,
+  #  user = "callum.oneill@rocketmail.com",
+  #  pass = "vyfnwlbnfqckumuh",  # paste the 16-char app password here (no spaces)
+  #  use_ssl = TRUE
+  #  )
 
 
-    batch_pdfs <- reactiveVal(list())
 
-    # Helper function to build Single_Plot arguments for batch
-    build_single_plot_args_batch <- function(batch_top_data, file_name = NULL) {
-      args <- formals(Single_Plot)
-      args <- lapply(args, function(x) if (is.call(x)) eval(x) else x)
 
-      args$Data <- batch_top_data
+  batch_pdfs <- reactiveVal(list())
 
-      if (is.null(args$Title) || args$Title == "") {
-        if (!is.null(file_name)) {
-          args$Title <- tools::file_path_sans_ext(file_name)
-        } else {
-          args$Title <- "Auto Single Plot"
+  # Helper function to build Single_Plot arguments for batch
+  build_single_plot_args_batch <- function(batch_top_data, file_name = NULL) {
+    args <- formals(Single_Plot)
+    args <- lapply(args, function(x) if (is.call(x)) eval(x) else x)
+
+    args$Data <- batch_top_data
+
+    if (is.null(args$Title) || args$Title == "") {
+      if (!is.null(file_name)) {
+        args$Title <- tools::file_path_sans_ext(file_name)
+      } else {
+        args$Title <- "Auto Single Plot"
+      }
+    }
+
+    if (is.null(args$Interactive) || args$Interactive == "") {
+      args$Interactive <- FALSE
+    }
+
+    return(args)
+  }
+
+  # Helper function to build Regional_Plot arguments for batch
+  safe_eval <- function(x) {
+    if (missing(x)) return(NULL)
+    if (is.symbol(x)) return(NULL)
+    if (is.call(x)) return(eval(x))
+    return(x)
+  }
+
+  build_regional_plot_args_batch <- function(batch_top_data) {
+    # Combine defaults from both
+    defaults_single <- formals(Single_Plot)
+    defaults_regional <- formals(Regional_Plot)
+
+    all_defaults <- modifyList(as.list(defaults_single), as.list(defaults_regional))
+    all_defaults <- lapply(all_defaults, function(x) if (is.call(x)) eval(x) else x)
+
+    # Combine user-saved settings from both tabs!
+    saved_single <- batch_settings$Single_Plot %||% list()
+    saved_regional <- batch_settings$Regional_Plot %||% list()
+    all_saved <- modifyList(saved_single, saved_regional)
+
+    args <- modifyList(all_defaults, all_saved)
+
+    args$Data <- batch_top_data
+    #  args$Chromosome <- args$Chromosome %||% 1
+    args$Condense_Scale <- args$Condense_Scale %||% TRUE
+
+    # Clean comma-separated strings
+    for (arg in names(args)) {
+      val <- args[[arg]]
+      if (is.character(val) && length(val) == 1 && grepl(",", val)) {
+        val_split <- trimws(strsplit(val, ",")[[1]])
+        args[[arg]] <- if (all(!is.na(suppressWarnings(as.numeric(val_split))))) as.numeric(val_split) else val_split
+      }
+      if (is.character(val) && val %in% c("TRUE", "FALSE")) {
+        args[[arg]] <- as.logical(val)
+      }
+    }
+
+    return(args)
+  }
+
+
+
+
+
+  # Safe fallback operator
+  `%||%` <- function(a, b) if (!is.null(a)) a else b
+
+  build_single_plot_args_batch <- function(batch_top_data, file_name = NULL) {
+    # 1. Start with function defaults
+    defaults <- formals(Single_Plot)
+    defaults <- lapply(defaults, function(x) if (is.call(x)) eval(x) else x)
+
+    # 2. Merge in saved user settings (if any)
+    saved <- batch_settings$Single_Plot %||% list()
+    args <- modifyList(defaults, saved)
+
+    # 3. Required overrides
+    args$Data <- batch_top_data
+    args$Title <- args$Title %||% tools::file_path_sans_ext(file_name %||% "Auto Single Plot")
+    args$Interactive <- args$Interactive %||% FALSE
+
+    # 4. Convert character lists (if needed)
+    for (arg in c("Chromosome_Colours", "Break_Point", "Chromosome_Labels")) {
+      if (!is.null(args[[arg]]) && is.character(args[[arg]])) {
+        if (length(args[[arg]]) == 1 && grepl(",", args[[arg]])) {
+          args[[arg]] <- trimws(strsplit(args[[arg]], ",")[[1]])
+          if (arg == "Break_Point") args[[arg]] <- as.numeric(args[[arg]])
         }
       }
-
-      if (is.null(args$Interactive) || args$Interactive == "") {
-        args$Interactive <- FALSE
-      }
-
-      return(args)
     }
 
-    # Helper function to build Regional_Plot arguments for batch
-    safe_eval <- function(x) {
-      if (missing(x)) return(NULL)
-      if (is.symbol(x)) return(NULL)
-      if (is.call(x)) return(eval(x))
-      return(x)
-    }
+    return(args)
+  }
 
-    build_regional_plot_args_batch <- function(batch_top_data) {
-      # Combine defaults from both
-      defaults_single <- formals(Single_Plot)
-      defaults_regional <- formals(Regional_Plot)
 
-      all_defaults <- modifyList(as.list(defaults_single), as.list(defaults_regional))
-      all_defaults <- lapply(all_defaults, function(x) if (is.call(x)) eval(x) else x)
+  build_regional_plot_args_batch <- function(batch_top_data) {
+    args <- batch_settings$Regional_Plot %||% list()
+    args$Data <- batch_top_data
+    #  args$Chromosome <- args$Chromosome %||% 1
+    args$Condense_Scale <- args$Condense_Scale %||% TRUE
+    return(args)
+  }
 
-      # Combine user-saved settings from both tabs!
-      saved_single <- batch_settings$Single_Plot %||% list()
-      saved_regional <- batch_settings$Regional_Plot %||% list()
-      all_saved <- modifyList(saved_single, saved_regional)
+  build_miami_plot_args_batch <- function(top_data, bottom_data) {
+    args <- batch_settings$Miami_Plot %||% list()
+    args$Top_Data <- top_data
+    args$Bottom_Data <- bottom_data
+    return(args)
+  }
 
-      args <- modifyList(all_defaults, all_saved)
+  build_annotate_data_args_batch <- function(data) {
+    args <- batch_settings$Annotate_Data %||% list()
+    args$Data <- data
+    return(args)
+  }
 
-      args$Data <- batch_top_data
-      #  args$Chromosome <- args$Chromosome %||% 1
-      args$Condense_Scale <- args$Condense_Scale %||% TRUE
+  build_forest_plot_args_batch <- function(dataset_names) {
+    args <- batch_settings$Forest_Plot %||% list()
+    args$Data_Sets <- dataset_names
+    return(args)
+  }
 
-      # Clean comma-separated strings
-      for (arg in names(args)) {
-        val <- args[[arg]]
-        if (is.character(val) && length(val) == 1 && grepl(",", val)) {
-          val_split <- trimws(strsplit(val, ",")[[1]])
-          args[[arg]] <- if (all(!is.na(suppressWarnings(as.numeric(val_split))))) as.numeric(val_split) else val_split
-        }
-        if (is.character(val) && val %in% c("TRUE", "FALSE")) {
-          args[[arg]] <- as.logical(val)
-        }
-      }
-
-      return(args)
-    }
+  build_model_munge_args_batch <- function(model_obj_name = "Model") {
+    args <- batch_settings$Model_Munge %||% list()
+    args$Model_Object <- model_obj_name
+    return(args)
+  }
 
 
 
+  # # Helper function to build Miami_Plot arguments for batch
+  # build_miami_plot_args_batch <- function(batch_data) {
+  #   midpoint <- floor(nrow(batch_data) / 2)
+  #
+  #   args <- formals(Miami_Plot)
+  #   args <- lapply(args, function(x) if (is.call(x)) eval(x) else x)
+  #
+  #   args$Top_Data <- batch_data[1:midpoint, ]
+  #   args$Bottom_Data <- batch_data[(midpoint+1):nrow(batch_data), ]
+  #
+  #   return(args)
+  # }
+  #
+  # # Helper function to build Annotate_Data arguments for batch
+  # build_annotate_data_args_batch <- function(batch_data) {
+  #   args <- formals(Annotate_Data)
+  #   args <- lapply(args, function(x) if (is.call(x)) eval(x) else x)
+  #
+  #   args$Data <- batch_data
+  #
+  #   return(args)
+  # }
 
 
-    # Safe fallback operator
-    `%||%` <- function(a, b) if (!is.null(a)) a else b
-
-    build_single_plot_args_batch <- function(batch_top_data, file_name = NULL) {
-      # 1. Start with function defaults
-      defaults <- formals(Single_Plot)
-      defaults <- lapply(defaults, function(x) if (is.call(x)) eval(x) else x)
-
-      # 2. Merge in saved user settings (if any)
-      saved <- batch_settings$Single_Plot %||% list()
-      args <- modifyList(defaults, saved)
-
-      # 3. Required overrides
-      args$Data <- batch_top_data
-      args$Title <- args$Title %||% tools::file_path_sans_ext(file_name %||% "Auto Single Plot")
-      args$Interactive <- args$Interactive %||% FALSE
-
-      # 4. Convert character lists (if needed)
-      for (arg in c("Chromosome_Colours", "Break_Point", "Chromosome_Labels")) {
-        if (!is.null(args[[arg]]) && is.character(args[[arg]])) {
-          if (length(args[[arg]]) == 1 && grepl(",", args[[arg]])) {
-            args[[arg]] <- trimws(strsplit(args[[arg]], ",")[[1]])
-            if (arg == "Break_Point") args[[arg]] <- as.numeric(args[[arg]])
-          }
-        }
-      }
-
-      return(args)
-    }
-
-
-    build_regional_plot_args_batch <- function(batch_top_data) {
-      args <- batch_settings$Regional_Plot %||% list()
-      args$Data <- batch_top_data
-      #  args$Chromosome <- args$Chromosome %||% 1
-      args$Condense_Scale <- args$Condense_Scale %||% TRUE
-      return(args)
-    }
-
-    build_miami_plot_args_batch <- function(top_data, bottom_data) {
-      args <- batch_settings$Miami_Plot %||% list()
-      args$Top_Data <- top_data
-      args$Bottom_Data <- bottom_data
-      return(args)
-    }
-
-    build_annotate_data_args_batch <- function(data) {
-      args <- batch_settings$Annotate_Data %||% list()
-      args$Data <- data
-      return(args)
-    }
-
-    build_forest_plot_args_batch <- function(dataset_names) {
-      args <- batch_settings$Forest_Plot %||% list()
-      args$Data_Sets <- dataset_names
-      return(args)
-    }
-
-    build_model_munge_args_batch <- function(model_obj_name = "Model") {
-      args <- batch_settings$Model_Munge %||% list()
-      args$Model_Object <- model_obj_name
-      return(args)
-    }
-
-
-
-    # # Helper function to build Miami_Plot arguments for batch
-    # build_miami_plot_args_batch <- function(batch_data) {
-    #   midpoint <- floor(nrow(batch_data) / 2)
-    #
-    #   args <- formals(Miami_Plot)
-    #   args <- lapply(args, function(x) if (is.call(x)) eval(x) else x)
-    #
-    #   args$Top_Data <- batch_data[1:midpoint, ]
-    #   args$Bottom_Data <- batch_data[(midpoint+1):nrow(batch_data), ]
-    #
-    #   return(args)
-    # }
-    #
-    # # Helper function to build Annotate_Data arguments for batch
-    # build_annotate_data_args_batch <- function(batch_data) {
-    #   args <- formals(Annotate_Data)
-    #   args <- lapply(args, function(x) if (is.call(x)) eval(x) else x)
-    #
-    #   args$Data <- batch_data
-    #
-    #   return(args)
-    # }
-
-
-    render_interactive_plot <- function(plot_obj, width = NULL, height = NULL) {
-      ggplotly(plot_obj, tooltip = "text") %>%
-        layout(
-          hoverlabel = list(font = list(size = 35)),
-          autosize = is.null(width),  # FALSE only when width is explicitly set
-          width = width,
-          height = height,
-          margin = list(t = 100, b = 50, l = 50, r = 150)
-        ) %>%
-        config(displayModeBar = TRUE, responsive = TRUE) %>%
-        onRender("
+  render_interactive_plot <- function(plot_obj, width = NULL, height = NULL) {
+    ggplotly(plot_obj, tooltip = "text") %>%
+      layout(
+        hoverlabel = list(font = list(size = 35)),
+        autosize = is.null(width),  # FALSE only when width is explicitly set
+        width = width,
+        height = height,
+        margin = list(t = 100, b = 50, l = 50, r = 150)
+      ) %>%
+      config(displayModeBar = TRUE, responsive = TRUE) %>%
+      onRender("
   function(el, x) {
     let hideTimeout = null;
 
@@ -1170,7 +1173,7 @@
 
 
 
-    }
+  }
 
 
 
@@ -2931,7 +2934,7 @@
       }
     )
   })
-  }
+}
 
-  # Run the Shiny app
-  shinyApp(ui = ui, server = server)
+# Run the Shiny app
+shinyApp(ui = ui, server = server)
