@@ -99,7 +99,7 @@ Single_Plot<- function(Data = NULL,
                        Lab = NULL,
                        Auto_Lab = FALSE,
                        Genome_Build = "grch38",
-                       Verbose = FALSE)
+                       Verbose = TRUE)
 
 {
 
