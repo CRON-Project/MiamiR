@@ -2,7 +2,7 @@
 #rm(list = ls(envir = .GlobalEnv), envir = .GlobalEnv)
 
 use_wrapper <- FALSE
-devtools::load_all(".")
+#devtools::load_all(".")
 
 suppressPackageStartupMessages({
 
@@ -813,15 +813,15 @@ zip_it <- function(files, zipfile) {
 reload_miamir <- function() {
 
 
-  if (requireNamespace("devtools", quietly = TRUE)) {
-
-    try(devtools::load_all(".", quiet = TRUE), silent = TRUE)
-
-  } else if (requireNamespace("pkgload", quietly = TRUE)) {
-
-    try(pkgload::load_all(".", quiet = TRUE, reset = TRUE), silent = TRUE)
-
-  }
+  # if (requireNamespace("devtools", quietly = TRUE)) {
+  #
+  #   try(devtools::load_all(".", quiet = TRUE), silent = TRUE)
+  #
+  # } else if (requireNamespace("pkgload", quietly = TRUE)) {
+  #
+  #   try(pkgload::load_all(".", quiet = TRUE, reset = TRUE), silent = TRUE)
+  #
+  # }
 
 }
 
@@ -2312,7 +2312,7 @@ server <- function(input, output, session) {
     htmlwidgets::saveWidget(g, tmphtml, selfcontained = TRUE)
     prefix <- paste0("rview_", as.integer(runif(1, 1e6, 1e9)))
     shiny::addResourcePath(prefix, dirname(tmphtml))
-    rel_url <- paste0("/", prefix, "/", basename(tmphtml))
+    rel_url <- paste(prefix, basename(tmphtml), sep = "/")
     session$sendCustomMessage("open-window", rel_url)
 
   })
@@ -3377,7 +3377,7 @@ data = list(rows_map = rows_map, col_order = col_order)
     htmlwidgets::saveWidget(g, tmphtml, selfcontained = TRUE)
     prefix <- paste0("rview_", as.integer(runif(1, 1e6, 1e9)))
     shiny::addResourcePath(prefix, dirname(tmphtml))
-    rel_url <- paste0("/", prefix, "/", basename(tmphtml))
+    rel_url <- paste(prefix, basename(tmphtml), sep = "/")
     session$sendCustomMessage("open-window", rel_url)
 
 
@@ -4985,7 +4985,7 @@ data = list(rows_map = rows_map, col_order = col_order)
     htmlwidgets::saveWidget(g, tmphtml, selfcontained = TRUE)
     prefix <- paste0("rview_", as.integer(runif(1, 1e6, 1e9)))
     shiny::addResourcePath(prefix, dirname(tmphtml))
-    rel_url <- paste0("/", prefix, "/", basename(tmphtml))
+    rel_url <- paste(prefix, basename(tmphtml), sep = "/")
     session$sendCustomMessage("open-window", rel_url)
 
   })
@@ -5291,7 +5291,7 @@ data = list(rows_map = rows_map, col_order = col_order)
     htmlwidgets::saveWidget(g, tmphtml, selfcontained = TRUE)
     prefix <- paste0("sview_", as.integer(runif(1, 1e6, 1e9)))
     shiny::addResourcePath(prefix, dirname(tmphtml))
-    rel_url <- paste0("/", prefix, "/", basename(tmphtml))
+    rel_url <- paste(prefix, basename(tmphtml), sep = "/")
     session$sendCustomMessage("open-window", rel_url)
 
   })
