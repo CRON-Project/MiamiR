@@ -369,6 +369,11 @@ METASOFT_File_Gen <- function(Data = NULL,
 
 }
 
+
+if (!exists("use_wrapper")) use_wrapper <- TRUE
+
+if(use_wrapper == TRUE)
+{
 .METASOFT_File_Gen_original <- METASOFT_File_Gen
 
 METASOFT_File_Gen <- function(..., session = NULL, Debug = FALSE) {
@@ -441,3 +446,5 @@ METASOFT_File_Gen <- function(..., session = NULL, Debug = FALSE) {
     )
   }
 }
+}
+

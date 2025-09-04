@@ -231,51 +231,58 @@
     }
 
 
-    .Model_Munge_original <- Model_Munge
+    if (!exists("use_wrapper")) use_wrapper <- TRUE
 
-    Model_Munge <- function(..., session = NULL) {
+    if(use_wrapper == TRUE)
+    {
 
-      args <- list(...)
-      args$session <- session
+.Model_Munge_original <- Model_Munge
 
-      # Find the name of the Data argument if present
-      data_arg_name <- if ("Data" %in% names(args)) {
+Model_Munge <- function(..., session = NULL) {
 
-        deparse(substitute(Data), backtick = TRUE)
+  args <- list(...)
+  args$session <- session
 
-      } else if ("Model_Object" %in% names(args)) {
+  # Find the name of the Data argument if present
+  data_arg_name <- if ("Data" %in% names(args)) {
 
-        args$Model_Object
+    deparse(substitute(Data), backtick = TRUE)
 
-      } else {
+  } else if ("Model_Object" %in% names(args)) {
 
-        NULL
-      }
+    args$Model_Object
 
-      if (!is.null(data_arg_name)) {
+  } else {
 
-        message(sprintf("Processing dataset: %s", data_arg_name))
+    NULL
+  }
 
-      }
+  if (!is.null(data_arg_name)) {
 
-      verbose_mode <- isTRUE(args$Verbose)
+    message(sprintf("Processing dataset: %s", data_arg_name))
 
-      if (verbose_mode) {
+  }
 
-        return(do.call(.Model_Munge_original, args))
+  verbose_mode <- isTRUE(args$Verbose)
 
-      } else {
+  if (verbose_mode) {
 
-        return(
-          suppressMessages(
-            suppressWarnings(
-              run_with_counter(
-                func    = .Model_Munge_original,
-                args    = args,
-                session = session
-              )
-            )
+    return(do.call(.Model_Munge_original, args))
+
+  } else {
+
+    return(
+      suppressMessages(
+        suppressWarnings(
+          run_with_counter(
+            func    = .Model_Munge_original,
+            args    = args,
+            session = session
           )
         )
-      }
-    }
+      )
+    )
+  }
+}
+
+}

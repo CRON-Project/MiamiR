@@ -53,6 +53,8 @@
 #' @export
 #'
 #' @examples  Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
+#'
+#'  Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats, Draft_Plot = T, Interactive = F)
 
 Single_Plot<- function(Data = NULL,
                        Random_Selection = 10000,
@@ -71,7 +73,7 @@ Single_Plot<- function(Data = NULL,
                        Sig_Line_Type = "dashed",
                        Sig_Threshold = 5e-8,
                        Sig_Line_Width = 0.5,
-                       Point_Size = 2.5,
+                       Point_Size = NULL,
                        Index_Size = NULL,
                        Index_Thickness = 1,
                        Chromosome_Labels = c(1:22, "X"),
@@ -81,7 +83,7 @@ Single_Plot<- function(Data = NULL,
                        Label_Index = TRUE,
                        Label_Size = 5, Label_Angle = 60,
                        Label_Colour = "black",
-                       Label_Height = 6,
+                       Label_Height = NULL,
                        Colour_Of_Index = "darkred",
                        Colour_Index = TRUE,
                        Diamond_Index = FALSE,
@@ -99,7 +101,7 @@ Single_Plot<- function(Data = NULL,
                        Lab = NULL,
                        Auto_Lab = FALSE,
                        Genome_Build = "grch38",
-                       Verbose = TRUE)
+                       Verbose = FALSE)
 
 {
 
@@ -131,6 +133,13 @@ Single_Plot<- function(Data = NULL,
 
   if (is_called_by_regional_plot && missing(Point_Size)) {
     Point_Size <- 10
+  }else{
+    Point_Size <- 2.5
+  }
+  if (is_called_by_regional_plot && missing(Label_Height)) {
+    Label_Height <- 20
+  }else{
+    Label_Height <- 7
   }
   if (is_called_by_regional_plot && missing(Diamond_Index)) {
     Diamond_Index <- TRUE
@@ -221,6 +230,24 @@ Single_Plot<- function(Data = NULL,
   Data$ALLELE0 <- Data[[Ref_Allele_Column]]
   Data$ALLELE1 <- Data[[Alt_Allele_Column]]
 
+  Data$ALLELE0 <- toupper(Data$ALLELE0)
+  Data$ALLELE1 <- toupper(Data$ALLELE1)
+
+  #Chromosome colours will not alternate if DF contains unordered CHROMs
+
+  chr_key <- toupper(as.character(Data$CHROM))
+  chr_key <- gsub("^CHR", "", chr_key)
+
+  chr_num <- suppressWarnings(as.integer(chr_key))
+
+  chr_num[chr_key == "X"] <- 23L
+  chr_num[chr_key == "Y"] <- 24L
+  chr_num[chr_key %in% c("M","MT","MITO","MTDNA")] <- 25L
+
+  lvl_order <- Data$CHROM[order(chr_num, na.last = TRUE)]
+  lvl_order <- lvl_order[!duplicated(lvl_order)]
+
+  Data$CHROM <- factor(Data$CHROM, levels = lvl_order, ordered = TRUE)
 
   if (is.null(Chromosome_Label_Drops)){
 
@@ -367,7 +394,10 @@ Single_Plot<- function(Data = NULL,
 
   message("Formatting title spacing beneath")
 
+
   Title <- paste0(Title, "\n \n ") # plotly only interprets for y if actual content on line in app]
+
+
 
   message("Formatting X Axis Title spacing above")
 
@@ -383,8 +413,9 @@ Single_Plot<- function(Data = NULL,
       "SNP: ", Data$ID, "\n",
       "CHR: ", Data$CHROM, "\n",
       "POS: ", Data$GENPOS, "\n",
-      "P: ", signif(Data$P, 4), "\n",
-      "REF: ", Data$ALLELE0, " ALT: ", Data$ALLELE1
+      "P: ", signif(Data$P, 2), "\n",
+      "REF: ", toupper(Data$ALLELE0), "\n",
+      "ALT: ", toupper(Data$ALLELE1)
     )
 
   }
@@ -671,7 +702,7 @@ if(length(unique(Data$CHROM)) == 1)
   Y_Axis_Title <- paste0(Y_Axis_Title, dot_padding)
   X_Axis_Title <- paste0(dot_padding, X_Axis_Title)
 
-  p <- p +  labs(y = Y_Axis_Title, x = X_Axis_Title)
+  p <- p +  labs(y = Y_Axis_Title, x = X_Axis_Title, title = Title)
 
   if(Diamond_Index == TRUE)
   {
@@ -728,6 +759,10 @@ if(length(unique(Data$CHROM)) == 1)
   }
 
 
+  # if(Interactive == FALSE)
+  #
+  # {
+
   if(Label_Index == TRUE)
   {
 
@@ -758,11 +793,30 @@ if(length(unique(Data$CHROM)) == 1)
 
   }
 
+  # }else{
+  #
+  #   message("Interactive mode requires richtext() alternative, for now...")
+  #   message("Ignoring Label_Height as label.padding unavailable")
+  #
+  #   if (Interactive == TRUE) {
+  #
+  #     p  <- p  + ggplot2::geom_text(ggplot2::aes(label = Lab), hjust = HJUST, vjust = VJUST,
+  #                                   size = Label_Size, angle = Label_Angle, colour = Label_Colour)
+  #
+  #   if (Diamond_Index == TRUE) {
+  #
+  #     p2 <- p2 + ggplot2::geom_text(ggplot2::aes(label = Lab), hjust = HJUST, vjust = VJUST,
+  #                                     size = Label_Size, angle = Label_Angle, colour = Label_Colour)
+  #     }
+  #
+  #   }
+  #
+  # }
 
   suppressMessages(suppressWarnings({
 
 
-  if(Colour_Index == TRUE & Interactive == FALSE & Diamond_Index == FALSE)
+  if(Colour_Index == TRUE& Diamond_Index == FALSE)
   {
 
     message("Colouring Index circle")
@@ -928,7 +982,7 @@ if(length(unique(Data$CHROM)) == 1)
   if (is_called_by_regional_plot) {
 
   idx <- which(sapply(Plot_Outcome$scales$scales, function(s) "y" %in% s$aesthetics))
-  Plot_Outcome$scales$scales[[idx]]$expand <- ggplot2::expansion(mult = c(0.05, 0))
+  Plot_Outcome$scales$scales[[idx]]$expand <- ggplot2::expansion(mult = c(0.05, 0.08))
 
   }
 

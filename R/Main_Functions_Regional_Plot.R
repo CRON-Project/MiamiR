@@ -551,7 +551,7 @@ Regional_Plot <- function(Data = NULL,
 
       }
 
-      if (Interactive == TRUE) {
+      if (1 == 1) {
 
         message("Creating hover text for interactive version")
 
@@ -564,7 +564,8 @@ Regional_Plot <- function(Data = NULL,
           "CHR: ", filtered_data$CHROM, "\n",
           "POS: ", filtered_data$GENPOS, "\n",
           "P: ", signif(filtered_data$P, 4), "\n",
-          "REF: ", filtered_data$ALLELE0, " ALT: ", filtered_data$ALLELE1, "\n",
+          "REF: ", filtered_data$ALLELE0, "\n",
+          "ALT: ", filtered_data$ALLELE1, "\n",
           "LD: ",  signif(filtered_data$R2_LD, 2)
         )
 
@@ -575,13 +576,14 @@ Regional_Plot <- function(Data = NULL,
             "CHR: ", filtered_data$CHROM, "\n",
             "POS: ", filtered_data$GENPOS, "\n",
             "P: ", signif(filtered_data$P, 4), "\n",
-            "REF: ", filtered_data$ALLELE0, " ALT: ", filtered_data$ALLELE1)
+            "REF: ", filtered_data$ALLELE0, "\n",
+            "ALT: ", filtered_data$ALLELE1)
 
         }
 
         #match single plot format
         #Double check if necessary when testing
-        filtered_data$Hover_Info <- NA_character_
+     #   filtered_data$Hover_Info <- NA_character_
       }
 
       message("Indexing top variant")
@@ -596,11 +598,13 @@ Regional_Plot <- function(Data = NULL,
 
       message("Spacing Title")
 
-      if (is.null(args$Title)) {
+      message(Title_Name)
+
+  #    if (is.null(args$Title)) {
 
           args$Title <- paste0(Title_Name, "\n\n\n")
 
-          }
+  #        }
 
       args <- modifyList(args, list(
         Data = filtered_data
@@ -1283,13 +1287,15 @@ Regional_Plot <- function(Data = NULL,
 
       message("Defining introns and exons")
 
+
+
       exons_df2 <-  suppressMessages( gene_data %>%
-        dplyr::select(transcript_id, label, y, exons) %>%
+        dplyr::select(transcript_id, gene_id, tx_start, tx_end, tx_length, strand,gene_biotype,  label, y, exons) %>%
         tidyr::unnest(exons)
       )
 
       introns_df2 <-  suppressMessages( gene_data %>%
-        dplyr::select(transcript_id, label, y, introns) %>%
+        dplyr::select(transcript_id, gene_id, tx_start, tx_end, tx_length, strand,gene_biotype,  label, y, introns) %>%
         tidyr::unnest(introns, names_repair = "unique"))
 
       introns_df2$start <-  introns_df2$intron_start
@@ -1308,62 +1314,69 @@ Regional_Plot <- function(Data = NULL,
         x
       }
 
+
       introns_df2 <- safely_strip_attributes(introns_df2)
       exons_df2 <- safely_strip_attributes(exons_df2)
 
 
-        }
+      }
 
-        suppressMessages(suppressWarnings({
+
+
+
+
+
+
+      suppressMessages(suppressWarnings({
 
         if( nrow(gene_data) != 0)
         {
 
-      message("Detailing gene panel with exons")
+          message("Detailing gene panel with exons")
 
-      p_genes <- ggplot2::ggplot(gene_data) +
-      ggplot2::geom_segment(data = exons_df2,
-                     ggplot2::aes(x = start, xend = end, y = y, yend = y),
-                     size = Gene_Structure_Size_Exons,
-                     color = Gene_Structure_Colour_Exons)
-
-
-      n_gene_rows <- max(gene_data$y)
-
-      # Dynamic scaling of total height
-
-      scale_factor <- 0.6 * (Gene_Structure_Size_Exons / 7) + 0.4 * (Gene_Label_Size / 5)
-
-      total_height <- (8 + (n_gene_rows * 2)) * scale_factor
-
-      message("Considering strand and arrow")
-
-      gene_data <- gene_data %>%
-        dplyr::mutate(
-          arrow_char = ifelse(strand == "+", "→", "←"),
-          arrow_x = ifelse(strand == "+", end, start),
-          arrow_y = (y + 0.013) * (scale_factor/1.8285) # 👈 Small upward nudge to center better
-        )
-
-      if(nrow(introns_df2) > 0)
-      {
-
-        message("Detailing gene panel with introns")
-
-        p_genes <-  p_genes +  ggplot2::geom_segment(data = introns_df2,
-                      ggplot2::aes(x = start, xend = end, y = y, yend = y),
-                      color = Gene_Structure_Colour_Introns,
-                      alpha = 0.1,
-                      size = Gene_Structure_Size_Introns)
+          p_genes <- ggplot2::ggplot(gene_data) +
+            ggplot2::geom_segment(data = exons_df2,
+                                  ggplot2::aes(x = start, xend = end, y = y, yend = y),
+                                  size = Gene_Structure_Size_Exons,
+                                  color = Gene_Structure_Colour_Exons)
 
 
+          n_gene_rows <- max(gene_data$y)
 
-      if(Sense_Arrow == TRUE)
-      {
+          # Dynamic scaling of total height
 
-      message("Finalising direction arrow characteristics")
+          scale_factor <- 0.6 * (Gene_Structure_Size_Exons / 7) + 0.4 * (Gene_Label_Size / 5)
 
-      # Compute view width for arrow segment and gap
+          total_height <- (8 + (n_gene_rows * 2)) * scale_factor
+
+          message("Considering strand and arrow")
+
+          gene_data <- gene_data %>%
+            dplyr::mutate(
+              arrow_char = ifelse(strand == "+", "→", "←"),
+              arrow_x = ifelse(strand == "+", end, start),
+              arrow_y = (y + 0.013) * (scale_factor/1.8285) # 👈 Small upward nudge to center better
+            )
+
+          if(nrow(introns_df2) > 0)
+          {
+
+            message("Detailing gene panel with introns")
+
+            p_genes <-  p_genes +  ggplot2::geom_segment(data = introns_df2,
+                                                         ggplot2::aes(x = start, xend = end, y = y, yend = y),
+                                                         color = Gene_Structure_Colour_Introns,
+                                                         alpha = 0.1,
+                                                         size = Gene_Structure_Size_Introns)
+
+
+
+            if(Sense_Arrow == TRUE)
+            {
+
+              message("Finalising direction arrow characteristics")
+
+              # Compute view width for arrow segment and gap
       view_width <- diff(pos_range)
       arrow_body_length <- Sense_Arrow_Body_Length * view_width     # Total arrow line length
       arrow_gap         <- Sense_Arrow_Gene_Gap * view_width    # Gap from gene edge
@@ -1744,6 +1757,11 @@ Regional_Plot <- function(Data = NULL,
         align = "v",
         axis = "lr"
       )
+
+      plot <- (p / p_genes) +
+        patchwork::plot_layout(heights = c(base_top_height, gene_panel_height))
+
+
     }
 
 
@@ -1757,7 +1775,7 @@ Regional_Plot <- function(Data = NULL,
       }
 
 
-      if(Interactive == TRUE)
+      if(Interactive == "L")
 
       {
 
@@ -1793,7 +1811,7 @@ Regional_Plot <- function(Data = NULL,
     total_height <- (5 + (n_gene_rows * 2)) * (Gene_Structure_Size_Exons/7) * (Gene_Label_Size/5)  # Base height + per-row bonus
 
     scale_factor <- 0.6 * (Gene_Structure_Size_Exons / 7) + 0.4 * (Gene_Label_Size / 5)
-    total_height <- (6 + (n_gene_rows * 2)) * scale_factor
+    total_height <- (6.5 + (n_gene_rows * 2)) * scale_factor
 
     attr(plot, "dynamic_height") <- total_height
 
@@ -1803,7 +1821,7 @@ Regional_Plot <- function(Data = NULL,
 
     }
 
-      if (Interactive == TRUE) {
+      if (Interactive == 12) {
 
         message("Adding interactive save dimensions")
 
@@ -1820,6 +1838,8 @@ Regional_Plot <- function(Data = NULL,
 
 
     message("Naming plot objects informatively")
+
+    message(Title_Names)
 
     names(plots) <- Title_Names
 

@@ -2266,6 +2266,11 @@
 
 }
 
+if (!exists("use_wrapper")) use_wrapper <- TRUE
+
+if(use_wrapper == TRUE)
+{
+
 .Forest_Plot_original <- Forest_Plot
 
 Forest_Plot <- function(Data, ..., session = NULL) {
@@ -2389,5 +2394,8 @@ Forest_Plot <- function(Data, ..., session = NULL) {
     ))
 
   }
+
+}
+
 
 }

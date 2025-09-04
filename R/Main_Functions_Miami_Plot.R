@@ -82,6 +82,14 @@
     Adjust <- base_adjust + (base_size - current_size) * 0.0045
   }
 
+
+
+
+  if(is.null(bottom_args$Bottom_Anchor_Label))
+  {
+  final_bottom_args$Anchor_Label <- "left mirror"
+  }
+
   if (!("Bottom_Anchor_Label" %in% names(user_args)) &&
       !("Anchor_Label" %in% names(user_args))) {
 
@@ -451,15 +459,20 @@
     ))
 
   message("Grobbing Top")
-  gA <-  ggplot2::ggplotGrob(Top_Plot)
+  #gA <-  ggplot2::ggplotGrob(Top_Plot)
 
   message("Grobbing Bottom")
-  gB <-  ggplot2::ggplotGrob(Bottom_Plot)
+  #gB <-  ggplot2::ggplotGrob(Bottom_Plot)
 
   message("Combining top and bottom grobs")
-  combined_grob <- rbind(gA, gB, size = "first")
+  #combined_grob <- rbind(gA, gB, size = "first")
+
+  combined_grob <- Top_Plot / Bottom_Plot +
+  patchwork::plot_layout(heights = c(1, 1))  # same sizes
 
   return(invisible(combined_grob))
+
+  #return(invisible(combined_grob))
 
 }
 

@@ -231,7 +231,8 @@ Tube_Alloys <- function(Data = NULL, Chromosomes = NULL, Phenos = NULL, Covars =
    assign(tmp_model_name, fit, envir = .GlobalEnv)
 
    message("Running Covariate File through Forest_Plot()")
-   GWASModelPlot <- Forest_Plot(Data = tmp_model_name, Model_Reference = T, Verbose = F)
+   GWASModelPlot <- Forest_Plot(Data = tmp_model_name, Model_Reference = T, Verbose = T)
+
 
    }
 

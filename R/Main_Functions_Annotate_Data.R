@@ -77,6 +77,9 @@ Annotate_Data <- function(Data = NULL,
   Data$ALLELE0 <- Data[[Ref_Allele_Column]]
   Data$ALLELE1 <- Data[[Alt_Allele_Column]]
 
+  Data$ALLELE0 <- toupper(Data$ALLELE0)
+  Data$ALLELE1 <- toupper(Data$ALLELE1)
+
   message("Allocating Index SNPs in specified regions")
 
   Data <- Data %>%
@@ -154,6 +157,8 @@ Annotate_Data <- function(Data = NULL,
    # Loop through each row of the coords object
    for (i in 1:length(coords)) {
 
+
+
      # Extract the current row (chromosomal region) from coords
      current_coord <- coords[i]
 
@@ -177,6 +182,8 @@ Annotate_Data <- function(Data = NULL,
      c <- rbind(c, b2)
 
      progress <- message(paste0("Obtained Index SNP RS code for ", i, " out of ", length(coords), " Index SNPs"))
+
+
 
 
    }
@@ -236,6 +243,10 @@ Annotate_Data <- function(Data = NULL,
 
 }
 
+if (!exists("use_wrapper")) use_wrapper <- TRUE
+
+if(use_wrapper == TRUE)
+{
 .Annotate_Data_original <- Annotate_Data
 
 Annotate_Data <- function(..., session = NULL) {
@@ -297,5 +308,9 @@ Annotate_Data <- function(..., session = NULL) {
         )
       )
     )
+
   }
+
+}
+
 }
