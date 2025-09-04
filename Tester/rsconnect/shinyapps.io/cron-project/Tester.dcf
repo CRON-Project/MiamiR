@@ -1,0 +1,12 @@
+name: Tester
+title: Tester
+username: cron-project
+account: cron-project
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15348146
+bundleId:
+url: https://cron-project.shinyapps.io/Tester/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

@@ -29,14 +29,14 @@ Imports:
     jsonlite,
     ggarchery,
     plotly,
-    devtools,
     profvis,
     rtracklayer,
     purrr,
     tidyr,
     tibble,
     stringr,
-    gtable
+    gtable,
+    dbplyr
 biocViews: Visualization, Software
 Depends: 
     R (>= 2.10)
