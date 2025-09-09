@@ -23,7 +23,8 @@ Introduction To MiamiR
   specified), This package is complete with extensive documentation and
   functionality.
 
-- A web app version will also be available soon (TBC).
+- A web app version is also available here:
+  <https://cron-project.shinyapps.io/MiamiR_Web_App_Pub/>
 
 ``` r
 library(MiamiR)

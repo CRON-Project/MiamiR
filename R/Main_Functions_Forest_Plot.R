@@ -2201,6 +2201,8 @@
 
   if ("underline" %in% res$Style) {
 
+    message("Adding underline")
+
     mid <- mid + ggplot2::theme(axis.line.x = ggplot2::element_line(linewidth  = 0.1) )
     combined <- invisible(left + mid + right + patchwork::plot_layout(widths = c(0.05, 0.9, 0.05)))
     g <- combined
@@ -2209,12 +2211,16 @@
   else if(Grid_Lines_On == FALSE)
   {
 
+    message("Stripping gird lines")
+
     mid <- mid + ggplot2::theme(axis.line.x = ggplot2::element_line(linewidth  = 0.1) )
     combined <- left + mid + right + patchwork::plot_layout(widths = c(0.05, 0.9, 0.05))
     g <- combined
 
   }
   else{
+
+    message("Combining")
 
     #Combine plots with patchwork
     combined <- left + mid + right + patchwork::plot_layout(widths = c(0.05, 0.9, 0.05))

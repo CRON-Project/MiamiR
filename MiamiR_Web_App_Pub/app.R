@@ -6,6 +6,7 @@ use_wrapper <- FALSE
 
 suppressPackageStartupMessages({
 
+  library(MiamiR)
   library(shiny)
   library(grid)
   library(ggplot2)
@@ -25,6 +26,8 @@ suppressPackageStartupMessages({
   library(gtable)
   library(plotly)
   library(htmlwidgets)
+  library(ggrastr)
+  library(cowplot)
 
 })
 
@@ -5784,7 +5787,7 @@ data = list(rows_map = rows_map, col_order = col_order)
       tabPanel(
         title = lbl, value = k,
         div(
-          h4("Preview (first 10 rows"),
+          h4("Preview (first 10 rows)"),
           tableOutput(paste0("annotate_table_", k))
         )
 
@@ -5823,28 +5826,45 @@ data = list(rows_map = rows_map, col_order = col_order)
 
   })
 
+  .METASOFT_File_Gen_original <- tryCatch(
+    getFromNamespace(".METASOFT_File_Gen_original", "MiamiR"),
+    error = function(e) {
+      tryCatch(getFromNamespace("METASOFT_File_Gen", "MiamiR"),
+               error = function(e2) MiamiR::METASOFT_File_Gen)
+    }
+  )
+
+  .METASOFT_File_Gen_original <-
+
+    if (exists(".METASOFT_File_Gen_original")) get(".METASOFT_File_Gen_original")
+
+  else METASOFT_File_Gen
+
 
   #METASOFT
 
   meta_defaults <- reactive({
+    fmls  <- tryCatch(formals(.METASOFT_File_Gen_original), error = function(e) NULL)
+    drops <- c("Data", "...", ".dots", "session", "input", "output")
 
-    fmls <- tryCatch(formals(.METASOFT_File_Gen_original), error = function(e) NULL)
+    keep  <- if (!is.null(fmls)) setdiff(names(fmls), drops) else character(0)
 
-    drops <- c("Data", "...", ".dots", "session", "input", "output", "Debug")
-
-    keep <- if (!is.null(fmls)) setdiff(names(fmls), drops) else character(0)
-
-    defs <- lapply(fmls[keep], function(x) { tryCatch(eval(x, envir = environment(.METASOFT_File_Gen_original)), error = function(e) NULL) })
-
-    names(defs) <- keep; defs
-
+    defs  <- lapply(fmls[keep], function(x)
+      tryCatch(eval(x, envir = environment(.METASOFT_File_Gen_original)), error = function(e) NULL))
+    names(defs) <- keep
+    defs
   })
 
   output$meta_arg_inputs <- renderUI({
+    defs <- meta_defaults()
 
-    lapply(names(meta_defaults()), function(nm) make_input_like_meta("meta_", nm, meta_defaults()[[nm]]))
+    if (is.null(defs) || !length(defs))
 
+      return(helpText("No additional METASOFT settings found in this build."))
+
+    lapply(names(defs), function(nm) make_input_like_meta("meta_", nm, defs[[nm]]))
   })
+
 
   meta_arg_vals <- reactive({
 
@@ -5919,13 +5939,45 @@ data = list(rows_map = rows_map, col_order = col_order)
 
   })
 
+  # --- Forest_Plot: collect args from the settings panel ---
+  collect_forest_args <- function() {
+    fun <- tryCatch(.Forest_Plot_original, error = function(e) NULL)
+    if (!is.function(fun)) fun <- get_forest_fun()
+
+    sa   <- formals(fun)
+    keep <- setdiff(names(sa), c("Data", "session", "..."))
+
+    args <- list()
+    for (arg in keep) {
+      v <- parse_input_val_meta(input[[paste0("forest_", arg)]])
+      if (!is.null(v)) args[[arg]] <- v
+    }
+    list(fun = fun, args = args)
+  }
+
+
+  # --- Forest_Plot: build settings panel inputs ---
   output$forest_arg_inputs <- renderUI({
+    # Prefer the original if present; otherwise use the public function
+    fun <- tryCatch(.Forest_Plot_original, error = function(e) NULL)
+    if (!is.function(fun)) fun <- get_forest_fun()
 
-    defs <- forest_defaults(); if (is.null(defs)) return(NULL)
+    sa <- formals(fun)
 
-    lapply(names(defs), function(nm) make_arg_input("forest_", nm, defs[[nm]]))
+    # Don't generate controls for these arguments
+    drop <- c("Data", "session", "...")
+    keep <- setdiff(names(sa), drop)
 
+    lapply(
+      keep,
+      function(arg) make_input_like_meta(
+        prefix  = "forest_",
+        name    = arg,
+        default = safe_eval_default_any(sa[[arg]], environment(fun))
+      )
+    )
   })
+
 
   observeEvent(input$forest_files, {
 
@@ -5956,99 +6008,94 @@ data = list(rows_map = rows_map, col_order = col_order)
   })
 
   output$forest_call_preview <- renderText({
+    fun <- tryCatch(.Forest_Plot_original, error = function(e) NULL)
+    if (!is.function(fun)) fun <- get_forest_fun()
+    sa <- formals(fun)
 
-    lbls <- if (!is.null(input$forest_files$name)) tools::file_path_sans_ext(basename(input$forest_files$name)) else character(0)
+    drop <- c("Data", "session", "...")
+    keep <- setdiff(names(sa), drop)
 
-    shown <- forest_current_args()
-
-    parts <- vapply(names(shown), function(nm) paste0(nm, " = ", format_arg_preview(shown[[nm]])), character(1))
-
-    dl <- if (length(lbls)) paste0("c(", paste(paste0("\"", lbls, "\""), collapse = ", "), ")") else "user_data"
-
-    paste0("Forest_Plot(\n  Data = ", dl, if (length(parts)) paste0(",\n  ", paste(parts, collapse = ",\n  ")) else "", "\n)")
-
-  })
-
-  observeEvent(input$run_forest, {
-
-    req(input$forest_files)
-    forest_append_log("Reading files and assigning to .GlobalEnv...")
-
-    f <- get_forest_fun()
-    forest_fun(f)
-
-
-    lbls <- tools::file_path_sans_ext(basename(input$forest_files$name))
-
-    for (i in seq_along(lbls)) {
-
-      nm <- lbls[i]
-
-      df <- tryCatch(
-
-        vroom::vroom(input$forest_files$datapath[i], show_col_types = FALSE),
-
-        error = function(e) {
-
-          forest_append_log("ERROR reading '", input$forest_files$name[i], "': ", e$message)
-
-          NULL
-
-        }
-      )
-
-      req(!is.null(df))
-      assign(nm, df, envir = .GlobalEnv)
-      forest_append_log("Assigned object: ", nm)
-
+    args <- list()
+    for (arg in keep) {
+      v <- parse_input_val_meta(input[[paste0("forest_", arg)]])
+      if (!is.null(v)) args[[arg]] <- v
     }
 
-    args <- forest_current_args()
-    args$Data <- lbls
+    shown <- Filter(Negate(is.null), args)
+    parts <- vapply(names(shown),
+                    function(nm) sprintf("%s = %s", nm, format_arg_val_meta(shown[[nm]])),
+                    character(1))
 
-    gp <- tryCatch(
-      do.call(forest_fun(), args),
-
-      error = function(e) {
-
-        forest_append_log("Forest_Plot error (combined): ", e$message)
-
-        NULL
-
-      }
-    )
-
-    req(!is.null(gp))
-
-
-    key <- "combined"
-
-    label <- if (length(lbls) == 1) lbls[[1]] else "Plot"
-
-    h <- attr(gp, "dynamic_height")
-
-    if (is.null(h) || !is.finite(h)) h <- 8
-
-    tmp <- tempfile(fileext = ".png")
-
-    gg  <- if (inherits(gp, c("gg", "ggplot"))) gp else ggplotify::as.ggplot(gp)
-
-    ggsave(
-      tmp, plot = gg,
-      width  = forest_last_w(),
-      height = h,
-      dpi    = forest_last_dpi(),
-      units = "in", limitsize = FALSE
-    )
-
-    forest_grobs(setNames(list(gp), key))
-    forest_labels(setNames(list(label), key))
-    forest_previews(setNames(list(tmp), key))
-    forest_heights(setNames(h, key))
-
-    forest_append_log("Done.")
-
+    paste0("Forest_Plot(\n  Data = <file(s)>",
+           if (length(parts)) paste0(",\n  ", paste(parts, collapse = ",\n  ")) else "",
+           "\n)")
   })
+
+  # --- Forest_Plot: run with user-specified args (single call; supports 1..N files) ---
+  observeEvent(input$run_forest, {
+    req(input$forest_files)
+
+    fa          <- collect_forest_args()             # from earlier snippet
+    fun         <- fa$fun
+    extra_args  <- fa$args
+
+    paths       <- input$forest_files$datapath
+    labels_vec  <- tools::file_path_sans_ext(input$forest_files$name)
+    key_vec     <- vapply(labels_vec, sanitize, character(1))
+
+    # Single call: pass ALL files in one go
+    args <- c(list(Data = paths), extra_args)
+
+    forest_append_log("Running Forest_Plot with ", length(paths), " file(s) ...")
+    out <- tryCatch(
+      do.call(fun, args),
+      error = function(e) { forest_append_log("ERROR: ", conditionMessage(e)); NULL }
+    )
+    req(!is.null(out))
+
+    # Normalize output → list of plots
+    plots <- list()
+    if (tube_is_plot_like(out)) {
+      plots <- list(out)
+      names(plots) <- key_vec[1]
+    } else if (is.list(out)) {
+      # keep only plot-like entries; if nested, flatten shallowly
+      cand <- Filter(tube_is_plot_like, out)
+      if (!length(cand) && any(vapply(out, is.list, logical(1)))) {
+        cand <- Filter(tube_is_plot_like, unlist(out, recursive = FALSE))
+      }
+      plots <- cand
+    }
+    validate(need(length(plots) > 0, "Forest_Plot returned no plot objects."))
+
+    # Build previews/tabs
+    grobs <- list(); previews <- list(); labels <- list(); heights <- numeric(0); i <- 0
+    for (nm in names(plots)) {
+      i <- i + 1
+      gp  <- plots[[nm]]
+      key <- nm %||% key_vec[pmin(i, length(key_vec))]
+      lab <-        labels_vec[pmin(i, length(labels_vec))]
+
+      grobs[[key]]  <- gp
+      labels[[key]] <- lab
+      heights[key]  <- tube_get_dyn_height(gp, fallback = 8)
+
+      tmp <- tempfile(fileext = ".png")
+      ggsave(
+        filename = tmp, plot = ggplotify::as.ggplot(gp),
+        width = forest_last_w(), height = heights[key],
+        dpi = forest_last_dpi(), units = "in", limitsize = FALSE
+      )
+      previews[[key]] <- tmp
+    }
+
+    forest_grobs(grobs)
+    forest_previews(previews)
+    forest_labels(labels)
+    forest_heights(heights)
+    forest_append_log("Done.")
+  }, ignoreInit = TRUE)
+
 
 
   output$forest_dynamic_tabs <- renderUI({
@@ -6264,13 +6311,39 @@ data = list(rows_map = rows_map, col_order = col_order)
     names(defs) <- keep; defs
   })
 
+  # --- Model_Munge: build settings panel inputs ---
+  # --- Model_Munge: build settings panel inputs ---
   output$mm_arg_inputs <- renderUI({
+    # Prefer the original if present; otherwise use the public function
+    fun <- tryCatch(.Model_Munge_original, error = function(e) NULL)
+    if (!is.function(fun)) fun <- Model_Munge
+    if (!is.function(fun)) {
+      return(div(helpText("Model_Munge() not found.")))
+    }
 
-    defs <- mm_defaults(); if (is.null(defs)) return(NULL)
+    sa   <- formals(fun)
+    drop <- c("Data", "Model", "session", "...")
+    keep <- setdiff(names(sa), drop)
 
-    lapply(names(defs), function(nm) make_input_like_meta("mm_arg_", nm, defs[[nm]]))
+    # If there are no configurable args, show a helpful note + an optional “extra args” box
+    if (length(keep) == 0) {
+      return(tagList(
+        div(class = "text-muted",
+            "Data/Model already considered")
+        # Optional: let power users pass extras via ...
+      ))
+    }
 
+    lapply(
+      keep,
+      function(arg) make_input_like_meta(
+        prefix  = "mm_",
+        name    = arg,
+        default = safe_eval_default_any(sa[[arg]], environment(fun))
+      )
+    )
   })
+
 
   mm_arg_vals <- reactive({
 
@@ -6316,21 +6389,25 @@ data = list(rows_map = rows_map, col_order = col_order)
 
   output$mm_call_preview <- renderText(mm_call_txt())
 
+  # Keep the uploaded dataset around for the builder/preview
   observeEvent(input$mm_file, {
-
-    req(input$mm_file$datapath)
-    base <- file_path_sans_ext(basename(input$mm_file$name))
-    updateTextInput(session, "mm_dataset_name", value = base)
-    updateTextInput(session, "mm_model_name", value = paste0(base, "_model"))
-
-    df <- tryCatch(vroom::vroom(input$mm_file$datapath, show_col_types = FALSE),
-
-                   error = function(e) { showNotification(paste("Read error:", e$message), type="error"); NULL })
-    req(!is.null(df))
-    assign(base, df, envir = .GlobalEnv)        # assign to .GlobalEnv by base name
+    req(input$mm_file)
+    df <- vroom::vroom(input$mm_file$datapath, show_col_types = FALSE)
     mm_df(df)
+  }, ignoreInit = TRUE)
 
-  }, ignoreInit = FALSE)
+  # --- Model builder (response/predictors) ---
+  output$mm_var_ui <- renderUI({
+    df <- mm_df()
+    if (is.null(df)) return(div(helpText("Upload a data file to pick variables.")))
+
+    cols <- names(df)
+    tagList(
+      selectInput("mm_response",   "Response (y)",  choices = cols),
+      selectInput("mm_predictors", "Predictors (x)", choices = cols, multiple = TRUE)
+    )
+  })
+
 
   output$mm_data_preview <- renderTable({
 
