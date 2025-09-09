@@ -54,7 +54,7 @@
 #'
 #' @examples  Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
 #'
-#'  Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats, Draft_Plot = T, Interactive = F)
+#'  Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
 
 Single_Plot<- function(Data = NULL,
                        Random_Selection = 10000,

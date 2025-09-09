@@ -14,7 +14,7 @@
 #' @examples Plots <- Tube_Alloys(Data = Intelligence_Sum_Stats, Phenos = Fake_PHENOS_Binary, Covars = Fake_COVARS, Chromosomes = 1 )
 #'
 
-Tube_Alloys <- function(Data = NULL, Chromosomes = NULL, Phenos = NULL, Covars = NULL,
+Tube_Alloys <- function(Data = NULL, Chromosomes = 1, Phenos = NULL, Covars = NULL,
                         Phenos_Covars = NULL, Pheno_Name = NULL)
 
 {
@@ -231,7 +231,7 @@ Tube_Alloys <- function(Data = NULL, Chromosomes = NULL, Phenos = NULL, Covars =
    assign(tmp_model_name, fit, envir = .GlobalEnv)
 
    message("Running Covariate File through Forest_Plot()")
-   GWASModelPlot <- Forest_Plot(Data = tmp_model_name, Model_Reference = T, Verbose = T)
+   GWASModelPlot <- Forest_Plot(Data = tmp_model_name, Model_Reference = T)
 
 
    }
