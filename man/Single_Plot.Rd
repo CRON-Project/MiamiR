@@ -110,5 +110,5 @@ Annotated, Customised Manhattan Plots
 \examples{
  Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
 
- Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats, Draft_Plot = T, Interactive = F)
+ Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
 }

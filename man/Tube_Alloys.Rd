@@ -6,7 +6,7 @@
 \usage{
 Tube_Alloys(
   Data = NULL,
-  Chromosomes = NULL,
+  Chromosomes = 1,
   Phenos = NULL,
   Covars = NULL,
   Phenos_Covars = NULL,
