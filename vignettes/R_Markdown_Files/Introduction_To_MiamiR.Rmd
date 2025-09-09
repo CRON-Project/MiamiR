@@ -146,7 +146,7 @@ carousel <- function(plots,
 
 - Once installed, load in the MiamiR package (lib.loc may need to be specified), This package is complete with extensive documentation and functionality. 
 
-- A web app version will also be available soon (TBC).
+- A web app version is also available here: https://cron-project.shinyapps.io/MiamiR_Web_App_Pub/
 ```{r setup, message=FALSE}
 library(MiamiR)
 ```
@@ -503,7 +503,7 @@ knitr::include_graphics(paste0(plots_dir,"/Split_Custom_Test_Miami.jpg"))
 
 - The Forest_Plot() function will decipher everything from the test statistic type and suitable defaults to ascertainment of the lead SNP in each independent region, which can be defined similarly to the arguments used in Regional_Plot().
 ```{r, results="hide", warning = FALSE, message = FALSE}
-devtools::load_all("C:/Users/callumon/Miami_Package_R/MiamiR")
+devtools::load_all(".")
 
 Forest_Plot <- Forest_Plot(Data = Intelligence_Sum_Stats, Chromosomes = 4)
 

@@ -131,7 +131,7 @@ carousel <- function(plots,
 
 - Once installed, load in the MiamiR package (lib.loc may need to be specified), This package is complete with extensive documentation and functionality. 
 
-- A web app version will also be available soon (TBC).
+- A web app version is also available here: https://cron-project.shinyapps.io/MiamiR_Web_App_Pub/
 ```{r eval=FALSE}
 library(MiamiR)
 ```
