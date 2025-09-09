@@ -72,6 +72,7 @@ METASOFT_File_Gen <- function(Data = NULL,
       Loaded_Data <- list()
 
       for (Set in Names) {
+
         message(Set)
 
         Spec_Name <- Set
@@ -145,6 +146,7 @@ METASOFT_File_Gen <- function(Data = NULL,
     Data$CHROM <- Data[[Chromosome_Column]]
     Data$GENPOS <- Data[[Position_Column]]
     Data$ID <- Data[[SNP_ID_Column]]
+    Data <- ensure_P(Data)
     Data$P <- Data[[PValue_Column]]
     Data$SE <- Data[[Standard_Error_Column]]
     Data$BETA <- Data[[Beta_Column]]

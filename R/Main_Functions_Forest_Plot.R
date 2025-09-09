@@ -440,6 +440,7 @@
 
     }
 
+    Data <- ensure_P(Data)
     Data$P <- Data[[PValue_Column]]
 
     message("Deducing type of test statistic supplied and performing required OR/BETA calculations")

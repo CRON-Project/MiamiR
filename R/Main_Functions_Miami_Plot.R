@@ -142,6 +142,7 @@
   Top_Data$CHROM <- Top_Data[[Chromosome_Column]]
   Top_Data$GENPOS <- Top_Data[[Position_Column]]
   Top_Data$ID <- Top_Data[[SNP_ID_Column]]
+  Top_Data <- ensure_P(Top_Data)
   Top_Data$P <- Top_Data[[PValue_Column]]
   Top_Data$ALLELE0 <- Top_Data[[Ref_Allele_Column]]
   Top_Data$ALLELE1 <- Top_Data[[Alt_Allele_Column]]
@@ -180,6 +181,7 @@
   Bottom_Data$CHROM <- Bottom_Data[[Chromosome_Column]]
   Bottom_Data$GENPOS <- Bottom_Data[[Position_Column]]
   Bottom_Data$ID <- Bottom_Data[[SNP_ID_Column]]
+  Bottom_Data <- ensure_P(Bottom_Data)
   Bottom_Data$P <- Bottom_Data[[PValue_Column]]
   Bottom_Data$ALLELE0 <- Bottom_Data[[Ref_Allele_Column]]
   Bottom_Data$ALLELE1 <- Bottom_Data[[Alt_Allele_Column]]

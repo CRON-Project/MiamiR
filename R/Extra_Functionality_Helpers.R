@@ -88,6 +88,26 @@ detect_pvalue_column <- function(Data, PValue_Column = NULL) {
   return(P_col)
 }
 
+#' @noRd
+ensure_P <- function(Data) {
+  p_names   <- c("P","p","Pvalue","pvalue","P-Value","p-value","p-Value","P-VALUE","p_value")
+  log_names <- c("logp","LogP","LOGP","Logp","log10p","Log10P","LOG10P","-LOG10P")
+
+  # If any P-style column exists, keep as-is (optionally you could standardise to P here)
+  hit_p <- intersect(p_names, names(Data))
+  if (length(hit_p) > 0) return(Data)
+
+  # Otherwise, if any log10P-style column exists, create P = 10^-(log10P)
+  hit_log <- intersect(log_names, names(Data))
+  if (length(hit_log) > 0) {
+    src <- hit_log[1]                # take the first match; reorder log_names to set priority
+    Data$P <- 10^-(as.numeric(Data[[src]]))
+    return(Data)
+  }
+
+  stop("No p-value or log10(p) columns found. Looked for: ",
+       paste(c(p_names, log_names), collapse = ", "))
+}
 
 
 #' @noRd

@@ -174,6 +174,7 @@ Regional_Plot <- function(Data = NULL,
   Data$CHROM <- Data[[Chromosome_Column]]
   Data$GENPOS <- Data[[Position_Column]]
   Data$ID <- Data[[SNP_ID_Column]]
+  Data <- ensure_P(Data)
   Data$P <- Data[[PValue_Column]]
   Data$ALLELE0 <- Data[[Ref_Allele_Column]]
   Data$ALLELE1 <- Data[[Alt_Allele_Column]]

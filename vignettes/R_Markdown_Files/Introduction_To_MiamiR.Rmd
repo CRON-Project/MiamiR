@@ -167,9 +167,10 @@ library(MiamiR)
 ```{r, results="hide", warning = FALSE, message = FALSE}
 plots_dir <- here("vignettes", "Plots")
 
-Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
+Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats, Verbose = T)
 
 setwd(plots_dir)
+
 ggplot2::ggsave("Intelligence_Plot.jpg", plot = Manhattan_Plot, width = 30,
                  height = 15, units = "in", dpi = 100)
 ```
