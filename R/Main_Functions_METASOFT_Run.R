@@ -16,7 +16,16 @@ METASOFT_Run <- function(Data, options = character(), REGENIE_Cols = TRUE ) {
 
   #Auto-detect Java path assuming wsl available in terminal
 
-  java_path <- tryCatch(system("wsl which java", intern = TRUE), error = function(e) "")
+  if(tolower(Sys.info()[["sysname"]]) == "linux")
+  {
+
+    java_path <- tryCatch(system("which java", intern = TRUE), error = function(e) "")
+
+  }else{
+
+    java_path <- tryCatch(system("wsl which java", intern = TRUE), error = function(e) "")
+
+  }
 
   if (length(java_path) == 0 || java_path == "") {
 
@@ -56,14 +65,31 @@ METASOFT_Run <- function(Data, options = character(), REGENIE_Cols = TRUE ) {
   input_file_wsl   <- to_wsl_quoted(input_file)
   output_file_wsl  <- to_wsl_quoted(output_file)
 
+  jar_path_wsl     <- (jar_path)
+  p_table_wsl      <- (p_table)
+  input_file_wsl   <- (input_file)
+  output_file_wsl  <- (output_file)
+
   #Build arguments for WSL call of METASOFT
 
+  if(tolower(Sys.info()[["sysname"]]) == "linux")
+  {
 
-  args <- c("java", "-jar", jar_path_wsl,
-            "-input", input_file_wsl,
-            "-output", output_file_wsl,
-            "-pvalue_table", p_table_wsl,
-            options)
+    args <- c("-jar", jar_path_wsl,
+              "-input", input_file_wsl,
+              "-output", output_file_wsl,
+              "-pvalue_table", p_table_wsl)
+
+
+  }else{
+
+    args <- c("java", "-jar", jar_path_wsl,
+              "-input", input_file_wsl,
+              "-output", output_file_wsl,
+              "-pvalue_table", p_table_wsl,
+              options)
+
+  }
 
   #Debug
 
@@ -75,7 +101,16 @@ METASOFT_Run <- function(Data, options = character(), REGENIE_Cols = TRUE ) {
 
   #Run METASOFT in WSL
 
+  if(tolower(Sys.info()[["sysname"]]) == "linux")
+  {
+
+  res <- system2("java", args = args, stdout = TRUE, stderr = TRUE)
+
+  }else{
+
   res <- system2("wsl", args = args, stdout = TRUE, stderr = TRUE)
+
+  }
 
   #Show METASOFT logs first
 
