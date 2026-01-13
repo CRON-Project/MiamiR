@@ -10,12 +10,8 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
-    BiocManager,
-    gdsfmt,
-    SeqArray,
     biomaRt,
     dplyr,
-    forcats,
     ggh4x,
     ggmanh,
     ggplot2,
@@ -28,15 +24,18 @@ Imports:
     patchwork,
     jsonlite,
     ggarchery,
-    plotly,
-    profvis,
-    rtracklayer,
-    purrr,
     tidyr,
     tibble,
     stringr,
     gtable,
-    dbplyr
+    LDlinkR,
+    cowplot,
+    ggplotify,
+    magick,
+    png,
+    ragg,
+    rlang,
+    vroom
 biocViews: Visualization, Software
 Depends: 
     R (>= 3.5)

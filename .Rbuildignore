@@ -4,3 +4,11 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^\.secrets$
+^docs$
+^MiamiR_Web_App_Pub$
+^dev$
+^docs$
+^README\.html$
+^vignettes/Plots$
+^vignettes/R_Markdown_Files$
+
