@@ -3,7 +3,8 @@
 #'
 #' @param Data These are the harmonised summary statistics (either file path(s), environmental object(s) or a variable(s) containing such contents) to be run through the METASFOT wrapper. These must match the METASFOT input file format and can be generated with METASOFT_File_Gen(); defaults to NULL
 #' @param options Character vector of extra METASOFT options (e.g. c("-verbose", "mvalue"); defaults to character()/NULL
-#' @param REGENIE_Cols Include REGENIE format-style columns; defaults to TRUE
+#' @param REGENIE_Cols Include REGENIE format-style columns in output; defaults to TRUE
+#' @param Verbose Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE.
 #'
 #' @return METASOFT output file is allocated to specified object
 #'
@@ -11,12 +12,48 @@
 #'
 #' @examples METASOFT_Output <- METASOFT_Run(Data = METASOFT_Example_Input)
 
-METASOFT_Run <- function(Data, options = character(), REGENIE_Cols = TRUE ) {
+  METASOFT_Run <- function(Data = NULL, options = character(), REGENIE_Cols = TRUE, Verbose = FALSE ) {
 
+  # Allow Data to be a file path
 
-  #Auto-detect Java path assuming wsl available in terminal
+     if (is.character(Data) && length(Data) == 1L && grepl("/", Data, fixed = TRUE)) {
+
+      file_path <- Data
+
+      message("Dataset absent from environment")
+
+      if (file.exists(file_path)) {
+
+        message("Reading data from file: ", file_path)
+
+        message("Loading data using vroom...")
+
+        suppressWarnings(
+
+        suppressMessages(
+
+        Data <- vroom::vroom(file_path, show_col_types = FALSE, progress = FALSE)
+
+        )
+
+        )
+
+        message("Finished reading")
+
+      } else {
+
+        stop("The provided character string does not point to an existing file: ", file_path, call. = FALSE)
+
+      }
+
+    }
+
+  # Auto-detect Java path assuming wsl available in terminal
+
+  message("Finding java path")
 
   if(tolower(Sys.info()[["sysname"]]) == "linux")
+
   {
 
     java_path <- tryCatch(system("which java", intern = TRUE), error = function(e) "")
@@ -33,160 +70,165 @@ METASOFT_Run <- function(Data, options = character(), REGENIE_Cols = TRUE ) {
 
   }
 
-  #Locate files in MiamiR package (inst/java)
+  message("Located functional path, locating packaged software")
+
+  # Locate files in MiamiR package (inst/java)
 
   jar_path <- system.file("java", "METASOFT.jar", package = "MiamiR")
   p_table  <- system.file("java", "HanEskinPvalueTable.txt", package = "MiamiR")
 
+  # Preview input data (first 10 rows)
 
-  #Preview input data (first 10 rows)
+  message("Gathering arguments")
 
-  message("Data preview (first 10 rows):")
-  print(utils::head(as.data.frame(Data), 10))
-
-  #Create temp input/output
+  # Create temp input/output
 
   input_file  <- tempfile(fileext = ".meta")
   output_file <- tempfile(fileext = ".out")
 
-  #Remove header from input DF for METASOFT
+  # Remove header from input DF for METASOFT
 
   utils::write.table(Data, input_file, quote = FALSE,
                      row.names = FALSE, col.names = FALSE)
 
-  #Convert Windows to WSL paths and quote them
+  # Convert Windows to WSL paths and quote them
+
+  # Convert Windows paths to quoted WSL paths (for use with `wsl`)
 
   to_wsl_quoted <- function(path) {
-    shQuote(sub("^([A-Za-z]):", "/mnt/\\L\\1", gsub("\\\\", "/", path), perl = TRUE))
+
+    path_win <- tryCatch(
+
+      normalizePath(path, winslash = "\\", mustWork = FALSE),
+      error = function(e) path
+
+    )
+
+    if (!nzchar(path_win)) path_win <- path
+
+    shQuote(sub("^([A-Za-z]):", "/mnt/\\L\\1", gsub("\\\\", "/", path_win), perl = TRUE))
+
   }
 
-  jar_path_wsl     <- to_wsl_quoted(jar_path)
-  p_table_wsl      <- to_wsl_quoted(p_table)
-  input_file_wsl   <- to_wsl_quoted(input_file)
-  output_file_wsl  <- to_wsl_quoted(output_file)
+  if (tolower(Sys.info()[["sysname"]]) == "linux") {
 
-  jar_path_wsl     <- (jar_path)
-  p_table_wsl      <- (p_table)
-  input_file_wsl   <- (input_file)
-  output_file_wsl  <- (output_file)
+    # Native Linux: just call java directly with normal paths
 
-  #Build arguments for WSL call of METASOFT
+    args <- c(
 
-  if(tolower(Sys.info()[["sysname"]]) == "linux")
+      "-jar", jar_path,
+      "-input", input_file,
+      "-output", output_file,
+      "-pvalue_table", p_table,
+      options
+
+    )
+
+
+    message("jar_path: ", jar_path)
+    message("java_path: ", paste(java_path, collapse = " "))
+    message("input_file: ", input_file)
+    message("output_file: ", output_file)
+
+    message("Running METASOFT meta-analysis...")
+
+    res <- system2("java", args = args, stdout = TRUE, stderr = TRUE)
+
+
+  } else {
+
+    # Windows via WSL: convert all paths to /mnt/c/... and quote them
+
+    jar_path_wsl    <- to_wsl_quoted(jar_path)
+    p_table_wsl     <- to_wsl_quoted(p_table)
+    input_file_wsl  <- to_wsl_quoted(input_file)
+    output_file_wsl <- to_wsl_quoted(output_file)
+
+    args <- c(
+
+      "java", "-jar", jar_path_wsl,
+      "-input", input_file_wsl,
+      "-output", output_file_wsl,
+      "-pvalue_table", p_table_wsl,
+      options
+
+    )
+
+
+    message("jar_path: ", jar_path)
+    message("java_path: ", paste(java_path, collapse = " "))
+    message("input_file: ", input_file)
+    message("output_file: ", output_file)
+
+    message("Running METASOFT meta-analysis...")
+
+    res <- system2("wsl", args = args, stdout = TRUE, stderr = TRUE)
+
+  }
+
+  # Debug
+
+  # Fail early if METASOFT didn't produce an output file
+
+  if (!file.exists(output_file)) {
+
+    stop("METASOFT failed: output file was not created. See log above.")
+
+  }
+
+  # Show METASOFT logs first
+
+  message("METASOFT log of call:")
+
+  if(Verbose == TRUE)
+
   {
-
-    args <- c("-jar", jar_path_wsl,
-              "-input", input_file_wsl,
-              "-output", output_file_wsl,
-              "-pvalue_table", p_table_wsl)
-
-
-  }else{
-
-    args <- c("java", "-jar", jar_path_wsl,
-              "-input", input_file_wsl,
-              "-output", output_file_wsl,
-              "-pvalue_table", p_table_wsl,
-              options)
-
-  }
-
-  #Debug
-
-  message("jar_path: ", jar_path)
-  message("java_path: ", paste(java_path, collapse = " "))
-  message("input_file: ", input_file)
-  message("output_file: ", output_file)
-  message("args (WSL):"); print(args)
-
-  #Run METASOFT in WSL
-
-  if(tolower(Sys.info()[["sysname"]]) == "linux")
-  {
-
-  res <- system2("java", args = args, stdout = TRUE, stderr = TRUE)
-
-  }else{
-
-  res <- system2("wsl", args = args, stdout = TRUE, stderr = TRUE)
-
-  }
-
-  #Show METASOFT logs first
-
-  message("METASOFT log")
 
   if (length(res)) cat(paste(res, collapse = "\n"), "\n")
 
-  #Load the METASOFT .out file
+  }
 
-  read_metasoft_out <- function(path) {
+  out_df <- suppressWarnings(
 
-    #Delimiter
+    suppressMessages(
 
-    sep <- "\t"
+      vroom::vroom(output_file, show_col_types = FALSE, progress = FALSE)
 
-    #Fallback: pad header to max fields, then read skipping header
-
-    header_line <- tryCatch(readLines(path, n = 1L, warn = FALSE), error = function(e) "")
-
-    header <- if (sep == "\t") {
-
-      strsplit(header_line, "\t", fixed = TRUE)[[1]]
-
-    } else {
-
-      scan(text = header_line, what = character(), quiet = TRUE)
-
-    }
-
-    #Count max fields across lines
-
-    nf <- tryCatch(
-      utils::count.fields(path, sep = if (sep == "\t") "\t" else " ",
-                          quote = "", blank.lines.skip = TRUE),
-      error = function(e) integer()
     )
 
-    if (!length(nf)) return(NULL)
+  )
 
-    maxf <- max(nf, na.rm = TRUE)
-    need <- maxf - length(header)
+  # Locate MVALUES column
 
-    if (need > 0) header <- c(header, paste0("V", seq_len(need)))
+  mcol <- base::grep("^MVALUES_OF_STUDIES", base::names(out_df), value = TRUE)
 
-    #Read body and set names
+  if (length(mcol) != 1L) {
 
-    df2 <- tryCatch(
-      utils::read.table(path, header = FALSE, sep = sep, quote = "",
-                        comment.char = "", stringsAsFactors = FALSE,
-                        fill = TRUE, skip = 1),
-      error = function(e) NULL
-    )
-
-    if (is.null(df2)) return(NULL)
-
-    #Pad columns if still short
-
-    if (ncol(df2) < length(header)) {
-
-      df2[(length(header))] <- NA
-
-    }
-
-    names(df2) <- header[seq_len(ncol(df2))]
-    df2
+    base::stop("Couldn't uniquely find the MVALUES column. Found: ", base::paste(mcol, collapse = ", "))
 
   }
 
-  out_df <- read_metasoft_out(output_file)
+  # Clean and count tokens
 
-  out_df$V1 <- NULL
-  out_df$V2 <- NULL
-  out_df$V3 <- NULL
+  out_df[[mcol]] <- stringr::str_squish(base::as.character(out_df[[mcol]]))
+
+  max_tokens <- base::max(stringr::str_count(out_df[[mcol]], "\\S+") + 0L, na.rm = TRUE)
+
+  # split into separate columns
+
+  out_df <- tidyr::separate_wider_delim(
+
+    out_df,
+    cols   = dplyr::all_of(mcol),
+    delim  = " ",
+    names  = base::paste0("MVALUE_", base::seq_len(max_tokens)),
+    too_few = "align_start"
+
+  )
 
   if (isTRUE(REGENIE_Cols)) {
 
+    message("Adding REGENIE Style information columns")
 
     rs <- as.character(out_df$RSID)
 
@@ -215,9 +257,7 @@ METASOFT_Run <- function(Data, options = character(), REGENIE_Cols = TRUE ) {
 
   if (!is.null(out_df)) {
 
-    message("Output preview (first 10 rows)")
-
-    print(utils::head(out_df, 10))
+    message("Outputting file...")
 
   } else {
 
@@ -225,8 +265,316 @@ METASOFT_Run <- function(Data, options = character(), REGENIE_Cols = TRUE ) {
 
   }
 
-  #Return results
+  # Return results
 
   return(out_df)
 
-}
+  }
+
+  if (!exists("use_wrapper")) use_wrapper <- TRUE
+
+  if (isTRUE(use_wrapper)) {
+
+    .METASOFT_Run_original <- METASOFT_Run
+
+    METASOFT_Run <- function(..., session = NULL) {
+
+      # Capture the *exact* expressions supplied in ...
+
+      dots_expr <- base::as.list(base::substitute(base::list(...)))[-1]
+
+      args <- base::list(...)
+      args$session <- session
+      args$.dots   <- args
+
+      # helpers
+
+      resolve_data_name <- function(name) {
+
+        if (!base::is.character(name) || base::length(name) != 1L) return(name)
+
+        pf <- base::parent.frame()
+
+        if (base::exists(name, envir = pf, inherits = TRUE)) {
+
+          return(base::get(name, envir = pf, inherits = TRUE))
+
+        }
+
+        if (base::exists(name, envir = .GlobalEnv, inherits = FALSE)) {
+
+          return(base::get(name, envir = .GlobalEnv, inherits = FALSE))
+
+        }
+
+        name
+      }
+
+      is_multi_data <- function(x) {
+
+        if (base::is.null(x)) return(FALSE)
+
+        if (base::is.data.frame(x)) return(FALSE)
+
+        if (base::is.list(x)) return(base::length(x) > 1L)
+
+        if (base::is.atomic(x) && base::length(x) > 1L) return(TRUE)
+
+        FALSE
+
+      }
+
+      as_data_list <- function(x) {
+
+        if (base::is.data.frame(x)) return(base::list(x))
+
+        if (base::is.list(x))       return(x)
+
+        if (base::is.atomic(x) && base::length(x) > 1L) return(base::as.list(x))
+
+        base::list(x)
+      }
+
+      pick_i <- function(val, i, n) {
+
+        if (base::is.null(val)) return(NULL)
+
+        if (base::is.list(val) && !base::is.data.frame(val)) {
+
+          if (base::length(val) == 1L) return(val[[1L]])
+
+          if (base::length(val) == n)  return(val[[i]])
+
+          return(val[[1L]])
+
+        }
+
+        if (base::is.atomic(val) && base::length(val) > 1L) {
+
+          if (base::length(val) == n) return(val[i])
+
+          return(val[1L])
+
+        }
+
+        val
+      }
+
+      infer_names <- function(dlist) {
+
+        n  <- base::length(dlist)
+        nm <- base::names(dlist)
+
+        if (!base::is.null(nm) && base::any(nzchar(nm))) {
+
+          nm[nm == ""] <- base::paste0("run_", base::which(nm == ""))
+
+          return(nm)
+
+        }
+
+        flat <- base::unlist(dlist, recursive = FALSE, use.names = FALSE)
+
+        if (base::length(flat) == n && base::all(base::vapply(flat, base::is.character, logical(1)))) {
+
+          out <- base::basename(flat)
+          out[out == "" | base::is.na(out)] <- base::paste0("run_", base::seq_len(n))
+
+          return(out)
+
+        }
+
+        base::paste0("run_", base::seq_len(n))
+
+      }
+
+      label_from_expr <- function(expr) {
+
+        if (base::is.null(expr)) return("run_1")
+
+        lab <- base::paste(base::deparse(expr, width.cutoff = 500L), collapse = "")
+
+        # if user literally typed a quoted string path, show basename
+
+        if (base::grepl('^".*"$', lab)) {
+
+          lab <- base::gsub('^"|"$', "", lab)
+
+          if (nzchar(lab)) lab <- base::basename(lab)
+
+        }
+
+        if (!nzchar(lab)) "run_1" else lab
+      }
+
+      send_pause <- function() {
+
+        if (!base::is.null(session)) {
+
+          session$sendCustomMessage(
+
+            "plot_progress",
+            base::list(pct = NA, msg = "Running METASOFT meta-analysis")
+
+          )
+
+        }
+
+      }
+
+      # run one file/df
+
+      run_one <- function(run_args) {
+
+        if ("Data" %in% base::names(run_args)) {
+
+          run_args$Data <- resolve_data_name(run_args$Data)
+
+        }
+
+        verbose_mode <- if ("Verbose" %in% base::names(run_args)) isTRUE(run_args$Verbose) else FALSE
+
+        run_args$session <- NULL
+        run_args$.dots   <- NULL
+
+        # silent progress bar
+
+        .bar_draw <- function(pct) {
+
+          pct_i <- base::as.integer(base::floor(base::max(0, base::min(100, pct))))
+          bar_len <- 30L
+          filled  <- base::as.integer(base::round(bar_len * pct_i / 100))
+
+          base::cat(
+
+            "\r[", base::strrep("=", filled), base::strrep(" ", bar_len - filled), "] ",
+            base::sprintf("%3d%%", pct_i),
+            sep = ""
+
+          )
+
+          utils::flush.console()
+
+        }
+
+        .bar_done <- function() {
+
+          base::cat("\n")
+          utils::flush.console()
+
+        }
+
+        if (verbose_mode) {
+
+          return(base::do.call(.METASOFT_Run_original, run_args))
+
+        }
+
+        # Verbose = FALSE: bar + METASOFT stdout/stderr only
+
+        .bar_draw(0)
+
+        out <- withCallingHandlers(
+
+          base::do.call(.METASOFT_Run_original, run_args),
+
+          message = function(m) {
+
+            msg <- base::conditionMessage(m)
+
+            # show + trigger pause only for this milestone
+
+            if (base::grepl("^Running METASOFT meta-analysis", msg)) {
+
+              send_pause()
+              .bar_draw(50)
+
+              return()  # DO NOT muffle this need for running pause
+
+            }
+
+            # muffle everything else in Verbose=FALSE
+
+            base::invokeRestart("muffleMessage")
+
+          }
+
+
+        )
+
+        .bar_draw(100)
+        .bar_done()
+
+        out
+
+      }
+
+      # MULTI-RUN
+
+      if ("Data" %in% base::names(args) && is_multi_data(args$Data)) {
+
+        Data_list <- as_data_list(args$Data)
+        n <- base::length(Data_list)
+
+        out_names <- infer_names(Data_list)
+
+        results <- base::vector("list", n)
+        base::names(results) <- out_names
+
+        base_args <- args
+        base_args$Data <- NULL
+
+        for (i in base::seq_len(n)) {
+
+          run_args <- base_args
+          run_args$Data <- Data_list[[i]]
+
+          for (nm in base::names(run_args)) {
+
+            if (nm %in% c("session", ".dots")) next
+
+            run_args[[nm]] <- pick_i(run_args[[nm]], i, n)
+
+          }
+
+          base::message(base::sprintf("Processing dataset %d/%d: %s", i, n, out_names[i]))
+
+          results[[i]] <- run_one(run_args)
+        }
+
+
+        return(results)
+
+      }
+
+      # SINGLE
+
+      # Use the *expression user typed* for Data
+
+      supplied_lab <- "run_1"
+
+      if ("Data" %in% base::names(dots_expr)) {
+
+        supplied_lab <- label_from_expr(dots_expr$Data)
+
+      } else if (base::length(dots_expr) >= 1L) {
+
+        # handle unnamed first arg: METASOFT_Run(METASOFT_Example_Input)
+
+        supplied_lab <- label_from_expr(dots_expr[[1L]])
+
+      }
+
+      base::message(base::sprintf("Processing dataset 1/1: %s", supplied_lab))
+
+      if ("Data" %in% base::names(args)) {
+
+        args$Data <- resolve_data_name(args$Data)
+
+      }
+
+      run_one(args)
+
+    }
+
+  }

@@ -1,9 +1,12 @@
+
 #' 100,000 SNP Sample Subset of GWAS Summary Statistics of Lewy Body Dementia
 #'
 #' A dataset containing a subset of the summary statistics from the Chia, R. 2021 Lewy Body Dementia GWAS
+#'
 #' The variables are as follows:
 #'
 #' \itemize{
+#'
 #'   \item chromosome = chromosome number
 #'   \item variant_id = SNP rs number
 #'   \item effect_allele_frequency = observed frequency of effect allele
@@ -21,5 +24,6 @@
 #' @keywords datasets
 #' @name LbDementia_Sum_Stats
 #' @usage data(LbDementia_Sum_Stats)
-#' @format A data frame with 100,000 rows (randomly selected) and 10 variables from: https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90001001-GCST90002000/GCST90001390/
-NULL
+#' @format A data frame with 100,000 rows (randomly selected) and 10 variables from:
+#' https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90001001-GCST90002000/GCST90001390/
+

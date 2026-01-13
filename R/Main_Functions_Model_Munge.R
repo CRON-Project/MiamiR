@@ -2,8 +2,8 @@
 #' Munged, Covariate & Modelling Data
 #'
 #' @param Model_Object Base R model generated from running an lm() or glm(); defaults to NULL
-#' @param ... Shadow argument to detect arguments passed; defaults to list()
-#' @param Verbose Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE.
+#' @param ... Shadow argument to detect arguments passed; defaults to empty list()
+#' @param Verbose Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE
 #'
 #' @return Munged dataframe amenable to plotting test statistics which can then be passed to other MiamiR functions
 #' @export
@@ -21,20 +21,30 @@
 
     Model_Type <- "Unknown"
 
-    message("Processing model")
+    message("Finding model")
 
-    Model <- get(Model_Object)
+    # If " " not supplied doesn't break via get and just sources
+
+    Model <- if (is.character(Model_Object)) get(Model_Object, inherits = TRUE) else Model_Object
+
+    #   Model <- get(Model_Object)
 
     if(inherits(Model, "glm"))
+
     {
+
       Model_Type <- "glm"
+
     }
 
     if(Model_Type == "glm")
 
     {
+
     if(Model$family$family == "binomial")
+
     {
+
       Special <- "binomial"
 
     }else{
@@ -50,10 +60,12 @@
     }
 
     if(inherits(Model, "lm") & Special == "none")
-    {
-      Model_Type <- "lm"
-    }
 
+    {
+
+      Model_Type <- "lm"
+
+    }
 
     message("Object Found")
 
@@ -77,12 +89,19 @@
     message("Determining model type")
 
     if(Model_Type == "glm")
+
     {
+
     ModelSum$OR <- exp(ModelSum$Estimate)
+
     }
+
     if(Model_Type == "lm")
+
     {
-      ModelSum$BETA <- ModelSum$Estimate #straight input for lm
+
+      ModelSum$BETA <- ModelSum$Estimate # straight input for lm
+
     }
 
     message("Assigning test statistic values")
@@ -92,26 +111,40 @@
     ModelSum$`Std. Error` <- NULL
 
     if(Special == "binomial")
+
     {
+
     ModelSum$P <- ModelSum$`Pr(>|z|)`
+
     }else{
+
     ModelSum$P <- ModelSum$`Pr(>|t|)`
+
     }
+
     ModelSum$`t value` <- NULL
+
     if(Special == "binomial")
+
     {
+
     ModelSum$`Pr(>|z|)` <- NULL
     ModelSum$`z value` <- NULL
-    }else
-    {
-    ModelSum$`Pr(>|t|)` <- NULL
+
     }
 
+    else
 
+    {
+
+    ModelSum$`Pr(>|t|)` <- NULL
+
+    }
 
     message("Data Extracted")
 
     ModelSum$group <- sapply(ModelSum$Covariate, function(cov) {
+
       parts <- unlist(strsplit(cov, ":"))
 
       matched_groups <- covariates[sapply(covariates, function(group)
@@ -127,8 +160,8 @@
         return(NA)
 
       }
-    })
 
+    })
 
     # Now remove the group part from the Covariate string, but only if they are different
 
@@ -139,16 +172,17 @@
       if (!is.na(grp)) {
 
         # Split both covariate and group by ':'
+
         cov_parts <- strsplit(cov, ":")[[1]]
         grp_parts <- strsplit(grp, ":")[[1]]
 
         # Keep numeric (continuous) covariates untouched, clean factors
+
         cleaned_parts <- mapply(function(c, g) {
 
           all_levels <- Model$xlevels[[g]]
 
           if (!is.null(all_levels)) {
-
 
             return(sub(paste0("^", g), "", c))
 
@@ -157,30 +191,37 @@
             # Continuous variable - keep as is
 
             return(c)
+
           }
+
         }, cov_parts, grp_parts, SIMPLIFY = TRUE)
 
         paste(cleaned_parts, collapse = ":")
+
       } else {
 
         cov
 
       }
+
     }, ModelSum$Covariate, ModelSum$group)
 
     message("Determining reference levels")
 
     ModelSum$Reference <- mapply(function(covariate_group, covariate) {
 
-      # Handle interaction terms (e.g., "Ethnicity:Sex")
+      # Handle interaction terms (e.g. "Ethnicity:Sex")
+
       if (grepl(":", covariate_group)) {
 
         group_parts <- unlist(strsplit(covariate_group, ":"))
 
         # Get reference level for each part
+
         ref_levels <- sapply(group_parts, function(g) {
 
           all_levels <- Model$xlevels[[g]]
+
           if (is.null(all_levels)) {
 
             return("None")
@@ -188,7 +229,9 @@
           }
 
           # Determine reference level (level not present as dummy var)
+
           non_reference_levels <- ModelSum$Covariate[ModelSum$group == g]
+
           reference_level <- setdiff(all_levels, non_reference_levels)
 
           if (length(reference_level) > 0) reference_level else "NA"
@@ -196,13 +239,16 @@
         }, USE.NAMES = FALSE)
 
         # Combine into one reference string
+
         return(paste(ref_levels, collapse = ":"))
       }
 
-      # Existing logic for single terms
+      # Original logic for single terms
+
       all_levels <- Model$xlevels[[covariate_group]]
 
       # If it's not a categorical variable, return NA
+
       if (is.null(all_levels)) {
 
         return("None")
@@ -210,6 +256,7 @@
       }
 
       # Find the level that is not present in the Covariate column for this group
+
       non_reference_levels <- ModelSum$Covariate[ModelSum$group == covariate_group]
       reference_level <- setdiff(all_levels, non_reference_levels)
 
@@ -230,20 +277,21 @@
 
     }
 
-
     if (!exists("use_wrapper")) use_wrapper <- TRUE
 
     if(use_wrapper == TRUE)
+
     {
 
-.Model_Munge_original <- Model_Munge
+  .Model_Munge_original <- Model_Munge
 
-Model_Munge <- function(..., session = NULL) {
+  Model_Munge <- function(..., session = NULL) {
 
   args <- list(...)
   args$session <- session
 
   # Find the name of the Data argument if present
+
   data_arg_name <- if ("Data" %in% names(args)) {
 
     deparse(substitute(Data), backtick = TRUE)
@@ -255,11 +303,33 @@ Model_Munge <- function(..., session = NULL) {
   } else {
 
     NULL
+
+  }
+
+  # Capture the raw call so can print what user typed if not " "
+
+  #cl <- match.call(definition = sys.function(sys.parent()), expand.dots = TRUE)
+  cl <- match.call(expand.dots = TRUE)
+
+  data_arg_name <- NULL
+
+  if (!is.null(cl$Model_Object)) {
+
+    # If user passed Model_Object = Model_One, this becomes "Model_One"
+
+    # If they passed "Model_One", this becomes "\"Model_One\"" (strip quotes)
+
+    data_arg_name <- deparse(cl$Model_Object)
+
+    # strip surrounding quotes for nicer printing
+
+    data_arg_name <- sub('^"(.*)"$', "\\1", data_arg_name)
+
   }
 
   if (!is.null(data_arg_name)) {
 
-    message(sprintf("Processing dataset: %s", data_arg_name))
+    message(sprintf("Processing model object: %s", data_arg_name))
 
   }
 
@@ -272,17 +342,27 @@ Model_Munge <- function(..., session = NULL) {
   } else {
 
     return(
+
       suppressMessages(
+
         suppressWarnings(
+
           run_with_counter(
+
             func    = .Model_Munge_original,
             args    = args,
             session = session
+
           )
+
         )
+
       )
+
     )
+
   }
+
 }
 
 }

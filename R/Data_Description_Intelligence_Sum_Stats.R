@@ -1,9 +1,11 @@
+
 #' 100,000 SNP Sample Subset of GWAS Summary Statistics of Intelligence
 #'
 #' A dataset containing a subset of the summary statistics from the Savage Jansen 2018 Intelligence GWAS
 #' The variables are as follows:
 #'
 #' \itemize{
+#'
 #'   \item SNP: rs number
 #'   \item UNIQUE_ID: unique SNP id based on chromosome, position
 #'   \item CHR: chromosome number
@@ -26,4 +28,4 @@
 #' @name Intelligence_Sum_Stats
 #' @usage data(Intelligence_Sum_Stats)
 #' @format A data frame with 100,000 rows (randomly selected) and 14 variables from: https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST006001-GCST007000/GCST006250/sumstats/README_SavageJansen_2018_intelligence_metaanalysis.txt
-NULL
+

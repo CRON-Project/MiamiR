@@ -13,7 +13,7 @@
 #' @param X_Axis_Separation Continuous value of the specific break separation to show on the X axis; defaults to NULL - leading to auto-calculation
 #' @param Strip_Colour Colour of the strips highlighting the groups of covariates or SNPs under a certain category; defaults to NULL
 #' @param Strips Display strips highlighting groups of interest; defaults to TRUE
-#' @param Pre_Calculated_CIs Indicate that custom CIs are precalculated and available in datasets; defaults to FALSE
+#' @param Pre_Calculated_CIs Indicate that custom CIs are pre-calculated and available in datasets; defaults to FALSE
 #' @param Legend_Title_Size Legend title size; defaults to 13
 #' @param Legend_Text_Size Legend text size; defaults to 11
 #' @param Legend_Title Title to display next to the legend; defaults to "Data"
@@ -30,7 +30,7 @@
 #' @param Styles These are a list of styles to be applied to the grid text on the right hand side of the main plot - this also specifies the order down the page; defaults to NULL and accepts "underline" or "bold" as deviations
 #' @param Missings Simulate shape positions for data points which may be missing from specific data sets plotted; defaults to TRUE
 #' @param Null_Line_Thickness Manually specify the thickness of the corresponding Null Line; defaults to 0.5
-#' @param Test_Statistic_Choice Manually specify which type of test statistic output is desired, OR or BETA; defaults to NULL - regardless of input type either output may be specified
+#' @param Test_Statistic_Choice Manually specify which type of test statistic output is desired, OR or BETA; defaults to BETA - regardless of input type either output may be specified
 #' @param Lead_Studies Manually specify which study's lead SNPs should be plotted when Selected_SNPs is NULL; defaults to NULL - leads to index SNPs from any set to be plotted
 #' @param Separation_Distance The minimum genomic distance between significant regions of interest/lead SNPs to be defined as distinct peaks, defined by P_threshold value when Selected_SNPs is NULL; defaults to 1e6
 #' @param P_threshold Maximum value of P (minimum LOG10P) allowed for a SNP to be classified as initiating detection as the lead SNP of a peak in the function, when Selected_SNPs is NULL; defaults to 5e-8
@@ -82,50 +82,20 @@
 #' @param order Specify the order and selection of information containing columns (Labels) in the grid text module on the right hand side of the plot; defaults to c("BETA_SE_Label", "P_Label")
 #' @param Verbose Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE
 #' @param Lab_Col Allocate the second level of information in the grid text module on the left hand side of the plot, when Double_Label is TRUE; defaults to "Real_ID"
+#' @param Unprocessed When using a raw model object, internal Model_Munge() processing to data frame is used; defaults to FALSE
+#' @param PDF Slightly alter the underlying construction, suitable for PDF output; defaults to FALSE
+#' @param REF When supplying model data, toggle the REF: notation on or off; defaults to TRUE
+#' @param Top_Grid_Thickness Modify the linewidth of the line at the very top of the grid, due to the potential graphics output; defaults to NULL, leading to automatic assignment unless otherwise specified
+#' @param HLA_Input Slightly alter the underlying processing, suitable for HLA-WAS inputs; defaults to FALSE
 #'
 #' @return Image of Forest Plot is allocated to specified object and the resulting ggplot object can then be saved to an image
 #' @export
 #'
 #' @examples Forest_Plot <- Forest_Plot(Data = "Intelligence_Sum_Stats", Chromosomes = 1)
-#'
-
 
       Forest_Plot <- function(
+
         Data = NULL,
-        Names = NULL,
-        Styles = NULL,
-        Shapes = NULL,
-        Data_Set_Colours = NULL,
-        Missings = TRUE,
-        Null_Line_Colour = "red",
-        Null_Line_Type = "dashed",
-        Null_Line_Thickness = 0.5,
-        Strip_Colour = "goldenrod",
-        Strips = TRUE,
-        Legend_Title = "Data",
-        Legend_Title_Size = 13.0,
-        Legend_Text_Size = 11.0,
-        Legend_On = TRUE,
-        X_Axis_Label = TRUE,
-        X_Axis_Title = NULL,
-        X_Axis_Text_Size = 11,
-        X_Axis_Title_Size = 13,
-        Test_Statistic_Choice = "BETA",
-        X_Axis_Separation = NULL,
-        X_Axis_Text_Resolution = NULL,
-        Lead_Studies = NULL,
-        Separation_Distance = 1e6,
-        P_threshold = 5e-8,
-        Chromosomes = NULL,
-        Double_Label = FALSE,
-        Shape_Size = 4,
-        CI_Line_Height = 0.35,
-        CI_Line_Size = 0.4,
-        Shape_Thickness = 1,
-        Match_Allele_Study = NULL,
-        Match_Allele_Direction = TRUE,
-        Grid_Thickness = 0.25,
-        Grid_Lines_On = TRUE,
         SE_Column = NULL,
         OR_Column = NULL,
         Chromosome_Column = NULL,
@@ -138,6 +108,38 @@
         Upper_CI_Column = NULL,
         Lower_CI_Column = NULL,
         Pre_Calculated_CIs = FALSE,
+        Names = NULL,
+        Styles = NULL,
+        Shapes = NULL,
+        Data_Set_Colours = NULL,
+        Null_Line_Colour = "red",
+        Null_Line_Type = "dashed",
+        Null_Line_Thickness = 0.5,
+        Strip_Colour = NULL,
+        Strips = TRUE,
+        Legend_Title = "Data",
+        Legend_Title_Size = 13.0,
+        Legend_Text_Size = 11.0,
+        Legend_On = TRUE,
+        X_Axis_Label = TRUE,
+        X_Axis_Title = NULL,
+        X_Axis_Text_Size = 11,
+        X_Axis_Title_Size = 13,
+        X_Axis_Separation = NULL,
+        X_Axis_Text_Resolution = NULL,
+        Separation_Distance = 1e6,
+        P_threshold = 5e-8,
+        Chromosomes = NULL,
+        Double_Label = FALSE,
+        Shape_Size = 4,
+        CI_Line_Height = 0.35,
+        CI_Line_Size = 0.4,
+        Shape_Thickness = 1,
+        Top_Grid_Thickness = NULL,
+        Match_Allele_Study = NULL,
+        Match_Allele_Direction = TRUE,
+        Grid_Thickness = 0.25,
+        Grid_Lines_On = TRUE,
         Left_Size = 9,
         Right_Size = 9,
         Right_Buffer = 1,
@@ -170,14 +172,19 @@
         Selected_Covariates = NULL,
         Selected_SNPs = NULL,
         Model_Reference = FALSE,
-        Verbose = FALSE,
-        Lab_Col = "Real_ID"
+        Lab_Col = "Real_ID",
+        HLA_Input = FALSE,
+        Test_Statistic_Choice = "BETA",
+        Missings = TRUE,
+        Lead_Studies = NULL,
+        PDF = FALSE,
+        REF = TRUE,
+        Unprocessed = FALSE,
+        Verbose = FALSE
 
       )
 
-{
-
-
+  {
 
   if (is.null(Data) || length(Data) == 0) {
 
@@ -186,6 +193,7 @@
   }
 
   if(!is.null(Selected_SNPs))
+
   {
 
     message("No chromosome filtering required as specific SNPs supplied")
@@ -208,13 +216,12 @@
 
   }
 
-
-
   call_expr <- Names_Run
 
   Orig_Names <- call_expr
 
   if(Grid_Lines_On == FALSE)
+
   {
 
     message("Setting plot element arguments for minimalist plot")
@@ -224,54 +231,82 @@
     Grid_Thickness <- 0
     Top_Grid_Thickness <- 0
 
-  }else{
+  }
+
+  else{
+
+    if(is.null(Top_Grid_Thickness))
+
+    {
 
     Top_Grid_Thickness <- Grid_Thickness
+
+    }
 
   }
 
   message("Checking names for path formatting")
+
   Orig_Names <- gsub('^"|"$', '', Orig_Names)
 
   if(Model_Reference == T && is.null(Left_Title))
+
   {
+
     Left_Title <- "Covariate"
+
   }
 
   if(Model_Reference == F && is.null(Left_Title))
+
   {
+
     Left_Title <- "SNP"
+
   }
 
   if(is.null(Lab_Col))
+
   {
+
     Lab_Col <- "ID"
+
   }
 
   if(is.null(Data_Set_Colours))
+
   {
+
     Data_Set_Colours <- viridis::viridis(length(Orig_Names))
+
   }
 
   if(!is.null(Names))
+
   {
+
     message("Using Names Provided")
 
-  }else{
+  }
+
+  else{
 
     Names <- Orig_Names
 
   }
 
   if (any(grepl("[/\\\\]", Names))) {
+
     Names <- sub(".*[\\\\/]", "", Names)
+
   }
 
+  # Goes below above as need to match based on STUDY assigned from Name
 
-  #Goes below above as need to match based on STUDY assigned from Name
   if (is.null(Match_Allele_Study) & Match_Allele_Direction == TRUE) {
 
     Match_Allele_Study <- Names[1]
+
     message(paste0("Matching allele directions automatically to ", Match_Allele_Study) )
 
   }
@@ -291,9 +326,11 @@
   message("Assigning statistic information titles")
 
   if(is.null(BETA_SE_Label_Title))
+
   {
 
     if(Test_Statistic_Choice == "BETA")
+
     {
 
       BETA_SE_Label_Title <- "BETA (SE)"
@@ -307,9 +344,11 @@
   }
 
   if(is.null(BETA_CI_Label_Title))
+
   {
 
     if(Test_Statistic_Choice == "BETA")
+
     {
 
       BETA_CI_Label_Title <- "BETA (CI)"
@@ -323,6 +362,7 @@
   }
 
   if(is.null(BETA_Label_Title))
+
   {
 
     if(Test_Statistic_Choice == "BETA")
@@ -345,12 +385,13 @@
     X_Axis_Title <- Test_Statistic_Choice
 
     X_Axis_Title <- paste0("\n", X_Axis_Title, "\n")
+
   }
 
   Combined_Processed_Data <- data.frame()
   Combined_Processed_SNPs <- data.frame()
 
-  message("Loading in data")
+  message("Loading in data \n")
 
   for (i in seq_along(Orig_Names)) {
 
@@ -369,17 +410,27 @@
 
       message("Reading from file path")
 
-      vroom::vroom(Orig_Names[i], show_col_types = FALSE)
+      suppressWarnings(
+        suppressMessages(
+
+      vroom::vroom(Orig_Names[i], show_col_types = FALSE, progress = F)
+
+        ))
+
     } else {
 
       stop("The name or file path '", Orig_Names[i], "' does not exist.")
 
     }
 
-    if(Model_Reference == TRUE)
+    if(Model_Reference == TRUE & Unprocessed == TRUE )
+
     {
 
       message("Munging model object")
+
+      print(Orig_Names[i])
+      print(Covariate_Phenotype_Data)
 
       Data <- Model_Munge(Model_Object = Orig_Names[i], Verbose = TRUE)
 
@@ -389,17 +440,48 @@
     corresponding_shape <- Shapes[i]
     corresponding_style <- Styles[i]
 
+    if(Model_Reference == FALSE )
+
+    {
+
     message("Deducing key column names")
 
     Chromosome_Column <- detect_chromosome_column(Data, Chromosome_Column)
 
     if(!is.null(Chromosome_Column))
 
-    {
+      message("Addressing variable chromosome X nomenclature")
 
-      Data <- Data %>%
-        dplyr::mutate(!!Chromosome_Column := ifelse(.data[[Chromosome_Column]] == "23", "X", .data[[Chromosome_Column]]))
+    # Use the detected column
 
+    col <- Chromosome_Column
+
+    # Pull once, mutate locally, assign back once
+
+    v <- Data[[col]]
+
+    if (is.factor(v)) {
+
+      lv <- levels(v)
+      hit <- (lv == "23") | (lv == 23L)
+
+      if (any(hit)) levels(v)[hit] <- "X"
+
+      Data[[col]] <- v
+
+    } else {
+
+      vc <- as.character(v)
+
+      # map 23/23L -> X
+
+      idx <- (vc == "23") | (vc == "23L")
+
+      if (any(idx)) vc[idx] <- "X"
+
+      Data[[col]] <- vc
+
+    }
 
     }
 
@@ -428,7 +510,11 @@
 
         message("Filtering for key chromosomes")
 
-        Data <- Data[Data$CHROM %in% Chromosomes, ]
+       # Data <- Data[Data$CHROM %in% Chromosomes, ]
+
+        keep <- !is.na(match(Data$CHROM, Chromosomes))
+        Data <- Data[keep, , drop = FALSE]
+
 
       }
 
@@ -440,7 +526,18 @@
 
     }
 
-    Data <- ensure_P(Data)
+    if (!is.null(PValue_Column) && grepl("log", PValue_Column, ignore.case = TRUE)) {
+
+      message("Converting log value to plain P")
+
+      x <- Data[[PValue_Column]]
+
+      x <- if (is.numeric(x)) x else as.numeric(x)
+
+      Data[[PValue_Column]] <- exp(-x * 2.302585092994046)  # 2.30258... = log(10)
+
+    }
+
     Data$P <- Data[[PValue_Column]]
 
     message("Deducing type of test statistic supplied and performing required OR/BETA calculations")
@@ -460,6 +557,7 @@
       } else {
 
         Test_Statistic <- "BETA" # Default if both are NULL
+
       }
 
     }
@@ -467,10 +565,12 @@
     if (Test_Statistic == "BETA") {
 
       # Assign BETA and rename SE
+
       Data$BETA    <- Data[[BETA_Column]]
       Data$BETA_SE <- Data[[SE_Column]]
 
       # Calculate OR and OR_SE
+
       Data$OR    <- exp(Data$BETA)
       Data$OR_SE <- Data$OR * Data$BETA_SE
 
@@ -479,16 +579,19 @@
     if (Test_Statistic == "OR") {
 
       # Assign OR and rename SE
+
       Data$OR    <- Data[[OR_Column]]
       Data$OR_SE <- Data[[SE_Column]]
 
       # Calculate BETA and BETA_SE
+
       Data$BETA    <- log(Data$OR)
       Data$BETA_SE <- Data$OR_SE / Data$OR
 
     }
 
     if(Pre_Calculated_CIs == T)
+
     {
 
       Data$LL <- Data[[Upper_CI_Column]]
@@ -497,6 +600,7 @@
     }
 
     if(Model_Reference == T)
+
     {
 
       Data$ID <- Data$Covariate
@@ -504,20 +608,31 @@
     }
 
     if(Model_Reference == T)
+
     {
 
       if(!is.null(Selected_Covariates)){
+
         message("Filtering for key Covariates (manual)")
+
         Selected_SNPs <- Selected_Covariates
+
         message(Selected_SNPs)
+
         Data <- Data[Data$group %in% Selected_SNPs,]
 
-      }else{
+      }
+
+      else{
 
         message("No covariates specified - retaining all (automatic)")
+
         message("Automatically generated order:")
+
         Selected_Covariates <- Data$group[!duplicated(Data$group)]
+
         message(Selected_Covariates)
+
         Selected_SNPs <- Selected_Covariates
 
       }
@@ -530,22 +645,27 @@
     Data$Real_ID <- Data$ID
 
     if(is.null(Selected_SNPs) & Model_Reference == F)
+
     {
 
       find_peaks <- function(data, Separation_Distance, P_threshold) {
 
         # Group by chromosome (or single group if only one CHROM)
+
         chrom_list <- if (length(unique(data$CHROM)) == 1) list(data) else base::split(data, data$CHROM)
 
         results <- base::lapply(chrom_list, function(chrom_data) {
 
           # Filter to only SNPs below genome-wide threshold - MAXIMUM P Value for significant hit/minimum LOG10P
+
           chrom_data <- chrom_data[chrom_data$P < P_threshold, , drop = FALSE]
 
           # If none pass threshold, return nothing
+
           if (nrow(chrom_data) == 0) return(chrom_data)
 
           # Sort by smallest P first
+
           chrom_data <- chrom_data[base::order(chrom_data$P), ]
 
           selected <- chrom_data[0, , drop = FALSE]
@@ -560,7 +680,10 @@
 
             } else {
 
-              # Only keep if this SNP is at least Separation_Distance away from all previously selected - basically loop through peaks.
+              # Only keep if this SNP is at least Separation_Distance away from all previously selected
+
+              # - basically loop through peaks.
+
               too_close <- base::any(base::abs(snp$GENPOS - selected$GENPOS) < Separation_Distance)
 
               if (!too_close) {
@@ -574,6 +697,7 @@
           }
 
           selected
+
         })
 
         dplyr::bind_rows(results)
@@ -612,6 +736,7 @@
     }
 
     if(Model_Reference == T)
+
     {
 
       Data <- Data %>% dplyr::select(ID,  OR, BETA, BETA_SE, OR_SE, P, STUDY, Shape, Style, group, Reference)
@@ -621,32 +746,52 @@
     }
 
     if(Model_Reference == F)
+
     {
 
       if(Double_Label == T)
+
       {
 
        Data$Backup_ID <- Data[[Lab_Col]]
 
-      }else{
+      }
+
+      else{
 
         Data$Backup_ID <- Data$ID
 
       }
 
-      message("Unifying coordinates")
+      message("Unifying coordinates \n")
 
       Data$Real_ID <- Data$ID
-      Data$ID <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
-      Data$COORD_Norm <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
-      Data$COORD_Alt <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE1, ":", Data$ALLELE0)
+
+      if (isTRUE(HLA_Input)) {
+
+        # HLA mode: no "chr", no ":" – just raw concatenation
+
+        Data$ID         <- stringi::stri_c(Data$CHROM, Data$GENPOS, Data$ALLELE0, Data$ALLELE1)
+        Data$COORD_Norm <- stringi::stri_c(Data$CHROM, Data$GENPOS, Data$ALLELE0, Data$ALLELE1)
+        Data$COORD_Alt  <- stringi::stri_c(Data$CHROM, Data$GENPOS, Data$ALLELE1, Data$ALLELE0)
+
+      } else {
+
+        # Standard GWAS mode
+
+        Data$ID         <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
+        Data$COORD_Norm <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE0, ":", Data$ALLELE1)
+        Data$COORD_Alt  <- stringi::stri_c("chr", Data$CHROM, ":", Data$GENPOS, ":", Data$ALLELE1, ":", Data$ALLELE0)
+
+      }
 
     }
 
     if(Model_Reference == F)
+
     {
 
-      #Reset all before next iteration as datasets vary and don't want saved allocation
+      # Reset all before next iteration as datasets vary and don't want saved allocation
 
       Chromosome_Column <- NULL
       PValue_Column     <- NULL
@@ -674,6 +819,7 @@
     ALL_STUDIES <- unique(Combined_Processed_Data$STUDY)
 
     if(!is.null(Lead_Studies))
+
     {
 
       messafe("Filtering auto-generated SNPs of interest to particular Studies")
@@ -683,6 +829,7 @@
     }
 
     if(is.null(Selected_SNPs))
+
     {
 
       Selected_SNPs <- Combined_Processed_SNPs$ID
@@ -695,7 +842,15 @@
 
     } else {
 
-      Combined_Processed_Data <- Combined_Processed_Data[Combined_Processed_Data$COORD_Norm %in% Selected_SNPs | Combined_Processed_Data$COORD_Alt %in% Selected_SNPs |  Combined_Processed_Data$ID %in% Selected_SNPs | Combined_Processed_Data$Backup_ID %in% Selected_SNPs , ] # will select even if there is a flip
+      Combined_Processed_Data <- Combined_Processed_Data[Combined_Processed_Data$COORD_Norm %in% Selected_SNPs |
+
+                                 Combined_Processed_Data$COORD_Alt %in% Selected_SNPs |
+
+                                 Combined_Processed_Data$ID %in% Selected_SNPs |
+
+                                 Combined_Processed_Data$Backup_ID %in% Selected_SNPs , ]
+
+                                 # will select even if there is a flip
 
     }
 
@@ -706,12 +861,15 @@
     message("Formatting model derived processed data for plotting")
 
     # Get unique references and their corresponding group values where Reference is not "None"
+
     unique_references_with_group <- Combined_Processed_Data %>%
       dplyr::filter(Reference != "None") %>%
       dplyr::distinct(Reference, group)
 
     # Create blank rows for each unique Reference value with NA for numeric columns,
+
     # set the ID to the Reference value, and the group to the corresponding group value
+
     blank_rows <- data.frame(ID = unique_references_with_group$Reference,
                              OR = 1,
                              BETA = 0,
@@ -725,12 +883,15 @@
                              stringsAsFactors = FALSE)
 
     # Combine the original dataframe with the new blank rows
+
     Combined_Processed_Data <- dplyr::bind_rows(Combined_Processed_Data, blank_rows)
 
     Combined_Processed_Data$Left_Plot_Value <- ifelse(
+
       Combined_Processed_Data$ID == Combined_Processed_Data$Reference,
       paste0(Combined_Processed_Data$group, " (Ref: ", Combined_Processed_Data$Reference, ")"),
       Combined_Processed_Data$ID
+
     )
 
   }else{
@@ -741,6 +902,14 @@
 
   }
 
+  if(REF == FALSE)
+
+  {
+
+   # NADA needed for now
+
+  }
+
   if(Missings == T & Model_Reference == T)
 
   {
@@ -748,22 +917,27 @@
     message("Simulating missing values from model")
 
     # Baseline: variables in Model
+
     baseline_ids <- Combined_Processed_Data %>%
       dplyr::filter(STUDY == "Model", !grepl("\\(Ref:", Left_Plot_Value)) %>%
       dplyr::pull(Left_Plot_Value) %>%
       unique()
 
     # For each study, only expect baseline_ids
+
     full_combination <- expand.grid(
+
       Left_Plot_Value = baseline_ids,
       STUDY = unique(Combined_Processed_Data$STUDY),
       stringsAsFactors = FALSE
+
     )
 
     missing_rows <- full_combination %>%
       dplyr::anti_join(Combined_Processed_Data, by = c("Left_Plot_Value", "STUDY"))
 
     # Add the missing rows with BETA, SE, and P set to 0
+
     missing_rows <- missing_rows %>%
       dplyr::mutate(
         BETA = 0,
@@ -772,23 +946,31 @@
         P = 1
       )
 
-    #because of blank refs to be skipped
+    # because of blank refs to be skipped
+
     missing_rows <- missing_rows[!is.na(missing_rows$Left_Plot_Value) & missing_rows$Left_Plot_Value != "" &
                                    !is.na(missing_rows$STUDY) & missing_rows$STUDY != "", ]
 
     missing_rows <- missing_rows %>%
+
       dplyr::mutate(
+
         Shape = "cross",
         Style = "normal"
+
       )
 
     # Combine the original dataset with the missing rows
+
     Combined_Processed_Data <-  dplyr::bind_rows(Combined_Processed_Data, missing_rows)
 
     Combined_Processed_Data <- dplyr::mutate(Combined_Processed_Data,
+
                                              Shape = dplyr::case_when(
+
                                                BETA == 0 & BETA_SE == 0 & P == 1 ~ "cross",
                                                TRUE ~ Shape  # Keeps existing values
+
                                              )
     )
 
@@ -802,6 +984,7 @@
     message("Simulating missing values from summary statistics")
 
     # Extract all unique IDs and STUDY values
+
     unique_ids <- unique(Combined_Processed_Data$Real_ID)
 
     unique_studies <- unique(Combined_Processed_Data$STUDY)
@@ -809,40 +992,57 @@
     unique_studies <- ALL_STUDIES
 
     # Create a full combination of all unique IDs and STUDY values
+
     full_combination <- expand.grid(Real_ID = unique_ids, STUDY = unique_studies)
 
     # Identify missing combinations (rows not in the original dataset)
+
     missing_rows <- full_combination %>%
       dplyr::anti_join(Combined_Processed_Data, by = c("Real_ID", "STUDY"))
 
     # Add the missing rows with BETA, SE, and P set to 0
+
     missing_rows <- missing_rows %>%
+
       dplyr::mutate(
+
         BETA = 0,
         OR = 1,
         SE = 0,
         P = 1
+
       )
 
     missing_rows <- missing_rows %>%
+
       dplyr::mutate(
+
         Shape = "cross",
         Style = "normal"
+
       )
 
     # Combine the original dataset with the missing rows
+
     Combined_Processed_Data <-  dplyr::bind_rows(Combined_Processed_Data, missing_rows)
 
-    Combined_Processed_Data <- dplyr::mutate(Combined_Processed_Data,
+    Combined_Processed_Data <- dplyr::mutate(
+
+                                             Combined_Processed_Data,
+
                                              Shape = dplyr::case_when(
+
                                                BETA == 0 & BETA_SE == 0 & P == 1 ~ "cross",
+
                                                TRUE ~ Shape  # Keeps existing values
+
                                              )
     )
 
   }
 
   if(Model_Reference == F)
+
   {
 
     message(paste0("Processing of matching allele directions to: ", Match_Allele_Study))
@@ -877,6 +1077,7 @@
     message("Removing failures from initial success...and binding second attempt of failures...")
 
     Combined_Processed_Data2 <- Combined_Processed_Data2 %>%
+
       dplyr::filter(!is.na(REF_ID)) %>%  # Keep rows matched on COORD_Norm
       dplyr::bind_rows(fallback)  # Add rows matched on COORD_Alt
 
@@ -889,36 +1090,76 @@
     {
 
       Combined_Processed_Data <- Combined_Processed_Data %>%
+
         dplyr::mutate(
+
           BETA_Flipped = !is.na(REF_Ref_ALLELE0) & !is.na(REF_Ref_ALLELE1) &
             ALLELE0 == REF_Ref_ALLELE1 & ALLELE1 == REF_Ref_ALLELE0,
           BETA = dplyr::if_else(BETA_Flipped, BETA * -1, BETA),
           OR = dplyr::if_else(BETA_Flipped & !is.na(OR), 1 / OR, OR),
           No_Match = (is.na(REF_COORD_Norm) & is.na(REF_COORD_Alt))
+
         )
 
     }
 
     # Collect the Real_IDs from rows where Study == Match_Allele_Study
+
     real_ids_in_match <- Combined_Processed_Data %>%
+
       dplyr::filter(STUDY == Match_Allele_Study  & !is.na(ID) &
                       P != 1) %>%
       dplyr::pull(Real_ID) %>%
       unique()
 
+    # choose whether to prepend "chr" or not (e.g. for HLA coordinates)
+
+    coord_prefix <- if (isTRUE(HLA_Input)) "" else "chr"
+
     Combined_Processed_Data <- Combined_Processed_Data %>%
+
       dplyr::mutate(
+
         use_alt_alleles = STUDY != Match_Allele_Study &
           !is.na(ID) &
           P != 1 &
-          !(Real_ID %in% real_ids_in_match),
+          !(Real_ID %in% real_ids_in_match)
 
-        COORD_Uni = ifelse(
-          use_alt_alleles,
-          stringi::stri_c("chr", CHROM, ":", GENPOS, ":", ALLELE0, ":", ALLELE1),
-          stringi::stri_c("chr", CHROM, ":", GENPOS, ":", REF_Ref_ALLELE0, ":", REF_Ref_ALLELE1)
-        )
       )
+
+    if (isTRUE(HLA_Input)) {
+
+      # HLA mode: no prefix, no separators
+
+      Combined_Processed_Data <- Combined_Processed_Data %>%
+        dplyr::mutate(
+          COORD_Uni = ifelse(
+            use_alt_alleles,
+            stringi::stri_c(CHROM, GENPOS, ALLELE0, ALLELE1),
+            stringi::stri_c(CHROM, GENPOS, REF_Ref_ALLELE0, REF_Ref_ALLELE1)
+
+          )
+
+        )
+
+    } else {
+
+      # Standard mode: chr + ":" separators
+
+      Combined_Processed_Data <- Combined_Processed_Data %>%
+        dplyr::mutate(
+
+          COORD_Uni = ifelse(
+
+            use_alt_alleles,
+            stringi::stri_c("chr", CHROM, ":", GENPOS, ":", ALLELE0, ":", ALLELE1),
+            stringi::stri_c("chr", CHROM, ":", GENPOS, ":", REF_Ref_ALLELE0, ":", REF_Ref_ALLELE1)
+
+          )
+
+        )
+
+    }
 
     Combined_Processed_Data <- Combined_Processed_Data %>%
       dplyr::group_by(Real_ID) %>%
@@ -927,14 +1168,16 @@
                                        COORD_Uni)) %>%
       dplyr::ungroup()
 
+  }
 
-  }else{
+  else{
 
     message("Model References don't require allele adjustment!")
 
   }
 
   if(Model_Reference == F)
+
   {
 
     Combined_Processed_Data$ID <- Combined_Processed_Data$COORD_Uni
@@ -947,20 +1190,28 @@
 
     Combined_Processed_Data <- Combined_Processed_Data %>%
       dplyr::mutate(
+
         Left_Plot_Value = stringr::str_replace(
+
           Left_Plot_Value,
           "^(chr\\d+):(\\d+):([A-Za-z]+):([A-Za-z]+)$",
           "\\1:\\2(\\3>\\4)"
+
         )
+
       )
 
     if(Double_Label == T)
+
     {
 
       Combined_Processed_Data$Left_Plot_Value <- paste0(
         Combined_Processed_Data$Left_Plot_Value,
+
         "<br><br>(",  # Adds an extra line break to create spacing
+
         Combined_Processed_Data[[Lab_Col]], ")"
+
       )
 
     }
@@ -986,6 +1237,7 @@
   res$RS[3] <- "----a"
 
   if(Pre_Calculated_CIs == F)
+
   {
 
     message("Calculating CIs")
@@ -998,7 +1250,8 @@
 
     }else{
 
-      #Assigned OR to BETA earlier.
+      # Assigned OR to BETA earlier.
+
       res$LL <- res$OR * exp(-1.96 * res$OR_SE)
       res$UL <- res$OR * exp(1.96 * res$OR_SE)
 
@@ -1012,15 +1265,19 @@
   message("Set args for special P notation")
 
   spaced_star <- paste0(
+
     "<span style='color:transparent;'>A</span>",
     "*",
     "<span style='color:transparent;'>A</span>"
+
   )
 
   res$Special_P <- spaced_star
   res$Special_P[res$P >= 0.05] <- "NS"
 
-  res$P <- sprintf(paste0("%.", P_Label_Resolution, "e"), res$P)
+  # res$P <- sprintf(paste0("%.", P_Label_Resolution, "e"), res$P)
+
+  res$P[res$P == 0] <- .Machine$double.xmin
 
   res$UL <- as.numeric(res$UL)
   res$LL <- as.numeric(res$LL)
@@ -1028,76 +1285,111 @@
   message("Ordering data set and SNPs/covars")
 
   # Create a vector of letters to use as prefixes
+
   prefixes <- LETTERS[1:length(Names)]
   postfixes <- LETTERS[1:length(Selected_SNPs)]
 
   # Modify the res data frame by adding the letter prefix to each dataset
+
   res <- res %>%
-    dplyr::mutate(Study = dplyr::case_when(
+
+    dplyr::mutate(
+
+      Study = dplyr::case_when(
+
       STUDY %in% Names ~ paste(prefixes[match(STUDY, Names)], STUDY, sep = "-"),
+
       TRUE ~ STUDY  # Default if none match
+
     ))
 
   if(Double_Label == T)
+
   {
 
     res <- res %>%
       dplyr::mutate(Backup_Single = stringr::str_extract(Backup_ID, "rs\\d+"))
 
-  }else{
+  }
+
+  else{
 
     res <- res %>%
       dplyr::mutate(Backup_Single = Backup_ID)
 
   }
 
-
   message("Ordering")
 
   if(Model_Reference == F)
+
   {
 
     res <- res %>%
+
       dplyr::mutate(
+
         RS = dplyr::case_when(
+
           RS %in% Selected_SNPs | Backup_Single %in% Selected_SNPs | Real_ID %in% Selected_SNPs ~ paste(
+
             postfixes[match(
+
               ifelse(
+
                 RS %in% Selected_SNPs,
                 RS,
                 ifelse(Backup_Single %in% Selected_SNPs, Backup_Single, Real_ID)
               ),
+
               Selected_SNPs
+
             )],
             RS,
             sep = "-"
+
           ),
+
           TRUE ~ RS
+
         )
+
       )
 
-  }else{
+  }
+
+  else{
 
     res <- res %>%
+
       dplyr::mutate(RS = dplyr::case_when(
+
         group %in% Selected_SNPs ~ paste(postfixes[match(group, Selected_SNPs)], RS, sep = "-"),
+
         TRUE ~ RS  # Default if none match
+
       ))
 
   }
 
   if(Model_Reference == TRUE)
+
   {
 
   message("Adjusting Model version for ref values")
 
   res <- res %>%
+
     dplyr::mutate(
+
       RS = ifelse(
+
         grepl("Ref:", Left_Plot_Value),
         sub("-", "-11A", RS),
         RS
+
       )
+
     )
 
   }
@@ -1106,7 +1398,8 @@
 
   res$RS <- paste0(res$RS,res$Study)
 
-  #Adjust back these placeholders
+  # Adjust back these placeholders
+
   res$RS[res$RS ==  "rs99999999NA"  ] <- "-aaa-rs99999999"
   res$RS[res$RS ==   "-a-aaarModelNA" ] <- "-a-aaarModel"
   res$RS[res$RS ==  "----aNA"  ] <- "---a"
@@ -1115,10 +1408,13 @@
   unique_study <- unique(na.omit(res$Study))
 
   res <- res %>%
+
     dplyr::arrange(desc(RS)) %>%  # Order by RS in descending order
+
     dplyr::mutate(Overall_Row_Number = dplyr::row_number())  # Create a new column with row numbers
 
-  #In model ref need to remove dummy " for ref cols
+  # In model ref need to remove dummy " for ref cols
+
   unique_study <- unique_study[unique_study != ""]
 
   res2 <- res %>%
@@ -1131,9 +1427,24 @@
   res$Left_Plot_Value[res$RS == "-a-aaarModel"] <- Left_Title
   res$Plot_Value[res$RS == "-a-aaarModel"] <- res$Overall_Row_Number[res$RS == "-a-aaarModel"]
 
+  # Display-only version of the left labels (drop " (Ref: ...)" on the plot)
+
+  # Display-only version of the left labels
+
+  res$Left_Plot_Display <- res$Left_Plot_Value
+
+  # When using model reference and REF = FALSE, hide " (Ref: ...)" in the *plot* only
+
+  if (isTRUE(Model_Reference) && !isTRUE(REF)) {
+
+    res$Left_Plot_Display <- sub(" \\(Ref: [^)]*\\)", "", res$Left_Plot_Display)
+
+  }
+
   message("Assigning required value to test statistic for plotting")
 
   if(Test_Statistic_Choice == "BETA")
+
   {
 
     res$SE <- res$BETA_SE
@@ -1146,9 +1457,9 @@
 
   }
 
-  MAX <- (.Machine$double.xmin) #may need in future
+  MAX <- (.Machine$double.xmin) # may need in future
 
-  res$outer <- res$Left_Plot_Value
+  res$outer <- res$Left_Plot_Display
 
   message("Creating buffers")
 
@@ -1158,15 +1469,19 @@
   transparent_z_span <- paste0("<span style='color:transparent;'>", invisible_z, "</span>")
 
   # Invisible spacer
+
   spacer_unit <- "Z"
   invisible_padding <- paste(rep(transparent_z_span, stat_buf), collapse = "")
 
   num_z <- 2
 
   # Create transparent spacer
+
   zzz_span <- sprintf(
+
     "<span style='color:transparent;'>%s</span>",
     strrep("Z", num_z)
+
   )
 
   zzz_span <- transparent_z_span
@@ -1174,10 +1489,13 @@
   invis_bracket <- "<span style='color:transparent;'>)</span>"
 
   # Model row index
+
   model_row <- which(res$inner == "-a-aaarModel")[1]
 
   # Check if any non-model row has a ')' before the first <br>
+
   any_has_bracket <- any(sapply(res$outer[res$inner != "-a-aaarModel"], function(x) {
+
     if (grepl("<br", x, fixed = TRUE)) {
 
       stringr::str_detect(strsplit(x, "<br>", fixed = TRUE)[[1]][1], stringr::fixed(")"))
@@ -1191,8 +1509,11 @@
   }))
 
   # Check if model row does NOT have a ')' before first <br>
+
   model_lacks_bracket <- {
+
     x <- res$outer[model_row]
+
     if (grepl("<br", x, fixed = TRUE)) {
 
       !stringr::str_detect(strsplit(x, "<br>", fixed = TRUE)[[1]][1], stringr::fixed(")"))
@@ -1202,14 +1523,17 @@
       !stringr::str_detect(x, stringr::fixed(")"))
 
     }
+
   }
 
   # Now build transformed version of res$outer
+
   res$outer <- vapply(seq_along(res$outer), function(i) {
 
     x <- res$outer[i]
 
     # Always start with leading transparent zzz
+
     out <- zzz_span
 
     if (grepl("<br", x, fixed = TRUE)) {
@@ -1217,6 +1541,7 @@
       parts <- strsplit(x, "<br>", fixed = TRUE)[[1]]
 
       # Model row may need invisible bracket in the first part
+
       if (i == model_row && any_has_bracket && model_lacks_bracket) {
 
         parts[1] <- paste0(parts[1], invis_bracket)
@@ -1224,28 +1549,37 @@
       }
 
       # Add zzz after every part *before* a <br> (i.e. all but the last part)
+
       if (length(parts) > 1) {
 
         for (j in 1:(length(parts) - 1)) {
+
           parts[j] <- paste0(parts[j], zzz_span)
 
         }
+
       }
 
       out <- paste0(out, paste(parts, collapse = "<br>"), zzz_span)
+
     } else {
 
       # No <br>: optionally add bracket to model row if needed
-      if (i == model_row && any_has_bracket && model_lacks_bracket) {
+
+      if (i == model_row && any_has_bracket && model_lacks_bracket)
+
+      {
 
         x <- paste0(x, invis_bracket)
 
       }
+
       out <- paste0(out, x, zzz_span)
 
     }
 
     out
+
   }, character(1))
 
   message("Defining styling function")
@@ -1263,6 +1597,7 @@
     } else if (style == "underline") {
 
       # Unicode combining underline (works!)
+
       return(paste0(paste0(strsplit(label, "")[[1]], collapse = "\u0332"), "\u0332"))
 
     } else {
@@ -1270,6 +1605,7 @@
       return(label)
 
     }
+
   }
 
   message("Assigning final plot values")
@@ -1279,6 +1615,7 @@
   res <- dplyr::mutate(res, num = dplyr::row_number())
 
   if(Test_Statistic_Choice == "BETA")
+
   {
 
     res$beta <- res$BETA
@@ -1286,7 +1623,9 @@
     res$se <- res$BETA_SE
     res$se <- as.numeric(res$se)
 
-  }else{
+  }
+
+  else{
 
     res$beta <- res$OR
     res$beta <- as.numeric(res$beta)
@@ -1298,6 +1637,7 @@
   res$p <- as.numeric(res$P)
 
   if(Special_P == TRUE)
+
   {
 
     res$p <- res$Special_P
@@ -1314,23 +1654,29 @@
   message("Computing CIs")
 
   if(Test_Statistic_Choice == "BETA")
+
   {
 
     res$ci_lower <- res$beta - 1.96 * res$se
     res$ci_upper <- res$beta + 1.96 * res$se
 
-  }else{
+  }
 
-    res$ci_lower <- res$beta - exp(1.96 * res$se)
-    res$ci_upper <- res$beta + exp(1.96 * res$se)
+  else{
+
+    res$ci_lower <- res$beta - (1.96 * res$se)
+    res$ci_upper <- res$beta + (1.96 * res$se)
 
   }
 
   message("Rounding Text Labels")
 
   if(Special_P == FALSE)
+
   {
+
     # Scientific notation with 'x10^' style
+
     res$p_label <- formatC(res$p, format = "e", digits = P_Label_Resolution)
 
   }
@@ -1354,21 +1700,27 @@
   res$beta_label <- factor(res$beta_label, levels = unique_levels)
 
   # If outer is not a character yet, convert it
+
   res$outer <- as.character(res$outer)
 
   # Define buffer size
+
   stat_buf <- Right_Buffer
 
   invisible_z <- paste(rep("z", stat_buf), collapse = "")
   transparent_z_span <- paste0("<span style='color:transparent;'>", invisible_z, "</span>")
 
   # Invisible spacer
+
   spacer_unit <- "Z"
   invisible_padding <- paste(rep(transparent_z_span, stat_buf), collapse = "")
 
   # Wrap function
+
   wrap_with_padding <- function(vec) {
+
     paste0(invisible_padding, vec, invisible_padding)
+
   }
 
   display_labels <- rep("", length(res$inner))
@@ -1385,24 +1737,29 @@
   res$beta_label[ (is.na(res$ALLELE0) | is.na(res$UL)) & res$inner != "-a-aaarModel" ] <- ""
 
   if(Test_Statistic_Choice == "BETA")
+
   {
 
     # Add invisible minus (visually hidden but layout-preserving)
+
     res$beta_label <- mapply(function(label, inner) {
 
       if (label != "" && inner != "-a-aaarModel" && !startsWith(label, "-")) {
 
         paste0("<span style='color:transparent;'>-</span>", label)
+
       } else {
 
         label
 
       }
+
     }, res$beta_label, res$inner, USE.NAMES = FALSE)
 
   }
 
   # Tag-aware underline version of style_label()
+
   style_label_safe <- function(label, style) {
 
     if (is.na(style) || style == "normal") {
@@ -1416,17 +1773,21 @@
     } else if (style == "underline") {
 
       # Split into HTML and non-HTML segments
+
       parts <- unlist(strsplit(label, "(<[^>]+>)", perl = TRUE))
+
       parts <- vapply(parts, function(part) {
 
-
         if (grepl("^<", part)) {
-          # HTML tag -> leave it untouched
+
+          # HTML tag - leave it untouched
+
           part
 
         } else if (nzchar(part)) {
 
-          # Visible text -> add combining underline
+          # Visible text - add combining underline
+
           paste0(paste0(strsplit(part, "")[[1]], collapse = "\u0332"), "\u0332")
 
         } else {
@@ -1443,12 +1804,16 @@
       return(label)
 
     }
+
   }
 
   # Use the safe version here
+
   res$beta_label <- setNames(
+
     mapply(style_label_safe, res$beta_label, res$Style, SIMPLIFY = TRUE),
     res$beta
+
   )
 
   res$beta_label <- wrap_with_padding(res$beta_label)
@@ -1473,28 +1838,44 @@
   }
 
   #Build display label mappings
+
   res$se_label  <- setNames(
+
     mapply(style_label, res$se_label, res$Style, SIMPLIFY = TRUE),
     res$se
+
   )
 
   res$se_label <- wrap_with_padding(res$se_label)
 
   display_labels_se <- setNames(res$se_label, res$inner)
 
-  if(Special_P == FALSE){
+  if (Special_P == FALSE) {
 
-    # Scientific notation
     res$p_label <- sprintf(paste0("%.", P_Label_Resolution, "e"), res$p)
+    res$p_label <- gsub("[eE]-", "*10-", res$p_label)
 
-  }else{
+  } else {
 
     res$p_label <- res$p
+
   }
 
   res$p_label[(is.na(res$UL)) & res$inner != "-a-aaarModel" ] <- ""
 
-  res$p_label <- paste0("", res$p_label, "")
+  if(PDF == TRUE) # need more space on rigth as cut due to formatting
+
+  {
+
+  res$p_label <- paste0("", res$p_label, "       ")
+
+  } else{
+
+
+    res$p_label <- paste0("", res$p_label, "")
+
+
+  }
 
   res$p_label[is.na(res$ALLELE0) & res$inner != "-a-aaarModel" ] <- ""
 
@@ -1512,15 +1893,18 @@
   )
 
   # Overwrite the raw display labels directly
+
   res$p_label <- wrap_with_padding(res$p_label)
 
   display_labels_p <- setNames(res$p_label, res$inner)
 
   # Ensure numeric
+
   res$beta <- as.numeric(res$beta)
   res$se   <- as.numeric(res$se)
 
   # Format values
+
   res$beta_fmt <- sprintf(paste0("%.", BETA_Label_Resolution, "f"), res$beta)
 
   res$se_fmt <- sprintf(paste0("%.", SE_Label_Resolution, "f"), res$se)
@@ -1529,6 +1913,7 @@
   res$se_fmt[(is.na(res$UL)) & res$inner != "-a-aaarModel" ] <- ""
 
   # Add invisible minus (visually hidden but layout-preserving)
+
   res$beta_fmt <- mapply(function(label, inner) {
 
     if (label != "" && inner != "-a-aaarModel" && !startsWith(label, "-")) {
@@ -1540,35 +1925,48 @@
       label
 
     }
+
   }, res$beta_fmt, res$inner, USE.NAMES = FALSE)
 
   # Combine beta (se)
+
   res$beta_se_label <- paste0(res$beta_fmt, " (", res$se_fmt, ")")
 
   # Handle model header
+
   res$beta_se_label[res$inner == "-a-aaarModel"] <- BETA_SE_Label_Title
 
   # Blank for missing SNPs
+
   res$beta_se_label[(is.na(res$ALLELE0)) & res$inner != "-a-aaarModel" ] <- ""
   res$beta_se_label[res$beta_se_label == " ()" & res$inner != "-a-aaarModel" ] <- ""
 
   res$beta_se_label  <- setNames(
-    mapply(style_label_safe, res$beta_se_label, res$Style, SIMPLIFY = TRUE),
+
+    mapply(
+
+      style_label_safe, res$beta_se_label, res$Style, SIMPLIFY = TRUE),
+
     res$beta_se_label
+
   )
 
   # Overwrite the raw display labels directly
-  res$beta_se_label       <- wrap_with_padding(res$beta_se_label)
+
+  res$beta_se_label <- wrap_with_padding(res$beta_se_label)
 
   # Name the labels for faceting
+
   display_labels_beta_se <- setNames(res$beta_se_label, res$inner)
 
   # Ensure numeric
+
   res$beta     <- as.numeric(res$beta)
   res$ci_lower <- as.numeric(res$ci_lower)
   res$ci_upper <- as.numeric(res$ci_upper)
 
   # Format values to 2 decimal places
+
   res$beta_fmt <- sprintf(paste0("%.", BETA_Label_Resolution, "f"), res$beta)
 
   res$beta_fmt[(is.na(res$UL)) & res$inner != "-a-aaarModel" ] <- ""
@@ -1582,6 +1980,7 @@
   res$ci_upper_fmt[(is.na(res$UL)) & res$inner != "-a-aaarModel" ] <- ""
 
   # Add invisible minus (visually hidden but layout-preserving)
+
   res$beta_fmt <- mapply(function(label, inner) {
 
     if (label != "" && inner != "-a-aaarModel" && !startsWith(label, "-")) {
@@ -1597,6 +1996,7 @@
   }, res$beta_fmt, res$inner, USE.NAMES = FALSE)
 
   # Add invisible minus (visually hidden but layout-preserving)
+
   res$ci_lower_fmt <- mapply(function(label, inner) {
 
     if (label != "" && inner != "-a-aaarModel" && !startsWith(label, "-")) {
@@ -1611,6 +2011,7 @@
   }, res$ci_lower_fmt, res$inner, USE.NAMES = FALSE)
 
   # Add invisible minus (visually hidden but layout-preserving)
+
   res$ci_upper_fmt <- mapply(function(label, inner) {
 
     if (label != "" && inner != "-a-aaarModel" && !startsWith(label, "-")) {
@@ -1624,73 +2025,94 @@
   }, res$ci_upper_fmt, res$inner, USE.NAMES = FALSE)
 
   # Combine into label
+
   res$beta_ci_label <- paste0("", res$beta_fmt, " (", res$ci_lower_fmt, ", ", res$ci_upper_fmt, ")")
 
   # Handle model header
+
   res$beta_ci_label[res$inner == "-a-aaarModel"] <- BETA_CI_Label_Title
 
   # Blank for missing SNP rows
+
   res$beta_ci_label[is.na(res$ALLELE0) & res$inner != "-a-aaarModel"] <- ""
 
   res$beta_ci_label[res$beta_ci_label == " (, )"] <- ""
 
   res$beta_ci_label  <- setNames(
+
     mapply(style_label_safe, res$beta_ci_label, res$Style, SIMPLIFY = TRUE),
     res$beta_ci_label
+
   )
 
-  res$beta_ci_label       <- wrap_with_padding(res$beta_ci_label)
+  res$beta_ci_label <- wrap_with_padding(res$beta_ci_label)
 
   # Named vector for use in facet labels
+
   display_labels_beta_ci <- setNames(res$beta_ci_label, res$inner)
 
   # Combine into label
+
   res$ci_label <- paste0(""," (", res$ci_lower_fmt, ", ", res$ci_upper_fmt, ")")
 
   # Handle model header
+
   res$ci_label[res$inner == "-a-aaarModel"] <- CI_Label_Title
 
   res$ci_label[res$ci_label == " (, )"] <- ""
 
   # Blank for missing SNP rows
+
   res$ci_label[is.na(res$ALLELE0) & res$inner != "-a-aaarModel"] <- ""
 
   res$ci_label  <- setNames(
+
     mapply(style_label_safe, res$ci_label, res$Style, SIMPLIFY = TRUE),
     res$ci_label
+
   )
 
   # Overwrite the raw display labels directly
+
   res$ci_label <- wrap_with_padding(res$ci_label)
 
   # Named vector for use in facet labels
+
   display_labels_ci <- setNames(res$ci_label, res$inner)
 
   # User input: number of transparent padding A's between labels
+
   n_padding_A <- 10
   invisible_A_pad <- paste0("<span style='color:transparent;'>", strrep("A", n_padding_A), "</span>")
 
-  #Strip HTML and compute visible widths
+  # Strip HTML and compute visible widths
+
   strip_html <- function(x) gsub("<[^>]*>", "", x)
   visible_labels <- sapply(res$beta_se_label, strip_html)
   visible_widths <- nchar(visible_labels, type = "width")
 
-  #Find max and second max widths
+  # Find max and second max widths
+
   sorted_widths <- sort(unique(visible_widths), decreasing = TRUE)
   max_width <- sorted_widths[1]
   second_max <- if (length(sorted_widths) >= 2) sorted_widths[2] else max_width
 
-  #Compute the difference in width
+  # Compute the difference in width
+
   width_diff <- max_width - second_max
 
-  #Create invisible spacer (e.g., transparent underscores)
+  # Create invisible spacer (e.g., transparent underscores)
+
   transparent_spacer <- paste(rep("<span style='color:transparent;'>_</span>", width_diff), collapse = "")
 
-  #Append the extra_spacer only where needed
+  # Append the extra_spacer only where needed
+
   res$extra_spacers <- ifelse(res$inner == "-a-aaarModel", transparent_spacer, "")
 
-  #Combine all into the desired format
+  # Combine all into the desired format
+
   res$beta_se_ci_label <- paste0(
+
     res$beta_se_label,
     invisible_A_pad,
     res$extra_spacers,
@@ -1706,7 +2128,8 @@
 
   res$beta_se_ci_label  <- wrap_with_padding(res$beta_se_ci_label)
 
-  #Create display vector
+  # Create display vector
+
   display_labels_beta_se_ci <- setNames(res$beta_se_ci_label, res$inner)
 
   res$outer <- as.factor(res$outer)
@@ -1728,18 +2151,26 @@
 
   message("Creating left plot")
 
-  left <- ggplot2::ggplot(res, ggplot2::aes(x, y)) +
+
+
+  left <-   suppressMessages( suppressWarnings( ggplot2::ggplot(res, ggplot2::aes(x, y)) +
+
     ggplot2::theme_void()+
     ggplot2::geom_blank()+
     ggplot2::scale_y_discrete(position = "bottom")+
+
     ggh4x::facet_nested(
+
       outer + inner ~ .,
       scales = "free_y",
       space = "free_y",
       strip = ggh4x::strip_nested(size = "variable"),
       labeller = ggplot2::labeller(inner = setNames(display_labels, levels(res$inner)))
+
     ) +
+
       ggplot2::theme(
+
       plot.background = ggplot2::element_rect(fill = "white", colour = "white", linewidth = 0),
       panel.background = ggplot2::element_rect(fill = "white", colour = "white", linewidth = 0),
       panel.grid.major = ggplot2::element_line(colour = "white", linewidth = 0),
@@ -1757,17 +2188,23 @@
       panel.spacing = ggplot2::unit(0.0, "cm"),
       strip.switch.pad.grid = ggplot2::unit(0, "cm"),
       plot.margin = ggplot2::unit(c(0.0, 0.0, 0.0, 0.0), "cm")
+
     )
 
-  #Ensure character for label keys
+  ))
+
+  # Ensure character for label keys
+
   res$se_label <- as.character(res$se_label)
   res$beta_label <- as.character(res$beta_label)
   res$p_label <- as.character(res$p_label)
 
   message("Ordering")
 
-  #Assign random number of spaces (0 to 5) per row
+  # Assign random number of spaces (0 to 5) per row
+
   set.seed(123)
+
   res$outer_sec <- sapply(sample(0:5, nrow(res), replace = TRUE), function(n) paste(rep(" ", n), collapse = ""))
 
   res$inner <- factor(res$inner, levels = unique(res$inner))
@@ -1781,21 +2218,25 @@
   display_labels_outer_sec <- setNames(res$outer_sec, res$num)
 
   all_labels <- list(
+
     ci_label = display_labels_ci,
     beta_label = display_labels_beta,
     se_label = display_labels_se,
     beta_se_label = display_labels_beta_se,
     beta_ci_label = display_labels_beta_ci,
     p_label = display_labels_p
+
   )
 
   show_flags <- c(
+
     ci_label = CI_Label,
     beta_label = BETA_Label,
     se_label = SE_Label,
     beta_se_label = BETA_SE_Label,
     beta_ci_label = BETA_CI_Label,
     p_label = P_Label
+
   )
 
   selected_labels <- all_labels[show_flags]
@@ -1807,21 +2248,26 @@
   selected_vars <- names(show_flags[show_flags])
 
   # Map to show_flags names
+
   name_map <- c(
+
     P_Label = "p_label",
     BETA_Label = "beta_label",
     SE_Label = "se_label",
     BETA_SE_Label = "beta_se_label",
     BETA_CI_Label = "beta_ci_label",
     CI_Label = "ci_label"
+
   )
 
   # Replace with correct names
+
   order_matched <- name_map[order]
 
   order <- order_matched
 
   # Always start with "num"
+
   facet_vars <- c("num", order)
 
   facet_formula_str <- paste(facet_vars, collapse = " + ")
@@ -1830,7 +2276,10 @@
 
   message("Creating right plot")
 
-  right <- ggplot2::ggplot(res, ggplot2::aes(x, y)) +
+
+
+  right <-   suppressMessages( suppressWarnings( ggplot2::ggplot(res, ggplot2::aes(x, y)) +
+
     ggplot2::theme_void() +
     ggplot2::geom_blank() +
     ggplot2::scale_y_discrete(position = "bottom") +
@@ -1842,8 +2291,11 @@
       space = "free_y",
       strip = ggh4x::strip_nested(size = "variable"),
       labeller = labeller_obj
+
     ) +
+
     ggplot2::theme(
+
       plot.background = ggplot2::element_rect(fill = "white", colour = "white", linewidth = 0),
       panel.background = ggplot2::element_rect(fill = "white", colour = "white", linewidth = 0),
       panel.grid.major = ggplot2::element_line(colour = "white", linewidth = 0),
@@ -1860,51 +2312,139 @@
       panel.spacing = ggplot2::unit(0.0, "cm"),
       strip.switch.pad.grid = ggplot2::unit(0, "cm"),
       plot.margin = ggplot2::unit(c(0.0, 0.0, 0.0, 0.0), "cm")
+
     )
 
+  ))
 
-  if(Strips == TRUE )
+   if (Strips == TRUE) {
 
-  {
+    message("Determining strip placement")
 
-  message("Determining strip placement")
+    if (isTRUE(Model_Reference)) {
+
+      # MODEL MODE: one colour per group
+
+      # Make sure `group` is present in res
+
+      if (!"group" %in% names(res)) {
+
+        stop("In Model_Reference mode, `group` column must be present in `res`.")
+
+      }
+
+      group_levels <- unique(res$group)
+      n_groups     <- length(group_levels)
+
+      # Decide colours
+
+      if (is.null(Strip_Colour)) {
+
+        # Use qualitative palettes with strong separation
+
+        if (requireNamespace("RColorBrewer", quietly = TRUE) && n_groups <= 12) {
+
+          base_cols <- RColorBrewer::brewer.pal(max(3, n_groups), "Set3")[seq_len(n_groups)]
+
+        } else {
+
+          # fallback: evenly spaced HCL hues (much more distinct than viridis for categories)
+
+          base_cols <- grDevices::hcl.colors(n_groups, palette = "Dynamic")
+
+        }
+
+        names(base_cols) <- group_levels
+
+      } else if (!is.null(names(Strip_Colour))) {
+
+        # Named vector supplied by user: names must match `group`
+
+        base_cols <- Strip_Colour
+
+        # Ensure all groups are covered
+
+        missing_groups <- setdiff(group_levels, names(base_cols))
+
+        if (length(missing_groups) > 0) {
+
+          stop("Strip_Colour is named but missing groups: ",
+
+               paste(missing_groups, collapse = ", "))
+
+        }
+
+      } else {
+
+        # Unnamed vector: recycle across groups
+
+        base_cols <- rep(Strip_Colour, length.out = n_groups)
+        names(base_cols) <- group_levels
+
+      }
+
+      # Map to rows
+
+      res <- res %>%
+        dplyr::mutate(
+
+          fills = unname(base_cols[as.character(group)]),
+          cols  = fills
+
+        )
+
+    } else {
+
+      # GWAS / SNP MODE
+
+      # Ensure outer is a factor in the desired order
+
+      res$outer <- factor(res$outer, levels = unique(res$outer))
+
+      # Identify the outer value for the SNP row
+
+      snp_outer <- res$outer[res$inner == "-a-aaarModel"][1]
+
+      # Get all unique outer levels
+
+      outer_levels <- levels(res$outer)
+
+      # Place SNP outer first, then alternate others
+
+      ordered_outers <- c(snp_outer, setdiff(outer_levels, snp_outer))
+
+      if (is.null(Strip_Colour)) {
+
+        outer_colors <- rep(c("goldenrod", "white"), length.out = length(ordered_outers))
+
+      } else {
+
+        outer_colors <- rep(c(Strip_Colour, "white"), length.out = length(ordered_outers))
+
+      }
+
+      outer_colors[1] <- "#bebebe"
+
+      # Create lookup table
+
+      outer_fill_map <- setNames(outer_colors, ordered_outers)
+
+      # Apply to df
+
+      res <- res %>%
+
+        dplyr::mutate(
+
+          fills = outer_fill_map[as.character(outer)],
+          cols  = outer_fill_map[as.character(outer)]
+
+        )
+
+    }
 
   }
 
-  # Ensure outer is a factor in the desired order
-  res$outer <- factor(res$outer, levels = unique(res$outer))
-
-  # Identify the outer value for the SNP row
-  snp_outer <- res$outer[res$inner == "-a-aaarModel"][1]
-
-  # Get all unique outer levels
-  outer_levels <- levels(res$outer)
-
-  # Place SNP outer first, then alternate others
-  ordered_outers <- c(snp_outer, setdiff(outer_levels, snp_outer))
-
-  if(is.null(Strip_Colour))
-  {
-
-    outer_colors <- rep(c("goldenrod", "white"), length.out = length(ordered_outers))
-
-  }else{
-
-    outer_colors <- rep(c(Strip_Colour, "white"), length.out = length(ordered_outers))
-
-  }
-
-  outer_colors[1] <- "#bebebe"
-
-  # Create lookup table
-  outer_fill_map <- setNames(outer_colors, ordered_outers)
-
-  # Apply to df
-  res <- res %>%
-    dplyr::mutate(
-      fills = outer_fill_map[as.character(outer)],
-      cols  = outer_fill_map[as.character(outer)]
-    )
+  # This stays the same:
 
   res2 <- res[res$inner == "-a-aaarModel", ]
 
@@ -1919,6 +2459,7 @@
       dplyr::arrange(outer, inner) |>
       dplyr::mutate(
         vline = ifelse(trimws(inner) != "-a-aaarModel", 1, NA_real_)
+
       )
 
   }else{
@@ -1928,25 +2469,39 @@
       dplyr::arrange(outer, inner) |>
       dplyr::mutate(
         vline = ifelse(trimws(inner) != "-a-aaarModel", 0, NA_real_)
+
       )
   }
 
   message("Creating middle plot")
 
   mid <- ggplot2::ggplot(res, ggplot2::aes(x = beta, y )) +
+
     ggplot2::theme_void()+
+
     ggplot2::facet_grid(
+
       outer + inner ~ .,
       scales = "free_y",
       space = "free_y",
       labeller = ggplot2::labeller(inner = setNames(display_labels, levels(res$inner)))
-    ) + ggplot2::geom_rect(data = res2, fill = "transparent",  colour = "black" ,xmin = -Inf,xmax = Inf,
+
+    ) + ggplot2::geom_rect(
+
+      data = res2, fill = "transparent",  colour = "black" ,xmin = -Inf,xmax = Inf,
               ymin = -Inf,ymax = Inf,alpha = 0.3,
               linewidth = Top_Grid_Thickness)+
-    ggplot2::geom_point(ggplot2::aes(x=beta, y, colour = STUDY),  shape=res$Shape, size= Shape_Size, stroke = Shape_Thickness) +
+
+    ggplot2::geom_point(ggplot2::aes(x=beta, y, colour = STUDY),
+                        shape=res$Shape, size= Shape_Size, stroke = Shape_Thickness) +
+
     ggplot2::scale_y_discrete(position = "bottom")+
-    ggplot2::geom_errorbarh(ggplot2::aes(xmin = ci_lower, xmax = ci_upper), height = CI_Line_Height, size = CI_Line_Size, color = "black") +
+
+    ggplot2::geom_errorbarh(ggplot2::aes(xmin = ci_lower, xmax = ci_upper),
+                            height = CI_Line_Height, size = CI_Line_Size, color = "black") +
+
     ggplot2::theme(
+
       axis.text.x = ggplot2::element_text(size = 10, color = "black"),
       axis.title.x = ggplot2::element_text(size = 12,  margin = ggplot2::margin(t = 0)),
       axis.line.x = ggplot2::element_line(colour = "black", size = 0),
@@ -1964,37 +2519,52 @@
       panel.spacing = ggplot2::unit(0.0, "cm"),
       strip.switch.pad.grid = ggplot2::unit(0, "cm"),
       plot.margin = ggplot2::unit(c(0.0, 0.0, 0.0, 0.0), "cm")
+
     )
 
   if(is.null(Null_Line_Colour))
+
   {
+
     Null_Line_Colour <- "red"
+
   }
 
   if(is.null(Null_Line_Type))
+
   {
+
     Null_Line_Type <- "dotted"
+
   }
 
   if(is.null(Null_Line_Thickness))
+
   {
+
     Null_Line_Thickness <- 1
+
   }
 
   message("Adding null line")
 
   mid <- mid + ggplot2::geom_vline(
+
     data = vline_df,
     ggplot2::aes(xintercept = vline),
     colour = Null_Line_Colour, linetype = Null_Line_Type, linewidth = Null_Line_Thickness
+
   )
 
   if(Strips == TRUE)
 
   {
+
     message("Colouring strips")
 
-    mid <- mid + ggplot2::geom_rect(data = res, fill = res$fills,  colour = res$cols ,xmin = -Inf,xmax = Inf,
+    # colour = res$cols fine when no pdf
+
+    mid <- mid + ggplot2::geom_rect(data = res, fill = res$fills,  colour = NA ,xmin = -Inf,xmax = Inf,
                            ymin = -Inf,ymax = Inf,alpha = 0.1,
                            linewidth = 0 )
 
@@ -2021,32 +2591,42 @@
     n_groups <- length(unique(res$STUDY))  # or group variable
 
     mid <- mid + ggplot2::guides(
+
       color = ggplot2::guide_legend(
+
         title = Legend_Title,
         override.aes = list(shape = Shapes)
+
       )
+
     )
 
   }
 
   message("Formatting Legend and X Axis")
 
-  mid <- mid + ggplot2::theme(legend.text = ggplot2::element_text(size = Legend_Text_Size, color ="black"),
+  mid <- mid + ggplot2::theme(
+
+    legend.text = ggplot2::element_text(size = Legend_Text_Size, color ="black"),
                               legend.title = ggplot2::element_text(size = Legend_Title_Size, color ="black"),
                               axis.text.x = ggplot2::element_text(size = X_Axis_Text_Size, color ="black"),
-                              axis.title.x = ggplot2::element_text(margin = ggplot2::margin(), color = "black", size = X_Axis_Title_Size ))
+                              axis.title.x = ggplot2::element_text(margin = ggplot2::margin(), color = "black",
+                                                                   size = X_Axis_Title_Size
+
+                                                                   ))
 
   mid <- mid + ggplot2::labs(x=X_Axis_Title, y="YL")
 
-
   mid <- mid + ggplot2::theme(
+
     axis.ticks.length.x  = ggplot2::unit(0.2,"cm"),
     axis.text.x = ggplot2::element_text( size = X_Axis_Text_Size, vjust = -1),
     legend.margin=ggplot2::margin()
+
   )
 
-
   if(X_Axis_Label == T)
+
   {
 
     X_Axis_Title <- paste0("\n", X_Axis_Title)
@@ -2055,6 +2635,7 @@
   }
 
   if(X_Axis_Label == F)
+
   {
 
     mid <- mid + ggplot2::xlab(" ")
@@ -2067,9 +2648,11 @@
   mincalc <-  min(res$ci_lower, na.rm = T)
 
   # Determine range width
+
   range_width <- max(abs(mincalc), abs(maxcalc))  # Symmetrical range
 
   .ensure_two_sides <- function(breaks, null, minlim, maxlim, step = NULL, log_scale = FALSE) {
+
     if (!length(breaks)) return(breaks)
 
     has_below <- any(breaks < null)
@@ -2080,12 +2663,14 @@
     if (log_scale) {
 
       if (is.null(step) || !is.finite(step) || step <= 0) step <- 0.30103  # ~log10(2)
+
       cand_below <- 10^(log10(null) - step)
       cand_above <- 10^(log10(null) + step)
 
     } else {
 
       if (is.null(step) || !is.finite(step) || step <= 0) step <- diff(range(breaks)) / 6
+
       cand_below <- null - step
       cand_above <- null + step
 
@@ -2104,65 +2689,86 @@
     }
 
     breaks
+
   }
 
   mid <- (function(
+
     mid, mincalc, maxcalc,
     Test_Statistic_Choice = c("BETA","OR"),
     Axis_Buffer = 0.02,
     X_Axis_Separation = NULL,
     X_Axis_Text_Resolution = NULL,
     Null_Buffer = 0.0
+
   ){
 
     Test_Statistic_Choice <- match.arg(Test_Statistic_Choice)
 
     # Helper for nice step rounding
+
     nice_steps <- function(step_raw) {
 
       cands <- c(1, 2, 2.5, 5) * 10^floor(log10(step_raw))
       cands[which.min(abs(step_raw - cands))]
 
     }
+
     dec_for_step <- function(step) if (step >= 1) 0 else abs(floor(log10(step)))
 
-    #Null center value
+    # Null center value
+
     null_center <- if (Test_Statistic_Choice == "BETA") 0 else 1
 
-    #Linear scale
+    # Linear scale
+
     range_width <- max(abs(mincalc - null_center), abs(maxcalc - null_center))
 
-    #Auto separation if user inputs missing
+    # Auto separation if user inputs missing
+
     if (is.null(X_Axis_Separation) || is.na(X_Axis_Separation)) {
+
       raw_step <- (2 * range_width) / 6
       X_Axis_Separation <- nice_steps(raw_step)
+
     }
+
     if (is.null(X_Axis_Text_Resolution) || is.na(X_Axis_Text_Resolution)) {
+
       X_Axis_Text_Resolution <- dec_for_step(X_Axis_Separation)
+
     }
 
     # Breaks
+
     min_axis <- null_center - range_width
     max_axis <- null_center + range_width
     breaks <- seq(min_axis, max_axis, by = X_Axis_Separation)
 
     # Null buffer
+
     if (Null_Buffer > 0) {
+
       keep <- (abs(breaks - null_center) >= Null_Buffer) | (abs(breaks - null_center) < .Machine$double.eps)
       breaks <- breaks[keep]
+
     }
 
     # Ensure at least one tick each side of center
+
     breaks <- .ensure_two_sides(breaks, null_center, mincalc, maxcalc, X_Axis_Separation, log_scale = FALSE)
 
     # Clip to CI range
+
     breaks <- breaks[breaks >= mincalc & breaks <= maxcalc]
 
     # Labels
+
     fmt <- paste0("%.", X_Axis_Text_Resolution, "f")
     labels <- sprintf(fmt, breaks)
 
     # Axis padding
+
     buffer <- (maxcalc - mincalc) * Axis_Buffer
 
     mid <- mid + ggplot2::scale_x_continuous(
@@ -2170,14 +2776,16 @@
       breaks = breaks,
       labels = labels,
       expand = c(0, 0)
+
     )
 
     mid
-  })(mid, mincalc, maxcalc, Test_Statistic_Choice, Axis_Buffer,
+
+  }) (mid, mincalc, maxcalc, Test_Statistic_Choice, Axis_Buffer,
      X_Axis_Separation, X_Axis_Text_Resolution, Null_Buffer)
 
-
   if(Legend_On == FALSE)
+
   {
 
     mid <- mid +  ggplot2::theme(legend.position = "none")
@@ -2185,12 +2793,15 @@
   }
 
   if(Legend_On == TRUE)
+
   {
 
     message("Positioning Legend")
 
       mid <- mid +
+
       ggplot2::theme(
+
         legend.position = "bottom",
         legend.box = "horizontal",
 
@@ -2209,7 +2820,9 @@
     g <- combined
 
   }
+
   else if(Grid_Lines_On == FALSE)
+
   {
 
     message("Stripping gird lines")
@@ -2219,28 +2832,42 @@
     g <- combined
 
   }
-  else{
+
+  else
+
+    {
 
     message("Combining")
 
-    #Combine plots with patchwork
+    # Combine plots with patchwork
+
     combined <- left + mid + right + patchwork::plot_layout(widths = c(0.05, 0.9, 0.05))
 
-    #Convert to grob
-    g <- patchwork::patchworkGrob(combined)
+    # Convert to grob
 
-    #Identify panel rows
+    g <- suppressWarnings(suppressMessages(
+
+      patchwork::patchworkGrob(combined)
+
+    ))
+
+    # Identify panel rows
+
     mid_panel_rows <- grep("^panel", g$layout$name)
     mid_layout <- g$layout[mid_panel_rows, ]
 
-    #Find the horizontal column span for the mid plot
+    # Find the horizontal column span for the mid plot
+
     mid_cols <- range(mid_layout$l)
 
-    #Find the bottom-most row (i.e., bottom-most facet)
+    # Find the bottom-most row (i.e., bottom-most facet)
+
     bottom_row <- max(mid_layout$t)
 
-    #Add green line inside panel, slightly inset to avoid strip overhang
+    # Add green line inside panel, slightly inset to avoid strip overhang
+
     g <- gtable::gtable_add_grob(
+
       g,
       grid::segmentsGrob(
         x0 = grid::unit(0.05, "npc"),  # 5% inset from left edge
@@ -2253,156 +2880,178 @@
       b = bottom_row,
       l = mid_cols[1],
       r = mid_cols[2]
+
     )
 
   }
 
   # Number of rows in res
+
   n_rows <- nrow(res)
 
   # Base + per-row scaling
+
   total_height <- 0.1 + (n_rows)
 
   scale_factor <- 1  # adjust as needed
+
   total_height <- total_height * scale_factor
 
   # Attach as attribute to your grob
+
   attr(g, "dynamic_height") <- total_height
 
   return(invisible(g))
 
 }
 
-if (!exists("use_wrapper")) use_wrapper <- TRUE
+    if (!exists("use_wrapper")) use_wrapper <- TRUE
 
-if(use_wrapper == TRUE)
-{
+    if(use_wrapper == TRUE)
 
-.Forest_Plot_original <- Forest_Plot
+    {
 
-Forest_Plot <- function(Data, ..., session = NULL) {
+    .Forest_Plot_original <- Forest_Plot
 
-  user_args <- c(list(Data = Data), list(...))
-  orig <- .Forest_Plot_original
+    Forest_Plot <- function(Data, ..., session = NULL) {
 
-  fmls <- formals(orig)
-  defaults <- lapply(fmls, function(x) eval(x, envir = parent.frame()))
-  defaults[["..."]] <- NULL
+      user_args <- c(list(Data = Data), list(...))
+      orig <- .Forest_Plot_original
 
-  if (!("session" %in% names(fmls))) {
+      fmls <- formals(orig)
 
-    session <- NULL
+      defaults <- lapply(fmls, function(x) eval(x, envir = parent.frame()))
 
-  } else {
+      defaults[["..."]] <- NULL
 
-    defaults$session <- session
+      if (!("session" %in% names(fmls))) {
 
-  }
+        session <- NULL
 
-  merged <- utils::modifyList(defaults, user_args, keep.null = TRUE)
+      } else {
 
-  call_expr <- match.call(expand.dots = FALSE)$Data
-  eval_data <- user_args$Data
-
-  if (is.character(eval_data)) {
-
-    # Data supplied as character vector (file paths)
-    Orig_Names <- unname(eval_data)  #
-
-    # If Names not provided, derive: prefer names(), else basename sans ext
-    if (is.null(merged$Names)) {
-
-      nm <- names(eval_data)
-      if (is.null(nm)) {
-
-        nm <- tools::file_path_sans_ext(basename(eval_data))
+        defaults$session <- session
 
       }
 
-      merged$Names <- nm
+      merged <- utils::modifyList(defaults, user_args, keep.null = TRUE)
+
+      call_expr <- match.call(expand.dots = FALSE)$Data
+      eval_data <- user_args$Data
+
+      if (is.character(eval_data)) {
+
+        # Data supplied as character vector (file paths)
+
+        Orig_Names <- unname(eval_data)
+
+        # If Names not provided, derive: prefer names(), else basename sans ext
+
+        if (is.null(merged$Names)) {
+
+          nm <- names(eval_data)
+
+          if (is.null(nm)) {
+
+            nm <- tools::file_path_sans_ext(basename(eval_data))
+
+          }
+
+          merged$Names <- nm
+
+        }
+
+      } else {
+
+        # Data supplied as symbols or c(symbol, "path", ...)
+
+        parts <- if (is.call(call_expr) && identical(call_expr[[1L]], quote(c))) {
+
+          as.list(call_expr)[-1L]
+
+        } else {
+
+          list(call_expr)
+
+        }
+
+        Orig_Names <- vapply(parts, function(p) {
+
+          if (is.character(p)) p else deparse1(p)
+
+        }, character(1))
+
+        Orig_Names <- gsub('^"|"$', '', Orig_Names)
+
+        if (is.null(merged$Names)) merged$Names <- Orig_Names
+
+      }
+
+      assign(".NF_Orig_Names", Orig_Names, envir = .GlobalEnv)
+
+      ds_labels <- merged$Names
+
+      if (is.null(ds_labels) || all(is.na(ds_labels))) {
+
+        ds_labels <- tools::file_path_sans_ext(basename(Orig_Names))
+
+      }
+
+      ds_labels <- gsub('^"|"$', '', ds_labels)
+
+      message(sprintf(
+
+        "Processing dataset%s: %s",
+
+        if (length(ds_labels) > 1) "s" else "",
+
+        paste(ds_labels, collapse = ", ")
+
+      ))
+
+      on.exit({
+
+        if (exists(".NF_Orig_Names", envir = .GlobalEnv, inherits = FALSE)) {
+
+          rm(".NF_Orig_Names", envir = .GlobalEnv)
+
+        }
+
+      }, add = TRUE)
+
+      default_verbose <- isTRUE(merged$Verbose)
+
+      verbose_mode <- if ("Verbose" %in% names(user_args)) isTRUE(user_args$Verbose) else default_verbose
+
+      merged$Verbose <- verbose_mode
+
+      if (verbose_mode) {
+
+        return(do.call(orig, merged))
+
+      } else {
+
+        merged$Verbose <- FALSE
+
+        return(withCallingHandlers(
+
+          run_with_counter(
+
+            func    = orig,
+            args    = merged,
+            session = session
+
+          ),
+
+          message = function(m) invokeRestart("muffleMessage"),
+
+          warning = function(w) invokeRestart("muffleWarning")
+
+        ))
+
+      }
 
     }
 
-  } else {
-
-    # Data supplied as symbols or c(symbol, "path", ...)
-    parts <- if (is.call(call_expr) && identical(call_expr[[1L]], quote(c))) {
-
-      as.list(call_expr)[-1L]
-
-    } else {
-
-      list(call_expr)
 
     }
-
-    Orig_Names <- vapply(parts, function(p) {
-
-      if (is.character(p)) p else deparse1(p)
-
-    }, character(1))
-
-    Orig_Names <- gsub('^"|"$', '', Orig_Names)
-    if (is.null(merged$Names)) merged$Names <- Orig_Names
-
-  }
-
-  assign(".NF_Orig_Names", Orig_Names, envir = .GlobalEnv)
-
-  ds_labels <- merged$Names
-
-  if (is.null(ds_labels) || all(is.na(ds_labels))) {
-
-    ds_labels <- tools::file_path_sans_ext(basename(Orig_Names))
-
-  }
-
-  ds_labels <- gsub('^"|"$', '', ds_labels)
-
-  message(sprintf(
-
-    "Processing dataset%s: %s",
-    if (length(ds_labels) > 1) "s" else "",
-    paste(ds_labels, collapse = ", ")
-
-  ))
-
-  on.exit({
-
-    if (exists(".NF_Orig_Names", envir = .GlobalEnv, inherits = FALSE)) {
-
-      rm(".NF_Orig_Names", envir = .GlobalEnv)
-
-    }
-
-  }, add = TRUE)
-
-  default_verbose <- isTRUE(merged$Verbose)
-
-  verbose_mode <- if ("Verbose" %in% names(user_args)) isTRUE(user_args$Verbose) else default_verbose
-
-  merged$Verbose <- verbose_mode
-
-  if (verbose_mode) {
-
-    return(do.call(orig, merged))
-
-  } else {
-
-    merged$Verbose <- FALSE
-    return(withCallingHandlers(
-      run_with_counter(
-        func    = orig,
-        args    = merged,
-        session = session
-      ),
-      message = function(m) invokeRestart("muffleMessage"),
-      warning = function(w) invokeRestart("muffleWarning")
-    ))
-
-  }
-
-}
-
-
-}
