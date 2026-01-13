@@ -147,7 +147,7 @@ carousel <- function(plots,
 - Once installed, load in the MiamiR package (lib.loc may need to be specified), This package is complete with extensive documentation and functionality. 
 
 - A web app version is also available here: https://cron-project.shinyapps.io/MiamiR_Web_App_Pub/
-```{r setup, message=FALSE}
+```{r setup, message=TRUE, warning= TRUE}
 library(MiamiR)
 ```
 
@@ -167,7 +167,7 @@ library(MiamiR)
 ```{r, results="hide", warning = FALSE, message = FALSE}
 plots_dir <- here("vignettes", "Plots")
 
-Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats, Verbose = T)
+Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats, Label_Angle = 60, Verbose = F)
 
 setwd(plots_dir)
 
@@ -293,7 +293,7 @@ carousel(img_paths)
 
 - Please bear in mind that querying an API is slow and may not always contain data pertaining to your particular set of SNPs or may be unavailable within certain system paramaters.
 
-- It is often better to produce your own LD matrix using tools such as PLINK1.9/2, the results of which can also be fed in to this package (FUTURE/TBC).
+- It is often better to produce your own LD matrix using tools such as PLINK1.9/2, the results of which can also be fed in to this package.
 ```{r, results="hide", warning = FALSE, message = FALSE}
   Regional_Plots <- Regional_Plot(Data = Sum_Stats[1], Auto_LD = TRUE, Chromosomes = c(22),
                                   Genome_Build = "grch37", Gene_Biotype = c("coding", "snorna"),
@@ -357,31 +357,36 @@ Let's have a look at our heavily customised and LD annotated Regional Plot.
 - This will allocate NULL/default settings to Intelligence_Sum_Stats and stratify the Household_Income_Sum_Stats plot by only "coding" and "processed_pseudogene" regions.
 
 - Please note that HG19 is passed as the genome build for Intelligence_Sum_Stats but HG38 for Household_Income_Sum_Stats due to differences in the data sets' references.
-```{r, results="hide", warning = FALSE, message = FALSE}
+```{r, results="hide", warning = FALSE, message = TRUE}
   Regional_Plots <- Regional_Plot(Data = c(Intelligence_Sum_Stats, Household_Income_Sum_Stats),
-                                Chromosomes = c(9),  Genome_Build =  c("grch37", "grch38"),
+                                Chromosomes = c(9),  Genome_Build =  c("grch37", "grch37"),
                                 Recombination_Line_Colour = c("darkgrey", "pink"),
                                 Point_Colour = c("blue", "red"), Y_Axis_Title =  c("SigVal"),
                                 Gene_Biotype = list( c(), c("coding", "processed_pseudogene" )),
                                 Gene_Biotype_Colour = list( c(), c("blue", "green")) )
 
-  for (plot_name in names(Regional_Plots)) {
-  plot <- Regional_Plots[[plot_name]]
-  file_safe <- gsub("[^A-Za-z0-9]", "_", plot_name)
-  filename <- paste0(file_safe, "_LmultiD", ".jpg")
-  height_to_use <- attr(plot, "dynamic_height")
-  if (is.null(height_to_use)) height_to_use <- 30
+for (i in seq_along(Regional_Plots)) {
+  inner <- Regional_Plots[[i]]
 
-  setwd(plots_dir)
-  ggplot2::ggsave(
-    filename = filename,
-    plot = plot,
-    width = 30,
-    height = height_to_use,
-    units = "in",
-    dpi = 100,
-    limitsize = FALSE
-  )
+  for (plot_name in names(inner)) {
+    plot <- inner[[plot_name]]
+
+    file_safe <- gsub("[^A-Za-z0-9]", "_", plot_name)
+    filename  <- file.path(plots_dir, paste0(file_safe, "_LmultiD.jpg"))
+
+    height_to_use <- attr(plot, "dynamic_height")
+    if (is.null(height_to_use)) height_to_use <- 30
+
+    ggplot2::ggsave(
+      filename = filename,
+      plot = plot,
+      width = 30,
+      height = height_to_use,
+      units = "in",
+      dpi = 100,
+      limitsize = FALSE
+    )
+  }
 }
 ```
 Let's have a look at both chromosome 9 Regional Plots for our exemplar data sets.
@@ -439,7 +444,8 @@ carousel(full_paths)
 
 - This function automatically aligns and buffers coordinates across different data sets and genomic builds to create a neat visualisation. Let's look at a default plot, specifying both data sets where needed.
 ```{r, results="hide", warning = FALSE, message = FALSE}
-Miami_Plot <- Miami_Plot(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Household_Income_Sum_Stats)
+Miami_Plot <- Miami_Plot(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Household_Income_Sum_Stats,
+                         Label_Angle = 55, Verbose = F)
 
 setwd(plots_dir)
 ggplot2::ggsave("Test_Miami.jpg", plot = Miami_Plot, width = 30,
@@ -463,7 +469,8 @@ knitr::include_graphics(paste0(plots_dir,"/Test_Miami.jpg"))
 Miami_Plot <- Miami_Plot(Top_Data = Intelligence_Sum_Stats, Bottom_Data = Household_Income_Sum_Stats,
                          Chromosome_Colours = c("limegreen", "darkorange"),
                          Chromosome_Label_Drops = c(15,19,22), Diamond_Index = TRUE,
-                         Chromosome_Label_Size = 12)
+                         Chromosome_Label_Size = 12,
+                         Label_Angle = 55)
 
 setwd(plots_dir)
 ggplot2::ggsave("Custom_Test_Miami.jpg", plot = Miami_Plot, width = 30,
@@ -481,7 +488,8 @@ knitr::include_graphics(paste0(plots_dir,"/Custom_Test_Miami.jpg"))
 Miami_Plot <- Miami_Plot(Top_Data = Sum_Stats[1], Bottom_Data = Sum_Stats[2],
                          Top_Chromosome_Colours = c("purple", "grey"),
                          Top_Diamond_Index = TRUE, Bottom_Chromosome_Colours = c("pink", "red"),
-                         Chromosome_Label_Size = 30, Label_Size = 7 )
+                         Chromosome_Label_Size = 30, Label_Size = 7,
+                         Label_Angle = 80, Label_Height = c(2,10))
 
 setwd(plots_dir)
 ggplot2::ggsave("Split_Custom_Test_Miami.jpg", plot = Miami_Plot, width = 30,
@@ -506,7 +514,7 @@ knitr::include_graphics(paste0(plots_dir,"/Split_Custom_Test_Miami.jpg"))
 ```{r, results="hide", warning = FALSE, message = FALSE}
 devtools::load_all(".")
 
-Forest_Plot <- Forest_Plot(Data = Intelligence_Sum_Stats, Chromosomes = 4)
+Forest_Plot <- Forest_Plot(Data = Intelligence_Sum_Stats, Chromosomes = 4, X_Axis_Text_Resolution = 3)
 
 setwd(plots_dir)
 ggplot2::ggsave(
@@ -514,7 +522,7 @@ ggplot2::ggsave(
   plot = Forest_Plot,
   height = attr(Forest_Plot, "dynamic_height", exact = TRUE),
   width = 10,
-  dpi = 100,
+  dpi = 600,
   units = "in"
 )
 ```
@@ -533,7 +541,8 @@ Forest_Plot <- Forest_Plot(Data = Sum_Stats, order = c("P_Label", "BETA_CI_Label
                            Selected_SNPs = c("rs2014952", "rs759550", "rs72832626", "rs6682851"),
                            Data_Set_Colours = c("blue", "green"),
                            Shapes = c("triangle", "circle"), Names = c("Intel", "Income"),
-                           Double_Label = T, Left_Fill = "lightblue")
+                           Double_Label = T, Left_Fill = "lightblue",
+                           X_Axis_Separation = 0.01, X_Axis_Text_Resolution = 3)
 
 setwd(plots_dir)
 ggplot2::ggsave(
@@ -541,7 +550,7 @@ ggplot2::ggsave(
   plot = Forest_Plot,
   height = attr(Forest_Plot, "dynamic_height", exact = TRUE),
   width = 10,
-  dpi = 100,
+  dpi = 600,
   units = "in"
 )
 ```
@@ -561,17 +570,19 @@ knitr::include_graphics(paste0(plots_dir,"/Selected_Custom_Forest.jpg"))
 Model_One <- lm(BMI ~ Age + Sex + Ethnicity + Location, data = Fake_Demo_Data)
 Model_Two <- lm(Dementia ~ Age + Sex + Ethnicity + Location, data = Fake_Demo_Data)
 
-Forest_Plot <- Forest_Plot(Data = c(Model_One, Model_Two), order = c("P_Label", "CI_Label"),                                                          Right_Size = 12, Left_Size = 13, Model_Reference = T, Axis_Buffer = 0.05,
-               Names = c("BMI", "Dementia"), Right_Fill = "lightgreen", Left_Fill = "turquoise" ,
-               Strips = F, Styles = c("bold", "underline"), Null_Line_Type = "solid")
+Forest_Plot <- Forest_Plot(Data = c(Model_One, Model_Two), order = c("P_Label", "CI_Label"),                                                          Right_Size = 12, Left_Size = 13, Model_Reference = T, 
+                                         Axis_Buffer = 0.05, Unprocessed = T,
+                Names = c("BMI", "Dementia"), Right_Fill = "lightgreen", Left_Fill = "turquoise" ,
+               Strips = F, Styles = c("bold", "underline"), Null_Line_Type = "solid", Verbose = F)
 
 setwd(plots_dir)
+
 ggplot2::ggsave(
   filename = "Model_Custom_Forest.jpg",
   plot = Forest_Plot,
   height = attr(Forest_Plot, "dynamic_height", exact = TRUE),
   width = 10,
-  dpi = 100,
+  dpi = 600,
   units = "in"
 )
 ```
@@ -630,6 +641,127 @@ Let's inspect our annotated data frame.
   ) |>
   scroll_box(width = "100%")
 ```
+# Single_With_Regional_Plot() {.tabset}
+
+## Base Example
+
+- Although Single_Plot() and Regional_Plot() are incredibly useful and come with plenty of customisation, often it is more informative to integrate them in to a single compound Manhattan plot. 
+
+- The Single_With_Regional_Plot() function allows users to pass one or more Regional_Plot() objects to a baseline Single_Plot() to be added automatically to their regions of interest.
+
+- Customisation passed to either function is also maintained and legends combined in a useful fashion.
+
+- Here is how we can combine the below exemplar Single and Regional plots.
+```{r, results="hide", warning = FALSE, message = FALSE}
+plots_dir <- here("vignettes", "Plots")
+
+Manhattan_Plot <- Single_Plot(Data = Household_Income_Sum_Stats, Label_Index = FALSE)
+
+Regional_Plot <- Regional_Plot(Data = c(Household_Income_Sum_Stats, Household_Income_Sum_Stats),
+                               Chromosomes = c(9,3),
+                               Separation_Distance = 1e9,
+                               Region_Window = c(3e5, 8e4),
+                               Auto_LD = TRUE,
+                               Genome_Build = "grch37",
+                               Title_On = FALSE,
+                               X_Axis_Title_Size = 100,
+                               X_Axis_Title_Vjust = 0,
+                               Y_Axis_Title_Vjust = 5.5,
+                               Y_Axis_Title_Size = 100,
+                               Y_Axis_Text_Size = 90,
+                               Y_Axis_Title = "\n-log₁₀(P)",
+                               Chromosome_Label_Size = 90,
+                               Sig_Line_Width = 5,
+                               Recombination_Line = TRUE,
+                               Recombination_Line_Thickness = 7.5,
+                               Recombination_Axis_Text_Size = 90,
+                               Recombination_Axis_Title_Size= 100,
+                               Recombination_Axis_Title_Vjust = 5.5,
+                               Recombination_Axis_Title     = "\nRR (cM/Mb)",
+                               Point_Size = 20,
+                               Label_Size = 25,
+                               Label_Height = 40,
+                               Label_Angle  = 2.5,
+                               Panel_Ratio  = "1:1",
+                               Gene_Label_Vertical_Spacing = 0.25,
+                               Gene_Track_Vertical_Spacing =  0.55,
+                               LD_Legend_Title_Size = 20,
+                               LD_Legend_Text_Size = 15,
+                               Gene_Legend_Title_Size = 20,
+                               Gene_Legend_Text_Size = 15,
+                               LD_Legend_On = FALSE,
+                               Gene_Legend_On = FALSE,
+                               Manual_Decimal_Places  = c(3,2),
+                               Target_Position_Breaks = 3,
+                               Gene_Label_Buffer = 6.5,
+                               Gene_Label_Size = 20,
+                               Gene_Structure_Size_Exons = 24,
+                               Gene_Structure_Size_Introns = 5,
+                               Sense_Arrow_Body_Length = 0.02,
+                               Sense_Arrow_Gene_Gap = 0.015,
+                               Sense_Arrow_Head_Size = 7)
+
+
+Annotated_Man <- Single_With_Regional_Plot(
+
+  Single_Plot   = Manhattan_Plot,
+  Regional_Plot = Regional_Plot,
+  Inset_Chromosomes = c(3,9),
+  Inset_Preset = c("left", "right"),
+  Preset_Tweak_Y    = c(0.52, 0.4))
+
+setwd(plots_dir)
+
+ggplot2::ggsave("Compound_Household_Income_Plot.jpg", plot = Annotated_Man, width = 30,
+                 height = 15, units = "in", dpi = 600)
+```
+Let's inspect our saved compound Manhattan Plot.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=300, out.width="100%"}
+knitr::include_graphics(paste0(plots_dir,"/Compound_Household_Income_Plot.jpg"))
+```
+
+
+
+# Segregate_HLA_Plot() {.tabset}
+
+## Base Example
+
+- At times Regional_Plot() can fail to capture the genetics signatures underlying highly complex regions of the genome.
+
+- Such regions include the MHC and HLA gene cluster where additional data beyond SNPs tends to offer better insight for deconvolution of such regions of association.
+
+- HLA-WAS with specialised imputation (e.g. via MEPs) provide association results for the MHC region, stratified by different calls, such as standard SNPs but also amino acid and field resolution allele calls.
+
+- MiamiR also includes a function called Segregate_HLA_Plot() which allows for line plot based, gene stratified visualation of all types of HLA data in addition to passing standard information internally to the Regional_Plot() function, improving analysis efficiency.
+
+- The package also includes a simulated HLA-call based GWAS summary statistics file called "Fake_HLA_10K" which we we'll used and svae outputs of using included helper function: Save_Segregate_HLA_Plots()
+```{r, results="hide", warning = FALSE, message = FALSE}
+HLA_Plots <- Segregate_HLA_Plot(Data = "Fake_HLA_10K")
+
+setwd(plots_dir)
+
+message("Saving")
+
+Save_Segregate_HLA_Plots(
+  res = HLA_Plots,
+  dir = "HLA_plots",   
+  dpi = 100           
+)
+
+```
+Let's inspect our saved set of plots.
+```{r,  warning = FALSE, message = FALSE,  fig.width=30, fig.height=15, dpi=300, out.width="100%"}
+img_dir   <- file.path(plots_dir, "HLA_plots")
+
+HLA_img_paths <- list.files(
+  path       = img_dir,
+  pattern    = "\\.jpg$",     
+  recursive  = FALSE,        
+  full.names = TRUE
+)
+
+carousel(HLA_img_paths)
+```
 
 # Tube_Alloys() {.tabset}
 
@@ -656,7 +788,7 @@ Tube_Alloys_Plots <- invisible(
   save_all_plots(
     Plots,
     base_dir = file.path(plots_dir, "Tube_Alloys_Plots"),
-    dpi = 100
+    dpi = 300
   )
 )
 ```
@@ -670,7 +802,7 @@ carousel(all_files)
 
 ## Base Example
 
-- A utility function also included in the MiamiR package is the METASOFT_File_Gen() function which takes multiple datasets as inputs and munges them by default to the METASOFT meta-analysis format (wrapper FUTURE/TBC).
+- A utility function also included in the MiamiR package is the METASOFT_File_Gen() function which takes multiple datasets as inputs and munges them by default to the METASOFT meta-analysis format.
 
 - Other formats may be specified and allele matching is automatically taken care of, similarly to the Forest_Plot() function, with outputs maintaining all SNPs which match the backbone dataset.
 
@@ -690,5 +822,31 @@ Let's preview the METASOFT_File_Gen() output.
   ) |>
   scroll_box(width = "100%")
 ```
+# METASOFT_Run() {.tabset}
+
+## Base Example
+
+- The MiamiR package also supplies a function called METASOFT_Run() 
+
+- This can take inputs like the above and call METASOFT on them within the R and package environment.
+
+- METASOFT arguments can also be supplied and by default a cleaned output with REGENIE formatted columns is supplied for further, downstream analysis.
+```{r, results="hide", warning = FALSE, message = FALSE}
+METASOFT_Output <- METASOFT_Run(Data = METASOFT_Example_Input )
+```
+Let's preview the METASOFT_Run() output.
+```{r,  warning = FALSE, message = FALSE}
+  METASOFT_Output |>
+    dplyr::filter(!is.na(PVALUE_FE)) |>
+    dplyr::slice_head(n = 5) |>
+    knitr::kable(format = "html", digits = 3, caption = "") |>
+    kableExtra::kable_styling(
+      full_width = TRUE,
+      position = "center",
+      bootstrap_options = c("striped", "hover")
+    ) |>
+    kableExtra::scroll_box(width = "100%")
+```
+
 <br>
 Thank you for reading the tutorial vignette! More functions and functionality coming soon :)

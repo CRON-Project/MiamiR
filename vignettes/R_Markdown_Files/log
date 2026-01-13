@@ -1,0 +1,11 @@
+Arguments:  -input /mnt/c/Users/callumon/AppData/Local/Temp/RtmpEXYwkr/file17947e1b64c2.meta -output /mnt/c/Users/callumon/AppData/Local/Temp/RtmpEXYwkr/file179454c67e04.out -pvalue_table /mnt/c/Users/callumon/OneDrive - Nexus365/Miami_Package_R/MiamiR/inst/java/HanEskinPvalueTable.txt
+ Input File: /mnt/c/Users/callumon/AppData/Local/Temp/RtmpEXYwkr/file17947e1b64c2.meta
+Output File: /mnt/c/Users/callumon/AppData/Local/Temp/RtmpEXYwkr/file179454c67e04.out
+Log File: log
+p-value Table File: /mnt/c/Users/callumon/OneDrive - Nexus365/Miami_Package_R/MiamiR/inst/java/HanEskinPvalueTable.txt
+Number of SNPs analyzed: 567
+Maximum number of studies: 2
+Specified lambda for   mean effect part (default = 1.0): 1.000000
+Specified lambda for heterogeneity part (default = 1.0): 1.000000
+Newly calculated inflation factor lambda for   mean effect part: 1.555475
+Newly calculated inflation factor lambda for heterogeneity part: 1.109507
