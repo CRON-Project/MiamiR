@@ -1,16 +1,16 @@
 rmarkdown::render(
-    "vignettes/R_Markdown_Files/README.Rmd",   
+    "vignettes/R_Markdown_Files/README.Rmd",
     output_format = "github_document",
     output_file   = "README.md",
-    output_dir    = "."                        
+    output_dir    = "."
 )
 
 rmarkdown::render(
   "vignettes/R_Markdown_Files/Introduction_To_MiamiR.Rmd",
   output_format   = "html_document",
-  output_file     = "index.html",   
+  output_file     = "index.html",
   output_dir      = "docs",
-  output_options  = list(self_contained = TRUE)  
+  output_options  = list(self_contained = TRUE)
 )
 
 # ensure static serving (no Jekyll build step)

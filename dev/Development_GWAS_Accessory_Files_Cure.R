@@ -266,3 +266,16 @@
 
   use_data(Fake_HLA_100K)
 
+  data("Fake_HLA_100K")
+
+  setwd("C:/Users/callumon/OneDrive - Nexus365/Miami_Package_R/MiamiR/inst/extdata/Example_Data_Raw")
+
+  vroom_write(Fake_HLA_100K, file = "Fake_HLA_100K_b.txt")
+
+
+  a <- vroom("C:/Users/callumon/OneDrive - Nexus365/Miami_Package_R/MiamiR/inst/extdata/Example_Data_Raw/Fake_HLA_100K_b.txt"
+  )
+
+  vroom_write(a, file = "Fake_HLA_100K_d.txt")
+
+
