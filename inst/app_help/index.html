@@ -1,58 +1,39 @@
 <!doctype html>
-<html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
-<title>MiamiR Help</title>
-<style>
-
-:root{--bg:#f7f9fc;--card:#fff;--text:#0b1220;--muted:#475569;--link:#2563eb;--border:#e5e7eb;}
-@media (prefers-color-scheme: dark){
-  :root{--bg:#0b0f14;--card:#121823;--text:#e6edf3;--muted:#9fb0c0;--link:#6aa6ff;--border:#233043;}
-}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-.wrap{max-width:980px;margin:0 auto;padding:24px;}
-.top{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);}
-.top h1{margin:0;font-size:22px;letter-spacing:-.02em;}
-.top .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
-.back{display:inline-block;margin-bottom:10px;color:var(--link);text-decoration:none;font-size:13px}
-.back:hover{text-decoration:underline}
-.main{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto;}
-a{color:var(--link);text-decoration:none}
-a:hover{text-decoration:underline}
-pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-pre{background:rgba(127,127,127,.12);padding:12px;border-radius:12px;overflow:auto}
-table{border-collapse:collapse;width:100%}
-th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
-th{background:rgba(127,127,127,.10)}
-ul.index{list-style:none;padding:0;margin:0;columns:2;column-gap:24px}
-ul.index li{break-inside:avoid;margin:0 0 8px}
-@media (max-width:720px){ul.index{columns:1}}
-
-</style>
+<html><head>
+  <meta charset="utf-8">
+  <title>MiamiR Help</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head><body>
-<div class='wrap'>
-<header class='top'><h1>MiamiR Help</h1><p class='sub'>Package documentation converted from .Rd</p></header>
-<main class='main'>
-<ul class='index'>
-<li><a href='Annotate_Data.html'>Annotate_Data</a></li>
-<li><a href='Fake_COVARS.html'>Fake_COVARS</a></li>
-<li><a href='Fake_COVARS_and_Binary.html'>Fake_COVARS_and_Binary</a></li>
-<li><a href='Fake_COVARS_and_Quant.html'>Fake_COVARS_and_Quant</a></li>
-<li><a href='Fake_Demo_Data.html'>Fake_Demo_Data</a></li>
-<li><a href='Fake_PHENOS_Binary.html'>Fake_PHENOS_Binary</a></li>
-<li><a href='Fake_PHENOS_Quant.html'>Fake_PHENOS_Quant</a></li>
-<li><a href='Forest_Plot.html'>Forest_Plot</a></li>
-<li><a href='Household_Income_Sum_Stats.html'>Household_Income_Sum_Stats</a></li>
-<li><a href='Intelligence_Sum_Stats.html'>Intelligence_Sum_Stats</a></li>
-<li><a href='LbDementia_Sum_Stats.html'>LbDementia_Sum_Stats</a></li>
-<li><a href='METASOFT_Example_Input.html'>METASOFT_Example_Input</a></li>
-<li><a href='METASOFT_File_Gen.html'>METASOFT_File_Gen</a></li>
-<li><a href='METASOFT_Run.html'>METASOFT_Run</a></li>
-<li><a href='Miami_Plot.html'>Miami_Plot</a></li>
-<li><a href='Model_Munge.html'>Model_Munge</a></li>
-<li><a href='Model_One.html'>Model_One</a></li>
-<li><a href='pipe.html'>pipe</a></li>
-<li><a href='Regional_Plot.html'>Regional_Plot</a></li>
-<li><a href='Single_Plot.html'>Single_Plot</a></li>
-<li><a href='Single_With_Regional_Plot.html'>Single_With_Regional_Plot</a></li>
-<li><a href='Tube_Alloys.html'>Tube_Alloys</a></li>
-</ul>
-</main></div></body></html>
+<div class="topbar"><a href="index.html">MiamiR Help</a><span class="crumb muted">Reference</span></div>
+<div class="container">
+<div class="card">
+<h1>MiamiR documentation</h1>
+<p class="muted">Click a topic or search below.</p>
+<div class="search"><input id="q" type="text" placeholder="Search topics..."></div>
+<div id="list" class="list">
+<a href="Annotate_Data.html">Annotate_Data</a>
+<a href="Forest_Plot.html">Forest_Plot</a>
+<a href="METASOFT_File_Gen.html">METASOFT_File_Gen</a>
+<a href="METASOFT_Run.html">METASOFT_Run</a>
+<a href="Miami_Plot.html">Miami_Plot</a>
+<a href="Model_Munge.html">Model_Munge</a>
+<a href="pipe.html">pipe</a>
+<a href="Regional_Plot.html">Regional_Plot</a>
+<a href="Segregate_HLA_Plot.html">Segregate_HLA_Plot</a>
+<a href="Single_Plot.html">Single_Plot</a>
+<a href="Single_With_Regional_Plot.html">Single_With_Regional_Plot</a>
+<a href="Tube_Alloys.html">Tube_Alloys</a>
+</div>
+</div></div>
+<script>
+  const q = document.getElementById('q');
+  const list = document.getElementById('list');
+  const items = Array.from(list.querySelectorAll('a'));
+  q.addEventListener('input', () => {
+    const s = q.value.toLowerCase();
+    items.forEach(a => {
+      a.style.display = a.textContent.toLowerCase().includes(s) ? '' : 'none';
+    });
+  });
+</script>
+</body></html>

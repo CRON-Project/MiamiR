@@ -1,0 +1,178 @@
+<!DOCTYPE html><html><head><title>R: Annotated, Customised HLA-WAS Plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+<script type="text/javascript">
+const macros = { "\\R": "\\textsf{R}", "\\code": "\\texttt"};
+function processMathHTML() {
+    var l = document.getElementsByClassName('reqn');
+    for (let e of l) { katex.render(e.textContent, e, { throwOnError: false, macros }); }
+    return;
+}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+    onload="processMathHTML();"></script>
+<link rel="stylesheet" type="text/css" href="style.css" />
+</head><body><div class="container">
+<div class="topbar"><a href="index.html">MiamiR Help</a><span class="crumb">/ Segregate_HLA_Plot</span></div>
+<div class="container"><div class="card">
+
+<table style="width: 100%;"><tr><td>Segregate_HLA_Plot</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2 id='Segregate_HLA_Plot'>Annotated, Customised HLA-WAS Plots</h2>
+
+<h3>Description</h3>
+
+<p>Annotated, Customised HLA-WAS Plots
+</p>
+
+
+<h3>Usage</h3>
+
+<pre><code class='language-R'>Segregate_HLA_Plot(
+  Data = NULL,
+  Verbose = FALSE,
+  Title = NULL,
+  Title_On = TRUE,
+  Title_Size = 28,
+  X_Axis_Title = "HLA Genes",
+  Y_Axis_Title = "-log₁₀(P)",
+  X_Axis_Title_Size = 26,
+  Y_Axis_Title_Size = 26,
+  X_Axis_Title_Vjust = -3,
+  Y_Axis_Title_Vjust = 6,
+  X_Axis_Text_Vjust = -0.2,
+  Y_Axis_Text_Vjust = 0.2,
+  X_Axis_Text_Size = 20,
+  Y_Axis_Text_Size = 20,
+  Label_Index = TRUE,
+  Label_Size = 3,
+  Label_Height = 2,
+  Segment_Width = 0.18,
+  Segment_Thickness = 0.9,
+  Sig_Line_Colour = "red",
+  Sig_Line_Type = "dashed",
+  Sig_Threshold = 5e-08,
+  Sig_Line_Width = 0.6,
+  session = NULL
+)
+</code></pre>
+
+
+<h3>Arguments</h3>
+
+<table>
+<tr><td><code id="Segregate_HLA_Plot_:_Data">Data</code></td>
+<td>
+<p>These are the summary statistics (either file path(s), environmental object(s) or a variable(s) containing such contents) to be plotted; defaults to NULL</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Verbose">Verbose</code></td>
+<td>
+<p>Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Title">Title</code></td>
+<td>
+<p>Manually specify title to be displayed; defaults to NULL, leading to auto-detection of dataframe object/file name</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Title_On">Title_On</code></td>
+<td>
+<p>Toggle on/off whether Title (either manually or automatically determined) displays on final plot; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Title_Size">Title_Size</code></td>
+<td>
+<p>Size of title; defaults to 28</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_X_Axis_Title">X_Axis_Title</code></td>
+<td>
+<p>Manually specify X axis title; defaults to &quot;HLA Genes&quot;</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Y_Axis_Title">Y_Axis_Title</code></td>
+<td>
+<p>Manually specify Y axis title; defaults to &quot;-log\u2081\u2080(P)&quot; - shows as &quot;-log₁₀(P)&quot;</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_X_Axis_Title_Size">X_Axis_Title_Size</code></td>
+<td>
+<p>Size of X axis title; defaults to 26</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Y_Axis_Title_Size">Y_Axis_Title_Size</code></td>
+<td>
+<p>Size of Y axis title; defaults to 26</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_X_Axis_Title_Vjust">X_Axis_Title_Vjust</code></td>
+<td>
+<p>Number of units of blank space between X_Axis_Title element area and above axis; defaults to -3</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Y_Axis_Title_Vjust">Y_Axis_Title_Vjust</code></td>
+<td>
+<p>Number of units of blank space between Y_Axis_Title element area and adjacent axis; defaults to 6</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_X_Axis_Text_Vjust">X_Axis_Text_Vjust</code></td>
+<td>
+<p>Number of units of blank space between X_Axis_Text element area and above axis; defaults to -0.2</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Y_Axis_Text_Vjust">Y_Axis_Text_Vjust</code></td>
+<td>
+<p>Number of units of blank space between Y_Axis_Text element area and adjacent axis; defaults to 0.2</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_X_Axis_Text_Size">X_Axis_Text_Size</code></td>
+<td>
+<p>Size of X axis text; defaults to 20</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Y_Axis_Text_Size">Y_Axis_Text_Size</code></td>
+<td>
+<p>Size of Y axis text; defaults to 20</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Label_Index">Label_Index</code></td>
+<td>
+<p>Annotate the index SNPs with ID provided; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Label_Size">Label_Size</code></td>
+<td>
+<p>Size of index labels if Label_Index is TRUE; defaults to 3</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Label_Height">Label_Height</code></td>
+<td>
+<p>Spacing between the point and the label position; defaults to 2</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Segment_Width">Segment_Width</code></td>
+<td>
+<p>Half-width of each per-point horizontal segment (total length = 2 * Segment_Width); defaults to 0.18</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Segment_Thickness">Segment_Thickness</code></td>
+<td>
+<p>Thickness/line width for the per-point horizontal segments; defaults to 0.9</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Sig_Line_Colour">Sig_Line_Colour</code></td>
+<td>
+<p>Colour of significance threshold line; defaults to &quot;red&quot;</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Sig_Line_Type">Sig_Line_Type</code></td>
+<td>
+<p>Type of significance threshold line; defaults to &quot;dashed&quot;</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Sig_Threshold">Sig_Threshold</code></td>
+<td>
+<p>Value of significance threshold; defaults to standard Bonferroni correction of 5e-8</p>
+</td></tr>
+<tr><td><code id="Segregate_HLA_Plot_:_Sig_Line_Width">Sig_Line_Width</code></td>
+<td>
+<p>Width of significance threshold line; defaults to 0.6</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Image of HLA type-specific Line Plot(s) is allocated to specified object and the resulting ggplots object can then be saved to images
+</p>
+
+
+<h3>Examples</h3>
+
+<pre><code class='language-R'>HLA_Plots &lt;- Segregate_HLA_Plot(Data = "Fake_HLA_100K")
+
+</code></pre>
+
+
+</div>
+</div></div>
+</body></html>

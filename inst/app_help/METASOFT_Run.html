@@ -11,37 +11,10 @@ function processMathHTML() {
 }</script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
     onload="processMathHTML();"></script>
-<link rel="stylesheet" type="text/css" href="R.css" />
-<style>
-
-:root{--bg:#f7f9fc;--card:#fff;--text:#0b1220;--muted:#475569;--link:#2563eb;--border:#e5e7eb;}
-@media (prefers-color-scheme: dark){
-  :root{--bg:#0b0f14;--card:#121823;--text:#e6edf3;--muted:#9fb0c0;--link:#6aa6ff;--border:#233043;}
-}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-.wrap{max-width:980px;margin:0 auto;padding:24px;}
-.top{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);}
-.top h1{margin:0;font-size:22px;letter-spacing:-.02em;}
-.top .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
-.back{display:inline-block;margin-bottom:10px;color:var(--link);text-decoration:none;font-size:13px}
-.back:hover{text-decoration:underline}
-.main{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto;}
-a{color:var(--link);text-decoration:none}
-a:hover{text-decoration:underline}
-pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-pre{background:rgba(127,127,127,.12);padding:12px;border-radius:12px;overflow:auto}
-table{border-collapse:collapse;width:100%}
-th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
-th{background:rgba(127,127,127,.10)}
-ul.index{list-style:none;padding:0;margin:0;columns:2;column-gap:24px}
-ul.index li{break-inside:avoid;margin:0 0 8px}
-@media (max-width:720px){ul.index{columns:1}}
-
-</style>
+<link rel="stylesheet" type="text/css" href="style.css" />
 </head><body><div class="container">
-<div class='wrap'>
-<header class='top'><a class='back' href='index.html'>&larr; Index</a><h1>METASOFT_Run</h1></header>
-<main class='main'>
+<div class="topbar"><a href="index.html">MiamiR Help</a><span class="crumb">/ METASOFT_Run</span></div>
+<div class="container"><div class="card">
 
 <table style="width: 100%;"><tr><td>METASOFT_Run</td><td style="text-align: right;">R Documentation</td></tr></table>
 
@@ -55,7 +28,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 
 <h3>Usage</h3>
 
-<pre><code class='language-R'>METASOFT_Run(Data, options = character(), REGENIE_Cols = TRUE)
+<pre><code class='language-R'>METASOFT_Run(..., session = NULL)
 </code></pre>
 
 
@@ -72,7 +45,11 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="METASOFT_Run_:_REGENIE_Cols">REGENIE_Cols</code></td>
 <td>
-<p>Include REGENIE format-style columns; defaults to TRUE</p>
+<p>Include REGENIE format-style columns in output; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="METASOFT_Run_:_Verbose">Verbose</code></td>
+<td>
+<p>Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE.</p>
 </td></tr>
 </table>
 
@@ -90,6 +67,5 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 
 
 </div>
-</main>
-</div>
+</div></div>
 </body></html>

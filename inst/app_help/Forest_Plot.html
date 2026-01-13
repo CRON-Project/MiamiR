@@ -11,37 +11,10 @@ function processMathHTML() {
 }</script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
     onload="processMathHTML();"></script>
-<link rel="stylesheet" type="text/css" href="R.css" />
-<style>
-
-:root{--bg:#f7f9fc;--card:#fff;--text:#0b1220;--muted:#475569;--link:#2563eb;--border:#e5e7eb;}
-@media (prefers-color-scheme: dark){
-  :root{--bg:#0b0f14;--card:#121823;--text:#e6edf3;--muted:#9fb0c0;--link:#6aa6ff;--border:#233043;}
-}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-.wrap{max-width:980px;margin:0 auto;padding:24px;}
-.top{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);}
-.top h1{margin:0;font-size:22px;letter-spacing:-.02em;}
-.top .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
-.back{display:inline-block;margin-bottom:10px;color:var(--link);text-decoration:none;font-size:13px}
-.back:hover{text-decoration:underline}
-.main{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto;}
-a{color:var(--link);text-decoration:none}
-a:hover{text-decoration:underline}
-pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-pre{background:rgba(127,127,127,.12);padding:12px;border-radius:12px;overflow:auto}
-table{border-collapse:collapse;width:100%}
-th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
-th{background:rgba(127,127,127,.10)}
-ul.index{list-style:none;padding:0;margin:0;columns:2;column-gap:24px}
-ul.index li{break-inside:avoid;margin:0 0 8px}
-@media (max-width:720px){ul.index{columns:1}}
-
-</style>
+<link rel="stylesheet" type="text/css" href="style.css" />
 </head><body><div class="container">
-<div class='wrap'>
-<header class='top'><a class='back' href='index.html'>&larr; Index</a><h1>Forest_Plot</h1></header>
-<main class='main'>
+<div class="topbar"><a href="index.html">MiamiR Help</a><span class="crumb">/ Forest_Plot</span></div>
+<div class="container"><div class="card">
 
 <table style="width: 100%;"><tr><td>Forest_Plot</td><td style="text-align: right;">R Documentation</td></tr></table>
 
@@ -116,7 +89,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Forest_Plot_:_Pre_Calculated_CIs">Pre_Calculated_CIs</code></td>
 <td>
-<p>Indicate that custom CIs are precalculated and available in datasets; defaults to FALSE</p>
+<p>Indicate that custom CIs are pre-calculated and available in datasets; defaults to FALSE</p>
 </td></tr>
 <tr><td><code id="Forest_Plot_:_Legend_Title_Size">Legend_Title_Size</code></td>
 <td>
@@ -180,7 +153,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Forest_Plot_:_Test_Statistic_Choice">Test_Statistic_Choice</code></td>
 <td>
-<p>Manually specify which type of test statistic output is desired, OR or BETA; defaults to NULL - regardless of input type either output may be specified</p>
+<p>Manually specify which type of test statistic output is desired, OR or BETA; defaults to BETA - regardless of input type either output may be specified</p>
 </td></tr>
 <tr><td><code id="Forest_Plot_:_Lead_Studies">Lead_Studies</code></td>
 <td>
@@ -386,6 +359,26 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 <td>
 <p>Allocate the second level of information in the grid text module on the left hand side of the plot, when Double_Label is TRUE; defaults to &quot;Real_ID&quot;</p>
 </td></tr>
+<tr><td><code id="Forest_Plot_:_Unprocessed">Unprocessed</code></td>
+<td>
+<p>When using a raw model object, internal Model_Munge() processing to data frame is used; defaults to FALSE</p>
+</td></tr>
+<tr><td><code id="Forest_Plot_:_PDF">PDF</code></td>
+<td>
+<p>Slightly alter the underlying construction, suitable for PDF output; defaults to FALSE</p>
+</td></tr>
+<tr><td><code id="Forest_Plot_:_REF">REF</code></td>
+<td>
+<p>When supplying model data, toggle the REF: notation on or off; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Forest_Plot_:_Top_Grid_Thickness">Top_Grid_Thickness</code></td>
+<td>
+<p>Modify the linewidth of the line at the very top of the grid, due to the potential graphics output; defaults to NULL, leading to automatic assignment unless otherwise specified</p>
+</td></tr>
+<tr><td><code id="Forest_Plot_:_HLA_Input">HLA_Input</code></td>
+<td>
+<p>Slightly alter the underlying processing, suitable for HLA-WAS inputs; defaults to FALSE</p>
+</td></tr>
 </table>
 
 
@@ -398,11 +391,9 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 <h3>Examples</h3>
 
 <pre><code class='language-R'>Forest_Plot &lt;- Forest_Plot(Data = "Intelligence_Sum_Stats", Chromosomes = 1)
-
 </code></pre>
 
 
 </div>
-</main>
-</div>
+</div></div>
 </body></html>

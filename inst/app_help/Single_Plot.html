@@ -11,37 +11,10 @@ function processMathHTML() {
 }</script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
     onload="processMathHTML();"></script>
-<link rel="stylesheet" type="text/css" href="R.css" />
-<style>
-
-:root{--bg:#f7f9fc;--card:#fff;--text:#0b1220;--muted:#475569;--link:#2563eb;--border:#e5e7eb;}
-@media (prefers-color-scheme: dark){
-  :root{--bg:#0b0f14;--card:#121823;--text:#e6edf3;--muted:#9fb0c0;--link:#6aa6ff;--border:#233043;}
-}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-.wrap{max-width:980px;margin:0 auto;padding:24px;}
-.top{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);}
-.top h1{margin:0;font-size:22px;letter-spacing:-.02em;}
-.top .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
-.back{display:inline-block;margin-bottom:10px;color:var(--link);text-decoration:none;font-size:13px}
-.back:hover{text-decoration:underline}
-.main{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto;}
-a{color:var(--link);text-decoration:none}
-a:hover{text-decoration:underline}
-pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-pre{background:rgba(127,127,127,.12);padding:12px;border-radius:12px;overflow:auto}
-table{border-collapse:collapse;width:100%}
-th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
-th{background:rgba(127,127,127,.10)}
-ul.index{list-style:none;padding:0;margin:0;columns:2;column-gap:24px}
-ul.index li{break-inside:avoid;margin:0 0 8px}
-@media (max-width:720px){ul.index{columns:1}}
-
-</style>
+<link rel="stylesheet" type="text/css" href="style.css" />
 </head><body><div class="container">
-<div class='wrap'>
-<header class='top'><a class='back' href='index.html'>&larr; Index</a><h1>Single_Plot</h1></header>
-<main class='main'>
+<div class="topbar"><a href="index.html">MiamiR Help</a><span class="crumb">/ Single_Plot</span></div>
+<div class="container"><div class="card">
 
 <table style="width: 100%;"><tr><td>Single_Plot</td><td style="text-align: right;">R Documentation</td></tr></table>
 
@@ -96,7 +69,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_Plot_:_Y_Axis_Title">Y_Axis_Title</code></td>
 <td>
-<p>Manually specify Y axis title; defaults to &quot;-log₁₀P&quot;</p>
+<p>Manually specify Y axis title; defaults to &quot;-log\u2081\u2080(P)&quot; - shows as &quot;-log₁₀P&quot;</p>
 </td></tr>
 <tr><td><code id="Single_Plot_:_X_Axis_Title">X_Axis_Title</code></td>
 <td>
@@ -144,7 +117,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_Plot_:_Point_Size">Point_Size</code></td>
 <td>
-<p>Size of data points; defaults to 2.5 but defaults to 10 when called within Regional_Plot()</p>
+<p>Size of data points; defaults to NULL and is modified depending on inherited functionality, unless manually assigned</p>
 </td></tr>
 <tr><td><code id="Single_Plot_:_Label_Index">Label_Index</code></td>
 <td>
@@ -152,11 +125,11 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_Plot_:_Label_Size">Label_Size</code></td>
 <td>
-<p>Size of index labels if Label_Index is TRUE; defaults to 5 but defaults to 9 when called within Regional_Plot()</p>
+<p>Size of index labels if Label_Index is TRUE; defaults to 5 but is automatically scaled in inherited functions</p>
 </td></tr>
 <tr><td><code id="Single_Plot_:_Label_Angle">Label_Angle</code></td>
 <td>
-<p>Angle of index labels if Label_Index is TRUE; defaults to 60 (degrees)</p>
+<p>Angle of index labels if Label_Index is TRUE; defaults to 15 (degrees)</p>
 </td></tr>
 <tr><td><code id="Single_Plot_:_Label_Colour">Label_Colour</code></td>
 <td>
@@ -172,11 +145,11 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_Plot_:_Chromosome_Labels">Chromosome_Labels</code></td>
 <td>
-<p>List of chromosomes to show index SNP labels on, given that Label_Index is TRUE; defaults to c(1:22, &quot;X&quot;)</p>
+<p>List of chromosomes to show index SNP labels on, given that Label_Index is TRUE; defaults to c(1:22, &quot;X&quot;, &quot;Y&quot;, &quot;M&quot;)</p>
 </td></tr>
 <tr><td><code id="Single_Plot_:_Chromosome_Index">Chromosome_Index</code></td>
 <td>
-<p>List of chromosomes to show index SNP circular highlight/colour on, given that Colour_Index is TRUE; defaults to c(1:22, &quot;X&quot;)</p>
+<p>List of chromosomes to show index SNP circular highlight/colour on, given that Colour_Index is TRUE; defaults to c(1:22, &quot;X&quot;, &quot;Y&quot;, &quot;M&quot;)</p>
 </td></tr>
 <tr><td><code id="Single_Plot_:_Condense_Scale">Condense_Scale</code></td>
 <td>
@@ -192,15 +165,11 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_Plot_:_Random_Selection">Random_Selection</code></td>
 <td>
-<p>Manually select a random subset of SNPs to plot (more for internal debugging and testing), given that Draft_Plot is TRUE; defaults to 10,000</p>
+<p>Manually select a random subset of SNPs to plot (more for internal debugging and testing), given that Draft_Plot is TRUE; defaults to 4,000</p>
 </td></tr>
 <tr><td><code id="Single_Plot_:_Chromosome_Label_Drops">Chromosome_Label_Drops</code></td>
 <td>
 <p>Manually specify which chromosome/X axis labels (as a list) should not be shown to prevent text crowding; defaults to NULL leading to c(21,22) being passed when X chromosome data is present and c(21) when only autosomes are present.</p>
-</td></tr>
-<tr><td><code id="Single_Plot_:_Interactive">Interactive</code></td>
-<td>
-<p>View the output as amenable to interactive plotly object, which can be used to inspect data, with key overlays (more for shiny App usage); defaults to FALSE</p>
 </td></tr>
 <tr><td><code id="Single_Plot_:_Index_Size">Index_Size</code></td>
 <td>
@@ -208,11 +177,11 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_Plot_:_Index_Thickness">Index_Thickness</code></td>
 <td>
-<p>Thickness of the outer ring circumference used to highlight the index SNPs, when Colour_Index is TRUE; defaults to 1 but defaults to 4 when called within Regional_Plot()</p>
+<p>Thickness of the outer ring circumference used to highlight the index SNPs, when Colour_Index is TRUE; defaults to 1 but is automatically scaled in inherited functions</p>
 </td></tr>
 <tr><td><code id="Single_Plot_:_Chromosome_Diamond">Chromosome_Diamond</code></td>
 <td>
-<p>List of chromosomes to show index SNP highlight/swapped diamond shape on, given that Diamond_Index is TRUE; defaults to c(1:22, &quot;X&quot;)</p>
+<p>List of chromosomes to show index SNP highlight/swapped diamond shape on, given that Diamond_Index is TRUE; defaults to c(1:22, &quot;X&quot;, &quot;Y&quot;, &quot;M&quot;)</p>
 </td></tr>
 <tr><td><code id="Single_Plot_:_Anchor_Label">Anchor_Label</code></td>
 <td>
@@ -220,7 +189,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_Plot_:_Label_Height">Label_Height</code></td>
 <td>
-<p>Spacing between the point and anchoring position of the index SNP label and the beginning of the label print area; defaults to 6 but defaults to 25 when called within Regional_Plot()</p>
+<p>Spacing between the point and anchoring position of the index SNP label and the beginning of the label print area; defaults to NULL but is assigned and otherwise automatically scaled in inherited functions</p>
 </td></tr>
 <tr><td><code id="Single_Plot_:_Diamond_Index">Diamond_Index</code></td>
 <td>
@@ -254,6 +223,66 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 <td>
 <p>Manually specify which chromosomes from the summary statistics to run the function on; defaults to NULL, leading to all being included/absent filtering</p>
 </td></tr>
+<tr><td><code id="Single_Plot_:_Lower_Mult">Lower_Mult</code></td>
+<td>
+<p>Number of units of coordinate buffering space between bottom of plot area and X axis; defaults to NULL, leading to automatic assignment unless specified</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_X_Axis_Title_Vjust">X_Axis_Title_Vjust</code></td>
+<td>
+<p>Number of units of blank space between X_Axis_Title element area and above axis; defaults to -5</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Y_Axis_Title_Vjust">Y_Axis_Title_Vjust</code></td>
+<td>
+<p>Number of units of blank space between Y_Axis_Title element area and adjacent axis; defaults to 5</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_X_Axis_Text_Vjust">X_Axis_Text_Vjust</code></td>
+<td>
+<p>Number of units of blank space between X_Axis_Text element area and above axis; defaults to -0.5</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_X_Axis_Title_Drop_Spaces">X_Axis_Title_Drop_Spaces</code></td>
+<td>
+<p>Number of lines of blank space between X_Axis_Title element area and above axis; defaults to 0, allowing for a tight fit</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Title_On">Title_On</code></td>
+<td>
+<p>Toggle on/off whether Title (either manually or automatically determined) displays on final plot; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Title_Drop_Spaces">Title_Drop_Spaces</code></td>
+<td>
+<p>Number of lines of blank space between Title element area and plot below; defaults to 0, allowing for a tight fit</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Diamond_Index_SNP">Diamond_Index_SNP</code></td>
+<td>
+<p>Manually specify a lead/index SNP of interest to base diamond styling on, rather than automatically allocated local maximum; defaults to NULL</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Top_Expand">Top_Expand</code></td>
+<td>
+<p>Number of units of coordinate blank spacing between end of top of Y axis line and entire plot area; defaults to NULL, and requires a Y value to engage - particularly useful for Single_With_Regional() for additional spacing of insets</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Upper_Mult">Upper_Mult</code></td>
+<td>
+<p>Number of units of coordinate buffering space between top of plot area and end of Y axis line; defaults to NULL, leading to automatic assignment unless specified</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Right_Mult">Right_Mult</code></td>
+<td>
+<p>Number of units of coordinate buffering space between right of plot area and end of X axis line; defaults to NULL, leading to automatic assignment unless specified</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Left_Mult">Left_Mult</code></td>
+<td>
+<p>Number of units of coordinate buffering space between left of plot area and Y axis line; defaults to NULL, leading to automatic assignment unless specified</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Y_Axis_Text_Vjust">Y_Axis_Text_Vjust</code></td>
+<td>
+<p>Number of units of blank space between Y_Axis_Text element area and adjacent axis; defaults to 0.5</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Y_Axis_Title_Drop_Spaces">Y_Axis_Title_Drop_Spaces</code></td>
+<td>
+<p>Number of lines of blank space between Y_Axis_Title element area and adjacent axis; defaults to 0, allowing for a tight fit</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Interactive">Interactive</code></td>
+<td>
+<p>Create plot amenable to interactive viewing - leads to slight modifications in elements used for compatibility and primarily calling in Shiny App; defaults to FALSE</p>
+</td></tr>
 </table>
 
 
@@ -271,6 +300,5 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 
 
 </div>
-</main>
-</div>
+</div></div>
 </body></html>

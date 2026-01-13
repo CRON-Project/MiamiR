@@ -11,37 +11,10 @@ function processMathHTML() {
 }</script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
     onload="processMathHTML();"></script>
-<link rel="stylesheet" type="text/css" href="R.css" />
-<style>
-
-:root{--bg:#f7f9fc;--card:#fff;--text:#0b1220;--muted:#475569;--link:#2563eb;--border:#e5e7eb;}
-@media (prefers-color-scheme: dark){
-  :root{--bg:#0b0f14;--card:#121823;--text:#e6edf3;--muted:#9fb0c0;--link:#6aa6ff;--border:#233043;}
-}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-.wrap{max-width:980px;margin:0 auto;padding:24px;}
-.top{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);}
-.top h1{margin:0;font-size:22px;letter-spacing:-.02em;}
-.top .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
-.back{display:inline-block;margin-bottom:10px;color:var(--link);text-decoration:none;font-size:13px}
-.back:hover{text-decoration:underline}
-.main{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto;}
-a{color:var(--link);text-decoration:none}
-a:hover{text-decoration:underline}
-pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-pre{background:rgba(127,127,127,.12);padding:12px;border-radius:12px;overflow:auto}
-table{border-collapse:collapse;width:100%}
-th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
-th{background:rgba(127,127,127,.10)}
-ul.index{list-style:none;padding:0;margin:0;columns:2;column-gap:24px}
-ul.index li{break-inside:avoid;margin:0 0 8px}
-@media (max-width:720px){ul.index{columns:1}}
-
-</style>
+<link rel="stylesheet" type="text/css" href="style.css" />
 </head><body><div class="container">
-<div class='wrap'>
-<header class='top'><a class='back' href='index.html'>&larr; Index</a><h1>Single_With_Regional_Plot</h1></header>
-<main class='main'>
+<div class="topbar"><a href="index.html">MiamiR Help</a><span class="crumb">/ Single_With_Regional_Plot</span></div>
+<div class="container"><div class="card">
 
 <table style="width: 100%;"><tr><td>Single_With_Regional_Plot</td><td style="text-align: right;">R Documentation</td></tr></table>
 
@@ -84,15 +57,15 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_LD_Legend_Scale">LD_Legend_Scale</code></td>
 <td>
-<p>Proportion of default sizing to use when displaying LD key on Single_Plot() background derived from inset Regional_Plot(); defaults to 0.75</p>
+<p>Proportion of default sizing to use when displaying LD key on Single_Plot() background derived from inset Regional_Plot(); defaults to 1</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Gene_Legend_Scale">Gene_Legend_Scale</code></td>
 <td>
-<p>Proportion of default sizing to use when displaying Gene Biotype key on Single_Plot() background derived from inset Regional_Plot(); defaults to 0.75</p>
+<p>Proportion of default sizing to use when displaying Gene Biotype key on Single_Plot() background derived from inset Regional_Plot(); defaults to 1</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_LD_Legend_Height">LD_Legend_Height</code></td>
 <td>
-<p>Proportion of default sizing height to use when anchoring LD key on Single_Plot() background; defaults to 0.85</p>
+<p>Proportion of default sizing height to use when anchoring LD key on Single_Plot() background; defaults to NULL</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Gene_Legend_Height">Gene_Legend_Height</code></td>
 <td>
@@ -116,7 +89,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Inset_Scale">Inset_Scale</code></td>
 <td>
-<p>Proportion of the full default size of the Regional_Plot() panels to use when overlaying as insets; defaults to 0.15</p>
+<p>Proportion of the full default size of the Regional_Plot() panels to use when overlaying as insets; defaults to 0.17</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Inset_Chromosomes">Inset_Chromosomes</code></td>
 <td>
@@ -132,7 +105,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Preset_Regional_Height_Tweak">Preset_Regional_Height_Tweak</code></td>
 <td>
-<p>Proportion of the full default Inset_Scale height of the Regional_Plot() panels to use when overlaying as insets allowing for further control in 2-Dimensions; defaults to 1</p>
+<p>Proportion of the full default Inset_Scale height of the Regional_Plot() panels to use when overlaying as insets allowing for further control in 2-Dimensions; defaults to 0.3</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Inset_Preset">Inset_Preset</code></td>
 <td>
@@ -156,7 +129,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Peak_Highlight_Thickness">Peak_Highlight_Thickness</code></td>
 <td>
-<p>Thickness of box around Regional_Plot() inset; defaults to &quot;solid&quot;</p>
+<p>Thickness of box around Regional_Plot() inset; defaults to 0.45</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Regional_Inset_Highlight_On">Regional_Inset_Highlight_On</code></td>
 <td>
@@ -172,7 +145,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Regional_Inset_Highlight_Thickness">Regional_Inset_Highlight_Thickness</code></td>
 <td>
-<p>Line type of box around Regional_Plot() inset; defaults to &quot;solid&quot;</p>
+<p>Line thickness of box around Regional_Plot() inset; defaults to 0.45</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Inset_Lines_On">Inset_Lines_On</code></td>
 <td>
@@ -188,7 +161,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Inset_Lines_Thickness">Inset_Lines_Thickness</code></td>
 <td>
-<p>Thickness of lines from box around significant signals of interest from which inset expands from to the box around the Regional_Plot() inset; defaults to 0.25</p>
+<p>Thickness of lines from box around significant signals of interest from which inset expands from to the box around the Regional_Plot() inset; defaults to 0.45</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Inset_Lines_Gap_Shading_On">Inset_Lines_Gap_Shading_On</code></td>
 <td>
@@ -200,11 +173,11 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Inset_Lines_Gap_Shading_Alpha">Inset_Lines_Gap_Shading_Alpha</code></td>
 <td>
-<p>Opacity of shaded space between lines from box around significant signals of interest from which inset expands from to the box around the Regional_Plot() inset; defaults to 0.25</p>
+<p>Opacity of shaded space between lines from box around significant signals of interest from which inset expands from to the box around the Regional_Plot() inset; defaults to 0.45</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Peak_Highlight_To_Zero">Peak_Highlight_To_Zero</code></td>
 <td>
-<p>When Peak_Highlight_On is TRUE, ensure that the box drawn around significant signals of interest from which inset expands from reach to the baseline of background Single_Plot(); defaults to FALSE</p>
+<p>When Peak_Highlight_On is TRUE, ensure that the box drawn around significant signals of interest from which inset expands from reach to the baseline of background Single_Plot(); defaults to TRUE</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Transparent_Regionals">Transparent_Regionals</code></td>
 <td>
@@ -216,15 +189,15 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Peak_Highlight_Tweak_Y_Up">Peak_Highlight_Tweak_Y_Up</code></td>
 <td>
-<p>Add/restrict spacing (matching to scale) along the maximum position on the Y-axis to the predefined Peak Highlight box around signal(s) of interest; defaults to 0</p>
+<p>Add/restrict spacing (matching to scale) along the maximum position on the Y-axis to the predefined Peak Highlight box around signal(s) of interest; defaults to 0.15</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Peak_Highlight_Tweak_Y_Down">Peak_Highlight_Tweak_Y_Down</code></td>
 <td>
-<p>Add/restrict spacing (matching to scale) along the minimum position on the Y-axis to the predefined Peak Highlight box around signal(s) of interest; defaults to 0</p>
+<p>Add/restrict spacing (matching to scale) along the minimum position on the Y-axis to the predefined Peak Highlight box around signal(s) of interest; defaults to 2</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Peak_Highlight_Tweak_X">Peak_Highlight_Tweak_X</code></td>
 <td>
-<p>Add/restrict spacing (matching to scale) along the midpoint on the X-axis to the predefined Peak Highlight box around signal(s) of interest; defaults to 0</p>
+<p>Add/restrict spacing (matching to scale) along the midpoint on the X-axis to the predefined Peak Highlight box around signal(s) of interest; defaults to 0.0035</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Inset_Lines_To_Zero">Inset_Lines_To_Zero</code></td>
 <td>
@@ -248,7 +221,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_Legend_Gap_Frac">Legend_Gap_Frac</code></td>
 <td>
-<p>fixed vertical gap between the two legend boxes (as fraction of panel height)</p>
+<p>Fixed vertical gap between the two legend boxes (as fraction of panel height); defaults to 0.04</p>
 </td></tr>
 <tr><td><code id="Single_With_Regional_Plot_:_LD_Legend_Horizontal">LD_Legend_Horizontal</code></td>
 <td>
@@ -257,6 +230,10 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 <tr><td><code id="Single_With_Regional_Plot_:_Gene_Legend_Horizontal">Gene_Legend_Horizontal</code></td>
 <td>
 <p>Proportion of default sizing horizontal positioning to use when anchoring Gene Biotype key on Single_Plot() background; defaults to NULL, leading to max anchoring relative to default or specified Gene_Legend_Preset</p>
+</td></tr>
+<tr><td><code id="Single_With_Regional_Plot_:_Inset_Lines_Lower_Frac">Inset_Lines_Lower_Frac</code></td>
+<td>
+<p>Proportion of the default Peak_Highlight_On box to draw the lower Inset_Line from; defaults to 0, allowing for full inset spacing</p>
 </td></tr>
 </table>
 
@@ -279,6 +256,7 @@ Regional_Plot &lt;- Regional_Plot(Data = c(Household_Income_Sum_Stats, Household
                                Region_Window = c(3e5, 8e4),
                                Auto_LD = TRUE,
                                Genome_Build = "grch37",
+                               Title_On = FALSE,
                                X_Axis_Title_Size = 100,
                                X_Axis_Title_Vjust = 0,
                                Y_Axis_Title_Vjust = 5.5,
@@ -332,6 +310,5 @@ Annotated_Man &lt;- Single_With_Regional_Plot(
 
 
 </div>
-</main>
-</div>
+</div></div>
 </body></html>

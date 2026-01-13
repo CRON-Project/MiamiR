@@ -11,37 +11,10 @@ function processMathHTML() {
 }</script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
     onload="processMathHTML();"></script>
-<link rel="stylesheet" type="text/css" href="R.css" />
-<style>
-
-:root{--bg:#f7f9fc;--card:#fff;--text:#0b1220;--muted:#475569;--link:#2563eb;--border:#e5e7eb;}
-@media (prefers-color-scheme: dark){
-  :root{--bg:#0b0f14;--card:#121823;--text:#e6edf3;--muted:#9fb0c0;--link:#6aa6ff;--border:#233043;}
-}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-.wrap{max-width:980px;margin:0 auto;padding:24px;}
-.top{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);}
-.top h1{margin:0;font-size:22px;letter-spacing:-.02em;}
-.top .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
-.back{display:inline-block;margin-bottom:10px;color:var(--link);text-decoration:none;font-size:13px}
-.back:hover{text-decoration:underline}
-.main{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto;}
-a{color:var(--link);text-decoration:none}
-a:hover{text-decoration:underline}
-pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-pre{background:rgba(127,127,127,.12);padding:12px;border-radius:12px;overflow:auto}
-table{border-collapse:collapse;width:100%}
-th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
-th{background:rgba(127,127,127,.10)}
-ul.index{list-style:none;padding:0;margin:0;columns:2;column-gap:24px}
-ul.index li{break-inside:avoid;margin:0 0 8px}
-@media (max-width:720px){ul.index{columns:1}}
-
-</style>
+<link rel="stylesheet" type="text/css" href="style.css" />
 </head><body><div class="container">
-<div class='wrap'>
-<header class='top'><a class='back' href='index.html'>&larr; Index</a><h1>Regional_Plot</h1></header>
-<main class='main'>
+<div class="topbar"><a href="index.html">MiamiR Help</a><span class="crumb">/ Regional_Plot</span></div>
+<div class="container"><div class="card">
 
 <table style="width: 100%;"><tr><td>Regional_Plot</td><td style="text-align: right;">R Documentation</td></tr></table>
 
@@ -132,7 +105,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Regional_Plot_:_Sense_Arrow_Head_Size">Sense_Arrow_Head_Size</code></td>
 <td>
-<p>Size of direction of transcription arrow head/tip in the gene panel, when Gene_Tracks is TRUE; defaults to 10</p>
+<p>Size of direction of transcription arrow head/tip in the gene panel, when Gene_Tracks is TRUE; defaults to 7</p>
 </td></tr>
 <tr><td><code id="Regional_Plot_:_Sense_Arrow_Body_Thickness">Sense_Arrow_Body_Thickness</code></td>
 <td>
@@ -220,7 +193,7 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 </td></tr>
 <tr><td><code id="Regional_Plot_:_LD_Legend_Title">LD_Legend_Title</code></td>
 <td>
-<p>Auto_LD Legend heading when both LD_Legend_On and Auto_LD are TRUE; defaults to R² LD</p>
+<p>Auto_LD Legend heading when both LD_Legend_On and Auto_LD are TRUE; defaults to &quot;R\u00b2 LD&quot; - R² LD</p>
 </td></tr>
 <tr><td><code id="Regional_Plot_:_Genome_Build">Genome_Build</code></td>
 <td>
@@ -274,6 +247,46 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 <td>
 <p>Shadow argument to detect inherited arguments passed and modified from the Single_Plot() function; defaults to list()</p>
 </td></tr>
+<tr><td><code id="Regional_Plot_:_Manual_Decimal_Places">Manual_Decimal_Places</code></td>
+<td>
+<p>Rounding of places to target regarding the X axis and genomic positions (Mb); defaults to NULL, and is automatically assigned unless specified</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_P_Value_Filter">P_Value_Filter</code></td>
+<td>
+<p>Threshold below which to ignore, primarily non-important points; defaults to NULL</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Label_Buffer">Gene_Label_Buffer</code></td>
+<td>
+<p>Units of space to add/jitter between each gene label near the edge of the Gene_Tracks panel to align inwards; defaults to 1</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Label_Vertical_Spacing">Gene_Label_Vertical_Spacing</code></td>
+<td>
+<p>Units of space to add between each gene label and gene track/body in the Gene_Tracks panel; defaults to 0.375</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Panel_Ratio">Panel_Ratio</code></td>
+<td>
+<p>Specify ratio when of Plot_Panel area to Annotation area, Gene_Tracks is TRUE; defaults to NULL, leading to auto calculation unless manually specified</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Plot_Panel">Plot_Panel</code></td>
+<td>
+<p>Decide whether to include the Plot area above the gene annotation; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Target_Position_Breaks">Target_Position_Breaks</code></td>
+<td>
+<p>Ideal number of positions to annotate on the genomic position/X axis; defaults to 6</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Track_Vertical_Spacing">Gene_Track_Vertical_Spacing</code></td>
+<td>
+<p>Units of space to add between each gene track in the Gene_Tracks panel; defaults to 0.75</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Recombination_Axis_Title_Vjust">Recombination_Axis_Title_Vjust</code></td>
+<td>
+<p>Number of units of blank space between Recombination_Axis_Title element area and adjacent axis; defaults to 7</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Manual_LD">Manual_LD</code></td>
+<td>
+<p>Specify manual LD matrices, in PLINK format to be projected on to the points via colour binning; defaults to NULL</p>
+</td></tr>
 </table>
 
 
@@ -290,6 +303,5 @@ ul.index li{break-inside:avoid;margin:0 0 8px}
 
 
 </div>
-</main>
-</div>
+</div></div>
 </body></html>

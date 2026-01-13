@@ -73,7 +73,8 @@ build_app_help <- function(
 
       end_i <- which(grepl("</body>", x, fixed = TRUE))
       if (length(end_i)) {
-        x <- append(x, c("</div></div>"), before = end_i[1])
+        # insert closing divs BEFORE </body>
+        x <- append(x, c("</div></div>"), after = end_i[1] - 1L)
       } else {
         x <- c(x, "</div></div>")
       }
@@ -81,6 +82,7 @@ build_app_help <- function(
 
     writeLines(x, html_file, useBytes = TRUE)
   }
+
 
   # 2) Convert + progress messages
   n <- length(rd_files)
