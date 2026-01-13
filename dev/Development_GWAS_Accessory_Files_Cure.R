@@ -86,3 +86,141 @@ setwd("C:/Users/callumon/Miami_Package_R/MiamiR/inst/extdata/Fake_GWAS_Files_Raw
 
 write.table(covars_with_bin,   "Fake_COVARS_and_Binary.tsv",   sep="\t", quote=FALSE, row.names=FALSE)
 write.table(covars_with_quant, "Fake_COVARS_and_Quant.tsv", sep="\t", quote=FALSE, row.names=FALSE)
+
+
+
+
+
+## Simulate a 100K “fake HLA” GWAS-like dataset that your Segregate_HLA_Plot()
+## will pick up via detect_snp_column() + detect_pvalue_column()
+##
+## - SNP column contains a mix of IDs matching your buckets:
+##     HLA_...*...      (HLA)
+##     AA_... / INDEL_AA_...   (AA)
+##     SNPS_... / INDEL_SNPS_... (SNPS)
+##     rs123...      (RSID)
+## - P column is valid (numeric) so detect_pvalue_column() can grab it
+## - CHR is all 6 (optional)
+##
+## Output: Fake_HLA_100K (a tibble)
+
+set.seed(1)
+
+simulate_fake_hla_100k <- function(
+    n = 100000,
+    chr = 6,
+    props = c(HLA = 0.25, AA = 0.25, SNPS = 0.25, RSID = 0.25),
+    include_other = FALSE,
+    other_prop = 0.0
+) {
+
+  props <- props / sum(props)
+  if (isTRUE(include_other) && other_prop > 0) {
+    props <- c(props, OTHER = other_prop)
+    props <- props / sum(props)
+  }
+
+  classes <- sample(names(props), size = n, replace = TRUE, prob = props)
+
+  ## ---- ID generators (match your regex logic) ----
+  hla_loci   <- c("A","B","C","DRB1","DQA1","DQB1","DPB1","DPA1")
+  hla_allele <- sprintf("%02d", 1:40)  # "01".."40"
+
+  make_HLA <- function(k) {
+    paste0("HLA_", sample(hla_loci, k, TRUE), "*", sample(hla_allele, k, TRUE))
+  }
+
+  aa_cat <- c("A","B","C","DRB1","DQA1","DQB1","DPB1","DPA1")
+  aa_aa  <- c("A","C","D","E","F","G","H","I","K","L","M","N","P","Q","R","S","T","V","W","Y")
+
+  make_AA <- function(k) {
+    indel <- sample(c(FALSE, TRUE), k, TRUE, prob = c(0.8, 0.2))
+    rest  <- paste0("POS", sample(1:350, k, TRUE), "_", sample(aa_aa, k, TRUE))
+    base  <- paste0(sample(aa_cat, k, TRUE), "_", rest)
+    ifelse(indel, paste0("INDEL_AA_", base), paste0("AA_", base))
+  }
+
+  snps_cat <- c("HLA","MHC","ClassI","ClassII","MHCIII")
+  make_SNPS <- function(k) {
+    indel <- sample(c(FALSE, TRUE), k, TRUE, prob = c(0.8, 0.2))
+    rest  <- paste0("rs", sample(1e6:9e6, k, TRUE), "_",
+                    sample(c("A","C","G","T"), k, TRUE), "_",
+                    sample(c("A","C","G","T"), k, TRUE))
+    base  <- paste0(sample(snps_cat, k, TRUE), "_", rest)
+    ifelse(indel, paste0("INDEL_SNPS_", base), paste0("SNPS_", base))
+  }
+
+  make_RSID  <- function(k) paste0("rs", sample(1e5:9e8, k, TRUE))
+  make_OTHER <- function(k) paste0("XYZ_", sample(LETTERS, k, TRUE), sample(1000:9999, k, TRUE))
+
+  SNP <- character(n)
+  k <- sum(classes == "HLA");  if (k) SNP[classes == "HLA"]  <- make_HLA(k)
+  k <- sum(classes == "AA");   if (k) SNP[classes == "AA"]   <- make_AA(k)
+  k <- sum(classes == "SNPS"); if (k) SNP[classes == "SNPS"] <- make_SNPS(k)
+  k <- sum(classes == "RSID"); if (k) SNP[classes == "RSID"] <- make_RSID(k)
+  if ("OTHER" %in% classes) {
+    k <- sum(classes == "OTHER"); SNP[classes == "OTHER"] <- make_OTHER(k)
+  }
+
+  ## ---- P-values: mostly null, with some enriched “signals” ----
+  # 90% uniform null, 10% enriched small P
+  is_signal <- runif(n) < 0.10
+  P <- numeric(n)
+  P[!is_signal] <- runif(sum(!is_signal), min = 0, max = 1)
+  # enriched tail: Beta(a=0.25,b=1) gives lots of tiny p-values
+  P[is_signal]  <- stats::rbeta(sum(is_signal), shape1 = 0.25, shape2 = 1)
+
+  # Avoid zeros
+  P[P < 1e-300] <- 1e-300
+
+  ## ---- GWAS-ish extras (optional but handy) ----
+  POS <- sample(25e6:34e6, n, TRUE)                 # MHC-ish window
+  A1  <- sample(c("A","C","G","T"), n, TRUE)
+  A2  <- sample(c("A","C","G","T"), n, TRUE)
+  # ensure A1 != A2
+  same <- A1 == A2
+  while (any(same)) {
+    A2[same] <- sample(c("A","C","G","T"), sum(same), TRUE)
+    same <- A1 == A2
+  }
+
+  out <- dplyr::tibble(
+    SNP = SNP,
+    CHR = rep(chr, n),
+    POS = POS,
+    A1  = A1,
+    A2  = A2,
+    P   = P
+  )
+
+  out
+}
+
+Fake_HLA_100K <- simulate_fake_hla_100k(n = 10000, chr = 6)
+
+## Optional sanity check: does it fall into your buckets?
+table(
+  dplyr::case_when(
+    stringr::str_starts(Fake_HLA_100K$SNP, "HLA_") ~ "HLA",
+    stringr::str_starts(Fake_HLA_100K$SNP, "AA_") |
+      stringr::str_starts(Fake_HLA_100K$SNP, "INDEL_AA_") ~ "AA",
+    stringr::str_starts(Fake_HLA_100K$SNP, "SNPS_") |
+      stringr::str_starts(Fake_HLA_100K$SNP, "INDEL_SNPS_") ~ "SNPS",
+    stringr::str_detect(Fake_HLA_100K$SNP, "^rs\\d+") ~ "RSID",
+    TRUE ~ "OTHER"
+  )
+)
+
+
+
+use_data(Fake_HLA_100K)
+
+
+
+
+
+
+
+
+
+
