@@ -4,14 +4,16 @@
 \alias{METASOFT_Run}
 \title{METASOFT Wrapper}
 \usage{
-METASOFT_Run(Data, options = character(), REGENIE_Cols = TRUE)
+METASOFT_Run(..., session = NULL)
 }
 \arguments{
 \item{Data}{These are the harmonised summary statistics (either file path(s), environmental object(s) or a variable(s) containing such contents) to be run through the METASFOT wrapper. These must match the METASFOT input file format and can be generated with METASOFT_File_Gen(); defaults to NULL}
 
 \item{options}{Character vector of extra METASOFT options (e.g. c("-verbose", "mvalue"); defaults to character()/NULL}
 
-\item{REGENIE_Cols}{Include REGENIE format-style columns; defaults to TRUE}
+\item{REGENIE_Cols}{Include REGENIE format-style columns in output; defaults to TRUE}
+
+\item{Verbose}{Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE.}
 }
 \value{
 METASOFT output file is allocated to specified object

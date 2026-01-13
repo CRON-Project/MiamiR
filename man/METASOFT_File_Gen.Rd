@@ -7,13 +7,11 @@
 METASOFT_File_Gen(..., session = NULL, Debug = FALSE)
 }
 \arguments{
-\item{Match_Allele_Direction}{Match the allele directions to avoid effect direction flips; defaults to TRUE}
-
 \item{Match_Allele_Study}{Data set used as reference point for effect allele direction; defaults to NULL - automatically assigned as first set}
 
-\item{Output}{A selection of columns to isolate, in order, alternating by dataset; defaults to c("BETA", "SE") - standard METASOFT ordered format}
+\item{Output}{A selection of columns to isolate, in order, alternating by dataset; defaults to NULL, but automatically assigned c("BETA", "SE") upon function call - standard METASOFT ordered format; GENPOS, P, CHROM, ALLELE0, ALLELE1 (all options)}
 
-\item{Data}{These are the summary statistics (either file path(s), environmental object(s) or a variable(s) containing such contents) to be plotted; defaults to NULL}
+\item{Data}{These are the summary statistics (either file path(s), environmental object(s) or a variable(s) containing such contents) to be plotted; defaults to NULL (must be one list only)}
 
 \item{BETA_Column}{Manually specify BETA Test Statistic column; defaults to NULL, leading to auto-detection}
 
@@ -28,9 +26,15 @@ METASOFT_File_Gen(..., session = NULL, Debug = FALSE)
 \item{Effect_Allele_Column}{Manually specify effect allele column; defaults to NULL, leading to auto-detection}
 
 \item{SE_Column}{Manually specify SE of Test Statistic column; defaults to NULL, leading to auto-detection}
+
+\item{Chromosome_Column}{Manually specify chromosome column; defaults to NULL, leading to auto-detection}
+
+\item{Output_Reference_Identifier}{Include the supplied internal identifier of the Match_Allele_Study dataset in final output; defaults to TRUE}
+
+\item{Verbose}{Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE}
 }
 \value{
-Munged dataframe amenable to METASOFT meta-analysis - only including SNPs present in backboned file
+Munged dataframe amenable to METASOFT meta-analysis - only including SNPs present in backbone/reference file as other SNPs effects cannot be consistently aligned
 }
 \description{
 Munged summary statistics in preparation for METASOFT-like meta-analysis

@@ -7,9 +7,9 @@
 Miami_Plot(..., session = NULL)
 }
 \arguments{
-\item{...}{Another shadow argument to detect inherited arguments passed and modified from the Single_Plot() function; defaults to list()}
+\item{...}{Another shadow argument to detect inherited arguments passed and modified from the Single_Plot() function; defaults to NULL}
 
-\item{session}{Blank session definitions; defaults to NULL}
+\item{session}{For safety, automatically blank session definitions; defaults to NULL}
 
 \item{Top_Data}{These are the summary statistics (either file path(s),environmental object(s) or a variable(s) containing such contents) to be plotted on the top; defaults to NULL}
 
@@ -29,7 +29,7 @@ Miami_Plot(..., session = NULL)
 
 \item{Verbose}{Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE.}
 
-\item{Adjust}{Shift shared X_Axis_Text down relative to the top plot, the larger the value the greater the shift; defaults to NULL and if not passed then calculated from expression mapped to Chromosome_Label_Size inherted from Single_Plot()}
+\item{Adjust}{Shift shared X_Axis_Text down relative to the top plot, the larger the value the greater the shift; defaults to NULL and if not passed then calculated from expression mapped to Chromosome_Label_Size inherited from Single_Plot()}
 
 \item{.dots}{Shadow argument to detect inherited arguments passed and modified from the Single_Plot() function; defaults to list()}
 }
@@ -40,5 +40,6 @@ Image of Miami Plot(s) is allocated to specified object and the resulting combin
 Annotated, Customised Miami Plots
 }
 \examples{
-Miami_Plot <- Miami_Plot(Top_Data = Household_Income_Sum_Stats, Bottom_Data = Intelligence_Sum_Stats)
+Miami_Plot <- Miami_Plot(Top_Data = Household_Income_Sum_Stats,
+                                   Bottom_Data = Intelligence_Sum_Stats)
 }

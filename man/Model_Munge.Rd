@@ -7,11 +7,11 @@
 Model_Munge(..., session = NULL)
 }
 \arguments{
-\item{...}{Shadow argument to detect arguments passed; defaults to list()}
+\item{...}{Shadow argument to detect arguments passed; defaults to empty list()}
 
 \item{Model_Object}{Base R model generated from running an lm() or glm(); defaults to NULL}
 
-\item{Verbose}{Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE.}
+\item{Verbose}{Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE}
 }
 \value{
 Munged dataframe amenable to plotting test statistics which can then be passed to other MiamiR functions

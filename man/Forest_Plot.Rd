@@ -33,7 +33,7 @@ Forest_Plot(Data, ..., session = NULL)
 
 \item{Strips}{Display strips highlighting groups of interest; defaults to TRUE}
 
-\item{Pre_Calculated_CIs}{Indicate that custom CIs are precalculated and available in datasets; defaults to FALSE}
+\item{Pre_Calculated_CIs}{Indicate that custom CIs are pre-calculated and available in datasets; defaults to FALSE}
 
 \item{Legend_Title_Size}{Legend title size; defaults to 13}
 
@@ -65,7 +65,7 @@ Forest_Plot(Data, ..., session = NULL)
 
 \item{Null_Line_Thickness}{Manually specify the thickness of the corresponding Null Line; defaults to 0.5}
 
-\item{Test_Statistic_Choice}{Manually specify which type of test statistic output is desired, OR or BETA; defaults to NULL - regardless of input type either output may be specified}
+\item{Test_Statistic_Choice}{Manually specify which type of test statistic output is desired, OR or BETA; defaults to BETA - regardless of input type either output may be specified}
 
 \item{Lead_Studies}{Manually specify which study's lead SNPs should be plotted when Selected_SNPs is NULL; defaults to NULL - leads to index SNPs from any set to be plotted}
 
@@ -168,6 +168,16 @@ Forest_Plot(Data, ..., session = NULL)
 \item{Verbose}{Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE}
 
 \item{Lab_Col}{Allocate the second level of information in the grid text module on the left hand side of the plot, when Double_Label is TRUE; defaults to "Real_ID"}
+
+\item{Unprocessed}{When using a raw model object, internal Model_Munge() processing to data frame is used; defaults to FALSE}
+
+\item{PDF}{Slightly alter the underlying construction, suitable for PDF output; defaults to FALSE}
+
+\item{REF}{When supplying model data, toggle the REF: notation on or off; defaults to TRUE}
+
+\item{Top_Grid_Thickness}{Modify the linewidth of the line at the very top of the grid, due to the potential graphics output; defaults to NULL, leading to automatic assignment unless otherwise specified}
+
+\item{HLA_Input}{Slightly alter the underlying processing, suitable for HLA-WAS inputs; defaults to FALSE}
 }
 \value{
 Image of Forest Plot is allocated to specified object and the resulting ggplot object can then be saved to an image
@@ -177,5 +187,4 @@ Annotated, Customised Forest Plots
 }
 \examples{
 Forest_Plot <- Forest_Plot(Data = "Intelligence_Sum_Stats", Chromosomes = 1)
-
 }
