@@ -62,7 +62,21 @@ if (requireNamespace("MiamiR", quietly = TRUE)) {
   .Model_Munge_original       <- tryCatch(getFromNamespace("Model_Munge", "MiamiR"),
                                           error = function(e) MiamiR::Model_Munge)
 
+  Segregate_HLA_Plot <- MiamiR::Segregate_HLA_Plot
+
+  .Segregate_HLA_Plot_original <- tryCatch(
+    getFromNamespace(".Segregate_HLA_Plot_original", "MiamiR"),
+    error = function(e) MiamiR::Segregate_HLA_Plot
+  )
+
+
 } else {
+
+  if (file.exists("R/Segregate_HLA_Plot.R")) source("R/Segregate_HLA_Plot.R")
+  stopifnot(exists("Segregate_HLA_Plot", mode="function"))
+
+  .Segregate_HLA_Plot_original <- if (exists(".Segregate_HLA_Plot_original")) .Segregate_HLA_Plot_original else Segregate_HLA_Plot
+
 
   if (file.exists("R/Miami_Plot.R"))        source("R/Miami_Plot.R")
   if (file.exists("R/Single_Plot.R"))       source("R/Single_Plot.R")
@@ -562,6 +576,55 @@ reg_inject_gene_hover <- function(p, capture_size = reg_CAPTURE_SIZE_BOTTOM) {
 
 }
 
+# HLA ones
+
+hla_extract_slides <- function(out) {
+  slides <- list()
+
+  add_slide <- function(plot_obj, label) {
+    if (is.null(plot_obj)) return()
+    if (inherits(plot_obj, "ggplot") || tube_is_plot_like(plot_obj) || inherits(plot_obj, "patchwork")) {
+      slides[[length(slides) + 1L]] <<- list(plot = plot_obj, label = label)
+    }
+  }
+
+  # Case 1: single result object: class "SegregateHLAPlots"
+  if (is.list(out) && any(c("HLA_plot","AA_plot","SNPS_plot","RSID_plots") %in% names(out))) {
+    add_slide(out$HLA_plot,  "Classical HLA Alleles")
+    add_slide(out$AA_plot,   "AA Sets")
+    add_slide(out$SNPS_plot, "SNP Sets")
+
+    # RSID_plots can be named list of patchworks
+    if (is.list(out$RSID_plots) && length(out$RSID_plots)) {
+      for (nm in names(out$RSID_plots)) {
+        add_slide(out$RSID_plots[[nm]], paste0("RSID Regional: ", nm))
+      }
+    }
+
+    return(slides)
+  }
+
+  # Case 2: wrapper returns a list of SegregateHLAPlots (multi datasets)
+  # We'll treat each element as "its own output"; caller should handle dataset splitting.
+  slides
+}
+
+
+hla_slide_height_in <- function(p, fallback = 10) {
+  h <- attr(p, "recommended_height")
+  if (is.numeric(h) && is.finite(h) && h > 0) return(as.numeric(h))
+
+  h <- attr(p, "dynamic_height")
+  if (is.numeric(h) && is.finite(h) && h > 0) return(as.numeric(h))
+
+  fallback
+}
+
+hla_save_slide_png <- function(p, file, width_in, dpi) {
+  h <- hla_slide_height_in(p, fallback = 10)
+  tube_save_plot_png(p, file, width_in = width_in, height_in = h, dpi = dpi)
+}
+
 
 #Build an invisible ggiraph overlay from a ggplot
 
@@ -1023,6 +1086,8 @@ ui <- fluidPage(
                 .btn.tile.tile--forest   { background:#EAF3EA; border-color:#D4E7D4; }
                 .btn.tile.tile--model    { background:#FDE7F3; border-color:#F7CDE6; }
                 .btn.tile.tile--tube     { background:#EAF0FF; border-color:#D3E0FF; }
+                .btn.tile.tile--hla { background:#EFFFF6; border-color:#CDEFE0; }
+
 
                 /* Wider screens: even larger */
 
@@ -1124,6 +1189,8 @@ ui <- fluidPage(
                 :root[data-theme='forest']   { --accent-bg:#EAF3EA; --accent-border:#D4E7D4; }
                 :root[data-theme='model']    { --accent-bg:#FDE7F3; --accent-border:#F7CDE6; }
                 :root[data-theme='tube']     { --accent-bg:#EAF0FF; --accent-border:#D3E0FF; }
+                :root[data-theme='hla'] { --accent-bg:#EFFFF6; --accent-border:#CDEFE0; }
+
 
                 /* Themed wrapper that tints each tool tab to match its tile */
 
@@ -1421,7 +1488,12 @@ ui <- fluidPage(
               actionButton("tile_meta",     HTML("METASOFT_File_Gen<span class='tile-caption'>Meta-analysis Input Curation</span>"), class = "btn tile tile--meta"),
               actionButton("tile_forest",   HTML("Forest_Plot<span class='tile-caption'>Evaluate Select SNPs</span>"),  class = "btn tile tile--forest"),
               actionButton("tile_model",    HTML("Model_Munge<span class='tile-caption'>Fit & Munge Models</span>"),    class = "btn tile tile--model"),
-              actionButton("tile_tube",     HTML("Tube_Alloys<span class='tile-caption'>One-click Overview Pipeline</span>"), class = "btn tile tile--tube")
+              actionButton("tile_tube",     HTML("Tube_Alloys<span class='tile-caption'>One-click Overview Pipeline</span>"), class = "btn tile tile--tube"),
+              actionButton("tile_hla",
+                           HTML("Segregate_HLA_Plot<span class='tile-caption'>HLA segregation plots</span>"),
+                           class = "btn tile tile--hla"
+              )
+
           ),
 
           # Slight drop / separate section
@@ -1445,6 +1517,52 @@ ui <- fluidPage(
       )
     )
     ,
+
+    #Seg HLA
+
+    tabPanel("Segregate_HLA_Plot", value = "hla",
+             div(class = "themed-tab",
+                 sidebarLayout(
+                   sidebarPanel(
+                     list(
+                       actionLink("back_home_hla", "\u2190 All tools", class = "link-back"),
+                       h4("Upload data (multiple allowed)"),
+                       fileInput("hla_files", "Data file(s)", multiple = TRUE,
+                                 accept = c(".csv", ".tsv", ".txt", ".gz", ".bgz")),
+
+                       div(class = "btnbar btnbar--spaced",
+                           actionButton("run_hla", "Run Segregate_HLA_Plot", class = "btn-primary btn--gap-right"),
+                           downloadButton("hla_download_simple", "Download"),
+                           selectInput("hla_ext", NULL,
+                                       choices = c("PNG"="png","PDF"="pdf","JPG"="jpg","SVG"="svg"),
+                                       selected = "png", width = "110px")
+                       ),
+
+                       div(class = "details-wrap",
+                           tags$details(
+                             tags$summary("Segregate_HLA_Plot settings"),
+                             uiOutput("hla_arg_inputs")
+                           ),
+                           tags$details(
+                             tags$summary("Render options"),
+                             numericInput("hla_save_width",  "Save Width (inches)",  value = 30, min = 4,  max = 60, step = 1),
+                             numericInput("hla_save_height", "Save Height (inches)", value = 10, min = 3,  max = 40, step = 0.5),
+                             numericInput("hla_save_dpi",    "Save DPI",             value = 100, min = 72, max = 1200, step = 10)
+                           ),
+                           tags$details(
+                             tags$summary("Show call preview"),
+                             div(class="call-preview", verbatimTextOutput("hla_call_preview", placeholder = TRUE))
+                           )
+                       )
+                     )
+                   ),
+                   mainPanel(
+                     uiOutput("hla_dynamic_tabs")
+                   )
+                 )
+             )
+    ),
+
 
     #Miami_Plot
 
@@ -2053,16 +2171,13 @@ server <- function(input, output, session) {
   #Map tab
 
   tab_to_theme <- c(
-    home     = "default",
-    miami    = "miami",
-    single   = "single",
-    regional = "regional",
-    annotate = "annotate",
-    meta     = "meta",
-    forest   = "forest",
-    model    = "model",
-    tube     = "tube"
+    home="default", miami="miami", single="single", regional="regional",
+    annotate="annotate", meta="meta", forest="forest", model="model",
+    tube="tube",
+    hla="hla"
   )
+
+
 
 
   observeEvent(input$tube_interactive_view, {
@@ -2443,16 +2558,11 @@ server <- function(input, output, session) {
   #Tile - tab navigation
 
   nav_map <- c(
-    tile_miami    = "miami",
-    tile_single   = "single",
-    tile_regional = "regional",
-    tile_annotate = "annotate",
-    tile_meta     = "meta",
-    tile_forest   = "forest",
-    tile_model    = "model",
-    tile_tube     = "tube"
+    tile_miami="miami", tile_single="single", tile_regional="regional",
+    tile_annotate="annotate", tile_meta="meta", tile_forest="forest",
+    tile_model="model", tile_tube="tube",
+    tile_hla="hla"
   )
-
   lapply(names(nav_map), function(id) {
 
     observeEvent(input[[id]], {
@@ -2464,12 +2574,13 @@ server <- function(input, output, session) {
   })
 
   #Back links - Home
-
   back_ids <- c(
-    "back_home_miami", "back_home_single", "back_home_regional",
-    "back_home_annotate", "back_home_meta", "back_home_forest",
-    "back_home_model", "back_home_tube"
+    "back_home_miami","back_home_single","back_home_regional",
+    "back_home_annotate","back_home_meta","back_home_forest",
+    "back_home_model","back_home_tube",
+    "back_home_hla"
   )
+
 
   lapply(back_ids, function(id) {
     observeEvent(input[[id]], {
@@ -4017,6 +4128,357 @@ data = list(rows_map = rows_map, col_order = col_order)
 
   })
 
+
+  output$hla_arg_inputs <- renderUI({
+    fmls <- formals(.Segregate_HLA_Plot_original)
+    drops <- c("Data","data","session","...")  # keep flexible
+    keep <- setdiff(names(fmls), drops)
+
+    lapply(keep, function(arg){
+      make_input_like_meta(
+        prefix  = "hla_",
+        name    = arg,
+        default = safe_eval_default_reg(fmls[[arg]], environment(.Segregate_HLA_Plot_original))
+      )
+    })
+  })
+
+  hla_build_call_preview <- reactive({
+    fmls <- formals(.Segregate_HLA_Plot_original)
+    drops <- c("Data","data","session","...")
+    keep <- setdiff(names(fmls), drops)
+
+    nm_vec <- if (!is.null(input$hla_files$name))
+      sanitize(tools::file_path_sans_ext(input$hla_files$name))
+    else character(0)
+
+    data_str <- if (!length(nm_vec)) "Data" else paste0("c(", paste(nm_vec, collapse=", "), ")")
+
+    arg_vals <- lapply(keep, function(nm) parse_input_val_meta(input[[paste0("hla_", nm)]]))
+    names(arg_vals) <- keep
+    shown <- Filter(Negate(is.null), arg_vals)
+
+    args <- c(sprintf("Data = %s", data_str))
+    if (length(shown)) {
+      for (nm in names(shown)) {
+        args <- c(args, sprintf("%s = %s", nm, format_arg_val_meta(shown[[nm]])))
+      }
+    }
+
+    paste0("Segregate_HLA_Plot(\n  ", paste(args, collapse=",\n  "), "\n)")
+  })
+
+  output$hla_call_preview <- renderText(hla_build_call_preview())
+
+
+  hla_results <- reactiveVal(list())  # named by dataset/tab
+
+  # ---- Shared saver for downloads (png/pdf/jpg/svg) ----
+  # ---- Shared saver for downloads (png/pdf/jpg/svg) ----
+  hla_save_any <- function(p, file, ext, width_in, height_in, dpi = 100) {
+    gg <- if (inherits(p, "ggplot")) p else ggplotify::as.ggplot(p)
+
+    ext <- tolower(ext %||% "png")
+
+    if (ext == "png") {
+      ggplot2::ggsave(file, plot = gg, width = width_in, height = height_in,
+                      units = "in", dpi = dpi, limitsize = FALSE)
+      return(invisible(TRUE))
+    }
+
+    if (ext %in% c("jpg","jpeg")) {
+      ggplot2::ggsave(file, plot = gg, width = width_in, height = height_in,
+                      units = "in", dpi = dpi, device = "jpeg", limitsize = FALSE)
+      return(invisible(TRUE))
+    }
+
+    if (ext == "pdf") {
+      ggplot2::ggsave(file, plot = gg, width = width_in, height = height_in,
+                      units = "in", device = cairo_pdf, limitsize = FALSE)
+      return(invisible(TRUE))
+    }
+
+    if (ext == "svg") {
+      if (!requireNamespace("svglite", quietly = TRUE)) {
+        stop("SVG export requires the 'svglite' package. Install it with install.packages('svglite').")
+      }
+      ggplot2::ggsave(file, plot = gg, width = width_in, height = height_in,
+                      units = "in", device = svglite::svglite, limitsize = FALSE)
+      return(invisible(TRUE))
+    }
+
+    stop("Unknown export type: ", ext)
+  }
+
+
+  # ---- Segregate_HLA_Plot tab: RUN handler (full observeEvent block) ----
+  # Assumes you already created:
+  #   - hla_results <- reactiveVal(list())
+  #   - UI inputs: hla_files, run_hla, hla_save_width, hla_save_dpi
+  #   - Helpers: sanitize(), tube_save_plot_png(), `%||%`,
+  #              hla_extract_slides(), hla_save_slide_png() (from earlier)
+
+  observeEvent(input$run_hla, {
+
+    req(input$hla_files)
+
+    out_res <- list()
+
+    assign_one_file <- function(file_row) {
+      obj <- sanitize(tools::file_path_sans_ext(basename(file_row$name)))
+      df  <- vroom::vroom(file_row$datapath, show_col_types = FALSE)
+      assign(obj, df, envir = .GlobalEnv)
+      obj
+    }
+
+    # Build arg list from UI inputs
+    fun_run <- Segregate_HLA_Plot
+    fmls_run <- formals(fun_run)
+    drops <- c("Data","data","session","...")
+
+    keep <- setdiff(names(fmls_run), drops)
+
+    ui_args <- lapply(keep, function(nm) parse_input_val_meta(input[[paste0("hla_", nm)]]))
+    names(ui_args) <- keep
+    ui_args <- Filter(Negate(is.null), ui_args)
+
+    # Optional: if function accepts session, pass it; otherwise omit
+    accepts_session <- "session" %in% names(fmls_run)
+
+    # Loop each uploaded dataset
+    for (i in seq_len(nrow(input$hla_files))) {
+
+      file_row <- input$hla_files[i, , drop = FALSE]
+      obj_name <- assign_one_file(file_row)
+
+      # Make unique dataset key
+      ds_key <- obj_name
+      if (ds_key %in% names(out_res)) ds_key <- make.unique(c(names(out_res), ds_key))[length(out_res) + 1L]
+
+      args <- c(
+        list(Data = get(obj_name, envir = .GlobalEnv)),
+        ui_args
+      )
+      if (accepts_session) args$session <- session
+
+      out <- tryCatch(
+        do.call(fun_run, args),
+        error = function(e) {
+          showNotification(
+            paste0("Segregate_HLA_Plot error for ", ds_key, ": ", e$message),
+            type = "error", duration = 8
+          )
+          NULL
+        }
+      )
+      if (is.null(out)) next
+
+      slides <- hla_extract_slides(out)
+
+      pngs   <- character(0)
+      labels <- character(0)
+      plots  <- list()
+
+      if (length(slides)) {
+
+        for (j in seq_along(slides)) {
+
+          p   <- slides[[j]]$plot
+          lab <- slides[[j]]$label %||% paste0("Plot ", j)
+
+          # Preview images for carousel are always PNG
+          png <- tempfile(fileext = ".png")
+
+          # Use dynamic/recommended height if available, otherwise fall back to input box
+          h_dyn <- hla_slide_height_in(p, fallback = input$hla_save_height %||% 10)
+          w_in  <- input$hla_save_width %||% 30
+          dpi   <- input$hla_save_dpi   %||% 100
+
+          tryCatch(
+            {
+              tube_save_plot_png(p, png, width_in = w_in, height_in = h_dyn, dpi = dpi)
+            },
+            error = function(e) {
+              showNotification(paste0("Failed to render preview slide ", j, " (", ds_key, "): ", e$message),
+                               type = "error", duration = 8)
+            }
+          )
+
+          pngs   <- c(pngs, png)
+          labels <- c(labels, lab)
+          plots[[j]] <- p
+        }
+      }
+
+      out_res[[ds_key]] <- list(
+        plots  = plots,
+        pngs   = pngs,
+        labels = labels
+      )
+    }
+
+    if (!length(out_res)) {
+      showNotification("No outputs produced. Check input files / arguments.", type = "warning", duration = 6)
+      return(invisible(NULL))
+    }
+
+    hla_results(out_res)
+
+    # default to first dataset tab
+    isolate({
+      updateTabsetPanel(session, "hla_output_tabs", selected = names(out_res)[1])
+    })
+
+  })
+
+
+
+
+  # ---- Segregate_HLA_Plot: dynamic UI (tabs + slickR carousels) ----
+  output$hla_dynamic_tabs <- renderUI({
+
+    res <- hla_results()
+    if (!length(res)) return(NULL)
+
+    tabs <- lapply(names(res), function(k) {
+
+      carId <- paste0("hla_carousel_", k)
+
+      local({
+        kk <- k
+        output[[carId]] <- renderSlickR({
+
+          imgs <- hla_results()[[kk]]$pngs
+          if (!length(imgs)) return(NULL)
+
+          w <- slickR(imgs, slideType = "img") +
+            settings(dots = TRUE, infinite = TRUE, arrows = TRUE, adaptiveHeight = FALSE)
+
+          # Track current slide index per dataset (optional; useful if you later add "Interactive View")
+          htmlwidgets::onRender(
+            w,
+            sprintf(
+              "function(el,x){
+               var $s = $(el).find('.slick-slider');
+               Shiny.setInputValue('%1$s', 1, {priority:'event'});
+               $s.on('afterChange', function(e, slick, current){
+                 Shiny.setInputValue('%1$s', current+1, {priority:'event'});
+               });
+             }",
+              paste0('hla_current_slide_', kk)
+            )
+          )
+        })
+      })
+
+      tabPanel(
+        title = tools::toTitleCase(gsub("_", " ", k)),
+        value = k,
+        slickROutput(carId, width = "100%", height = "680px")
+      )
+    })
+
+    do.call(tabsetPanel, c(list(id = "hla_output_tabs"), tabs))
+  })
+
+
+  observe({
+    res <- hla_results()
+    if (!length(res)) return(invisible(NULL))
+
+    lapply(names(res), function(nm){
+      local({
+        id <- paste0("hla_slick_", nm)
+
+        output[[id]] <- slickR::renderSlickR({
+          pngs   <- res[[nm]]$pngs
+          labels <- res[[nm]]$labels
+
+          req(length(pngs))
+
+          # Data URI avoids resourcePath headaches
+          mk_src <- function(path) {
+            if (requireNamespace("base64enc", quietly = TRUE)) {
+              base64enc::dataURI(file = path, mime = "image/png")
+            } else {
+              # fallback: plain file path (may not load in browser without resourcePath)
+              path
+            }
+          }
+
+          slides <- lapply(seq_along(pngs), function(i){
+            htmltools::tags$div(
+              style = "text-align:center;",
+              htmltools::tags$img(src = mk_src(pngs[i]), style = "max-width:100%; max-height:660px; width:auto; height:auto;"),
+              htmltools::tags$div(style="margin-top:10px; font-weight:700; color:#111827;",
+                                  labels[i] %||% "")
+            )
+          })
+
+          slickR::slickR(
+            obj = slides,
+            slideId = paste0("hla_carousel_", nm)
+          ) + slickR::settings(
+            dots = TRUE,
+            arrows = TRUE,
+            adaptiveHeight = TRUE
+          )
+        })
+      })
+    })
+  })
+
+
+
+  output$hla_download_simple <- downloadHandler(
+    filename = function() {
+      ext <- tolower(input$hla_ext %||% "png")
+      res <- hla_results()
+      total_plots <- sum(vapply(res, function(x) length(x$plots), integer(1)))
+
+      if (total_plots > 1) return(paste0("Segregate_HLA_Plot_", ext, ".zip"))
+      paste0("Segregate_HLA_Plot.", ext)
+    },
+    content = function(file) {
+      ext <- tolower(input$hla_ext %||% "png")
+      res <- hla_results()
+      req(length(res))
+
+      plots_all <- list()
+      for (nm in names(res)) {
+        if (length(res[[nm]]$plots)) {
+          for (j in seq_along(res[[nm]]$plots)) {
+            plots_all[[paste0(nm, "_", j)]] <- res[[nm]]$plots[[j]]
+          }
+        }
+      }
+      req(length(plots_all))
+
+      save_one <- function(p, path) {
+        if (ext == "pdf") tube_save_plot_pdf(p, path, input$hla_save_width, input$hla_save_height)
+        else tube_save_plot_png(p, path, input$hla_save_width, input$hla_save_height, input$hla_save_dpi, dpi = input$hla_save_dpi)
+      }
+
+      if (length(plots_all) == 1) {
+        save_one(plots_all[[1]], file)
+        return(invisible())
+      }
+
+      tmpdir <- tempfile("hla_dl_"); dir.create(tmpdir)
+      files <- character(0)
+
+      for (nm in names(plots_all)) {
+        out <- file.path(tmpdir, paste0("HLA_", sanitize(nm), ".", ext))
+        save_one(plots_all[[nm]], out)
+        files <- c(files, out)
+      }
+
+      zip_it(files, file)
+    }
+  )
+
+
+
   #Miami_Plot - call preview & run
 
   miami_call_txt <- reactive({
@@ -4189,6 +4651,67 @@ data = list(rows_map = rows_map, col_order = col_order)
     }
   })
 
+  # ---- Segregate_HLA_Plot: Download handler ----
+  output$hla_download_simple <- downloadHandler(
+
+    filename = function() {
+      ext <- tolower(input$hla_ext %||% "png")
+      res <- hla_results()
+      n_plots <- sum(vapply(res, function(x) length(x$plots), integer(1)))
+
+      if (n_plots > 1) {
+        paste0("Segregate_HLA_Plot_", ext, ".zip")
+      } else {
+        paste0("Segregate_HLA_Plot.", ext)
+      }
+    },
+
+    content = function(file) {
+
+      ext <- tolower(input$hla_ext %||% "png")
+      res <- hla_results()
+      req(length(res))
+
+      n_plots <- sum(vapply(res, function(x) length(x$plots), integer(1)))
+      w_in  <- input$hla_save_width  %||% 30
+      dpi   <- input$hla_save_dpi    %||% 100
+
+      # If single output, write directly
+      if (n_plots <= 1) {
+        ds <- names(res)[1]
+        p  <- res[[ds]]$plots[[1]]
+        req(!is.null(p))
+
+        h_in <- input$hla_save_height %||% hla_slide_height_in(p, fallback = 10)
+        hla_save_any(p, file, ext = ext, width_in = w_in, height_in = h_in, dpi = dpi)
+        return(invisible())
+      }
+
+      # Otherwise zip
+      tmpdir <- tempfile("hla_dl_"); dir.create(tmpdir, recursive = TRUE)
+      files <- character(0)
+
+      for (ds in names(res)) {
+        for (j in seq_along(res[[ds]]$plots)) {
+          p <- res[[ds]]$plots[[j]]
+          if (is.null(p)) next
+
+          lab <- res[[ds]]$labels[j] %||% paste0("Plot_", j)
+          fn  <- file.path(
+            tmpdir,
+            paste0(sanitize(ds), "__", sprintf("%02d", j), "__", sanitize(lab), ".", ext)
+          )
+
+          h_in <- input$hla_save_height %||% hla_slide_height_in(p, fallback = 10)
+          hla_save_any(p, fn, ext = ext, width_in = w_in, height_in = h_in, dpi = dpi)
+
+          files <- c(files, fn)
+        }
+      }
+
+      zip_it(files, file)
+    }
+  )
 
   output$miami_plot <- renderImage({ req(preview_file()); list(src = preview_file(), contentType = "image/png", width = "100%") }, deleteFile = FALSE)
   output$log <- renderText({ log_text() })

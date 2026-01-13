@@ -5,19 +5,19 @@
 #' @param Verbose Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE
 #' @param Title Manually specify title to be displayed; defaults to NULL, leading to auto-detection of dataframe object/file name
 #' @param Title_On Toggle on/off whether Title (either manually or automatically determined) displays on final plot; defaults to TRUE
-#' @param Title_Size Size of title; defaults to 28
+#' @param Title_Size Size of title; defaults to 20
 #' @param X_Axis_Title Manually specify X axis title; defaults to "HLA Genes"
 #' @param Y_Axis_Title Manually specify Y axis title; defaults to "-log\u2081\u2080(P)" - shows as "-log₁₀(P)"
-#' @param X_Axis_Title_Size Size of X axis title; defaults to 26
-#' @param Y_Axis_Title_Size Size of Y axis title; defaults to 26
-#' @param X_Axis_Title_Vjust Number of units of blank space between X_Axis_Title element area and above axis; defaults to -3
+#' @param X_Axis_Title_Size Size of X axis title; defaults to 20
+#' @param Y_Axis_Title_Size Size of Y axis title; defaults to 20
+#' @param X_Axis_Title_Vjust Number of units of blank space between X_Axis_Title element area and above axis; defaults to -6
 #' @param Y_Axis_Title_Vjust Number of units of blank space between Y_Axis_Title element area and adjacent axis; defaults to 6
 #' @param X_Axis_Text_Vjust Number of units of blank space between X_Axis_Text element area and above axis; defaults to -0.2
 #' @param Y_Axis_Text_Vjust Number of units of blank space between Y_Axis_Text element area and adjacent axis; defaults to 0.2
-#' @param X_Axis_Text_Size Size of X axis text; defaults to 20
-#' @param Y_Axis_Text_Size Size of Y axis text; defaults to 20
+#' @param X_Axis_Text_Size Size of X axis text; defaults to 15
+#' @param Y_Axis_Text_Size Size of Y axis text; defaults to 15
 #' @param Label_Index Annotate the index SNPs with ID provided; defaults to TRUE
-#' @param Label_Size Size of index labels if Label_Index is TRUE; defaults to 3
+#' @param Label_Size Size of index labels if Label_Index is TRUE; defaults to 4
 #' @param Label_Height Spacing between the point and the label position; defaults to 2
 #' @param Segment_Width Half-width of each per-point horizontal segment (total length = 2 * Segment_Width); defaults to 0.18
 #' @param Segment_Thickness Thickness/line width for the per-point horizontal segments; defaults to 0.9
@@ -38,19 +38,19 @@
         Verbose = FALSE,
         Title = NULL,
         Title_On = TRUE,
-        Title_Size = 28,
+        Title_Size = 20,
         X_Axis_Title = "HLA Genes",
         Y_Axis_Title = "-log\u2081\u2080(P)",
-        X_Axis_Title_Size = 26,
-        Y_Axis_Title_Size = 26,
-        X_Axis_Title_Vjust = -3,
+        X_Axis_Title_Size = 20,
+        Y_Axis_Title_Size = 20,
+        X_Axis_Title_Vjust = -6,
         Y_Axis_Title_Vjust = 6,
         X_Axis_Text_Vjust = -0.2,
         Y_Axis_Text_Vjust = 0.2,
-        X_Axis_Text_Size = 20,
-        Y_Axis_Text_Size = 20,
+        X_Axis_Text_Size = 15,
+        Y_Axis_Text_Size = 15,
         Label_Index  = TRUE,
-        Label_Size   = 3,
+        Label_Size   = 4,
         Label_Height = 2,
         Segment_Width     = 0.18,
         Segment_Thickness = 0.9,
@@ -301,8 +301,6 @@
 
         if (length(show_cols) == 0) show_cols <- names(other_df)
 
-        print(utils::head(other_df[, show_cols, drop = FALSE], 10))
-
       } else {
 
         message("No unmatched rows (CLASS == 'OTHER').")
@@ -360,7 +358,7 @@
 
             axis.text.y  = ggplot2::element_text(size = Y_Axis_Text_Size, vjust = Y_Axis_Text_Vjust, colour = "black"),
             axis.line    = ggplot2::element_line(colour = "black"),
-            plot.margin  = ggplot2::margin(t = 14, r = 14, b = 12, l = 12)
+            plot.margin  = ggplot2::margin(t = 14, r = 14, b = 42, l = 42)
 
           )
       }
@@ -460,8 +458,8 @@
 
           .base_theme()
 
-        attr(p_hla, "recommended_width")  <- 12
-        attr(p_hla, "recommended_height") <- max(6, length(unique_hla_types) * 0.6)
+        attr(p_hla, "recommended_width")  <- 15
+        attr(p_hla, "recommended_height") <- max(6, length(unique_hla_types) * 0.9)
         attr(p_hla, "suggested_filename") <- paste0(pheno, "_HLA_Locus.jpg")
 
         message("HLA plot complete")

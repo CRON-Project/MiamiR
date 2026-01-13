@@ -429,8 +429,8 @@
 
       message("Munging model object")
 
-      print(Orig_Names[i])
-      print(Covariate_Phenotype_Data)
+    #  print(Orig_Names[i])
+    #  print(Covariate_Phenotype_Data)
 
       Data <- Model_Munge(Model_Object = Orig_Names[i], Verbose = TRUE)
 

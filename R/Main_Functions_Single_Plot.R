@@ -24,7 +24,7 @@
 #' @param Point_Size Size of data points; defaults to NULL and is modified depending on inherited functionality, unless manually assigned
 #' @param Label_Index Annotate the index SNPs with ID provided; defaults to TRUE
 #' @param Label_Size Size of index labels if Label_Index is TRUE; defaults to 5 but is automatically scaled in inherited functions
-#' @param Label_Angle Angle of index labels if Label_Index is TRUE; defaults to 15 (degrees)
+#' @param Label_Angle Angle of index labels if Label_Index is TRUE; defaults to 45 (degrees)
 #' @param Label_Colour Colour of index labels if Label_Index is TRUE; defaults to "black"
 #' @param Colour_Index Highlight the index SNP with a circular ring around the original point; defaults to TRUE
 #' @param Colour_Of_Index Colour of index SNP circular highlight if Colour_Index is TRUE; defaults to "darkred"
@@ -102,7 +102,7 @@ Single_Plot<- function(Data = NULL,
                        Chromosome_Diamond = c(1:22, "X", "Y", "M"),
                        Label_Index = TRUE,
                        Label_Size = 5,
-                       Label_Angle = 15,
+                       Label_Angle = 45,
                        Label_Colour = "black",
                        Label_Height = NULL,
                        Anchor_Label = "left",
@@ -433,7 +433,7 @@ Single_Plot<- function(Data = NULL,
 
   # Need to keep derivatives for regional
 
-  if(!is_called_by_regional_plot)
+  if(!is_called_by_regional_plot & !is_called_by_miami_plot) # messes up buffer point
 
   {
 
@@ -1034,7 +1034,7 @@ Single_Plot<- function(Data = NULL,
   a2 <- ggmanh::manhattan_plot(x = Data2, preserve.position = T, plot.title = Title,
                               chr.colname = Chromosome_Column, pos.colname = Position_Column, label.colname = NULL,
                               pval.colname = PValue_Column, annotateTop = FALSE,
-                              chr.order = c(chroms),
+                              chr.order = c(chroms), # for single
                               chr.col = Chromosome_Colours, chrlabs = c(1:22, "X", "Y", "M"), rescale = Condense_Scale,
                               signif = Break_Point, rescale.ratio.threshold = 0.0, signif.rel.pos = 0.8,
                               signif.col = c("transparent"),  point.size = Point_Size, x.label = "", y.label = "")
@@ -1074,6 +1074,7 @@ Single_Plot<- function(Data = NULL,
   # Pretty count like 123,456
 
   .point_count <- formatC(nrow(Data), format = "d", big.mark = ",")
+
 
   a <- .progress_break(
 
@@ -1118,6 +1119,7 @@ Single_Plot<- function(Data = NULL,
 
   )
 
+
   }
 
   message("Define alternating chromosome colours")
@@ -1148,7 +1150,6 @@ Single_Plot<- function(Data = NULL,
     a$data$colour_group[a$data$top == TRUE & a$data[[chr_field]] %in% Chromosome_Diamond] <- "transparent"
 
   }))
-
 
   if (!is.null(Top_Expand)) {
 
@@ -1202,7 +1203,7 @@ Single_Plot<- function(Data = NULL,
   a2 <- ggmanh::manhattan_plot(x = Data2, preserve.position = T, plot.title = Title,
                               chr.colname = Chromosome_Column, pos.colname = Position_Column, label.colname = NULL,
                               pval.colname = PValue_Column, annotateTop = FALSE,
-                              chr.order = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"X","Y","M"),
+                              chr.order = tight_order,
                               chr.col = Chromosome_Colours, chrlabs = c(1:22, "X", "Y", "M"), rescale = Condense_Scale,
                               signif = Break_Point, rescale.ratio.threshold = 0.0, signif.rel.pos = 0.8,
                               signif.col = c("transparent"),  point.size = Point_Size, x.label = "", y.label = "")

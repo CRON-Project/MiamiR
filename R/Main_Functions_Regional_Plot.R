@@ -2346,10 +2346,26 @@ Regional_Plot <- function(Data = NULL,
 
           # Store gene legend spec for later use (like LD_legend_spec)
 
-          gene_levels <- present_biotypes  # already in your code
+          # gene_levels <- present_biotypes  # already in your code
+          #
+          # gene_legend_spec <- list(
+          #
+          #   levels        = present_levels,
+          #   legend_colors = pal_vec,
+          #   shapes        = setNames(rep(15, length(present_levels)), present_levels),
+          #   title         = Gene_Legend_Title,
+          #   title_size    = Gene_Legend_Title_Size,
+          #   text_size     = Gene_Legend_Text_Size,
+          #   legend_margin = ggplot2::margin(t = 10, r = 15, b = 10, l = 15),
+          #   box_margin    = ggplot2::margin(t = 0,  r = 0,  b = 0,  l = 0)
+          #
+          # )
+
+          # Store gene legend spec for later use (like LD_legend_spec)
+          present_levels <- present_biotypes
+          pal_vec <- color_map_present
 
           gene_legend_spec <- list(
-
             levels        = present_levels,
             legend_colors = pal_vec,
             shapes        = setNames(rep(15, length(present_levels)), present_levels),
@@ -2358,10 +2374,10 @@ Regional_Plot <- function(Data = NULL,
             text_size     = Gene_Legend_Text_Size,
             legend_margin = ggplot2::margin(t = 10, r = 15, b = 10, l = 15),
             box_margin    = ggplot2::margin(t = 0,  r = 0,  b = 0,  l = 0)
-
           )
 
           attr(p_genes, "Gene_legend_spec") <- gene_legend_spec
+
 
          }
 

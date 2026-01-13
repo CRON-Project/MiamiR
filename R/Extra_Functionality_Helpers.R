@@ -1548,3 +1548,51 @@ make_gene_legend_plot_from_spec <- function(gene_info) {
   }
 
   #End of inset helper functions - could slim down in future.
+
+  # SAVE helper - HLA
+
+  Save_Segregate_HLA_Plots <- function(res, dir = ".", dpi = 150, units = "in") {
+
+    if (!dir.exists(dir)) dir.create(dir, recursive = TRUE)
+
+    save_one <- function(p) {
+
+      fn <- attr(p, "suggested_filename")
+
+      w  <- attr(p, "recommended_width")
+
+      h  <- attr(p, "recommended_height")
+
+      if (is.null(fn) || is.null(w) || is.null(h)) return(invisible(NULL))
+
+      ggplot2::ggsave(
+
+        filename  = file.path(dir, fn),
+        plot      = p,
+        width     = w,
+        height    = h,
+        units     = units,
+        dpi       = dpi,
+        limitsize = FALSE
+
+      )
+
+      invisible(fn)
+
+    }
+
+    if (!is.null(res$HLA_plot))  save_one(res$HLA_plot)
+
+    if (!is.null(res$AA_plot))   save_one(res$AA_plot)
+
+    if (!is.null(res$SNPS_plot)) save_one(res$SNPS_plot)
+
+    if (!is.null(res$RSID_plots) && length(res$RSID_plots)) {
+
+      for (nm in names(res$RSID_plots)) save_one(res$RSID_plots[[nm]])
+
+    }
+
+    invisible(TRUE)
+  }
+
