@@ -23,7 +23,7 @@ Single_Plot(..., session = NULL)
 
 \item{Title}{Manually specify title to be displayed; defaults to NULL, leading to auto-detection of dataframe object/file name}
 
-\item{Y_Axis_Title}{Manually specify Y axis title; defaults to "-log₁₀P"}
+\item{Y_Axis_Title}{Manually specify Y axis title; defaults to "-log\u2081\u2080(P)" - shows as "-log₁₀P"}
 
 \item{X_Axis_Title}{Manually specify X axis title; defaults to NULL, leading to assignment as Chromosome when called solely in Single_Plot() but Genomic Position (Mb) within Regional_Plot() by default.}
 
@@ -47,13 +47,13 @@ Single_Plot(..., session = NULL)
 
 \item{Sig_Line_Width}{Width of significance threshold line; defaults to 0.5}
 
-\item{Point_Size}{Size of data points; defaults to 2.5 but defaults to 10 when called within Regional_Plot()}
+\item{Point_Size}{Size of data points; defaults to NULL and is modified depending on inherited functionality, unless manually assigned}
 
 \item{Label_Index}{Annotate the index SNPs with ID provided; defaults to TRUE}
 
-\item{Label_Size}{Size of index labels if Label_Index is TRUE; defaults to 5 but defaults to 9 when called within Regional_Plot()}
+\item{Label_Size}{Size of index labels if Label_Index is TRUE; defaults to 5 but is automatically scaled in inherited functions}
 
-\item{Label_Angle}{Angle of index labels if Label_Index is TRUE; defaults to 60 (degrees)}
+\item{Label_Angle}{Angle of index labels if Label_Index is TRUE; defaults to 15 (degrees)}
 
 \item{Label_Colour}{Colour of index labels if Label_Index is TRUE; defaults to "black"}
 
@@ -61,9 +61,9 @@ Single_Plot(..., session = NULL)
 
 \item{Colour_Of_Index}{Colour of index SNP circular highlight if Colour_Index is TRUE; defaults to "darkred"}
 
-\item{Chromosome_Labels}{List of chromosomes to show index SNP labels on, given that Label_Index is TRUE; defaults to c(1:22, "X")}
+\item{Chromosome_Labels}{List of chromosomes to show index SNP labels on, given that Label_Index is TRUE; defaults to c(1:22, "X", "Y", "M")}
 
-\item{Chromosome_Index}{List of chromosomes to show index SNP circular highlight/colour on, given that Colour_Index is TRUE; defaults to c(1:22, "X")}
+\item{Chromosome_Index}{List of chromosomes to show index SNP circular highlight/colour on, given that Colour_Index is TRUE; defaults to c(1:22, "X", "Y", "M")}
 
 \item{Condense_Scale}{Log transform and condense scale above allotted break point to enhance visualisation of 'hits' with vastly different test statistics; defaults to TRUE}
 
@@ -71,23 +71,21 @@ Single_Plot(..., session = NULL)
 
 \item{Draft_Plot}{Specify whether a random subset of SNPs, the number of which is specified by Random_Selection, is plotted; defaults to FALSE}
 
-\item{Random_Selection}{Manually select a random subset of SNPs to plot (more for internal debugging and testing), given that Draft_Plot is TRUE; defaults to 10,000}
+\item{Random_Selection}{Manually select a random subset of SNPs to plot (more for internal debugging and testing), given that Draft_Plot is TRUE; defaults to 4,000}
 
 \item{Chromosome_Label_Drops}{Manually specify which chromosome/X axis labels (as a list) should not be shown to prevent text crowding; defaults to NULL leading to c(21,22) being passed when X chromosome data is present and c(21) when only autosomes are present.}
 
-\item{Interactive}{View the output as amenable to interactive plotly object, which can be used to inspect data, with key overlays (more for shiny App usage); defaults to FALSE}
-
 \item{Index_Size}{Size of the outer ring diameter used to highlight the index SNPs, when Colour_Index is TRUE; defaults to NULL and if not manually passed is always scaled to 2X the passed or default Point_Size}
 
-\item{Index_Thickness}{Thickness of the outer ring circumference used to highlight the index SNPs, when Colour_Index is TRUE; defaults to 1 but defaults to 4 when called within Regional_Plot()}
+\item{Index_Thickness}{Thickness of the outer ring circumference used to highlight the index SNPs, when Colour_Index is TRUE; defaults to 1 but is automatically scaled in inherited functions}
 
-\item{Chromosome_Diamond}{List of chromosomes to show index SNP highlight/swapped diamond shape on, given that Diamond_Index is TRUE; defaults to c(1:22, "X")}
+\item{Chromosome_Diamond}{List of chromosomes to show index SNP highlight/swapped diamond shape on, given that Diamond_Index is TRUE; defaults to c(1:22, "X", "Y", "M")}
 
 \item{Anchor_Label}{Which side of the point to anchor/position the index label to, when Label_Index is TRUE; defaults to "left"}
 
-\item{Label_Height}{Spacing between the point and anchoring position of the index SNP label and the beginning of the label print area; defaults to 6 but defaults to 25 when called within Regional_Plot()}
+\item{Label_Height}{Spacing between the point and anchoring position of the index SNP label and the beginning of the label print area; defaults to NULL but is assigned and otherwise automatically scaled in inherited functions}
 
-\item{Diamond_Index}{Highlight the index SNP by swapping the standard point shape to a (different by default) coloured diamond; defaults to FALSE, unless called within Regional_Plot, then defaults to TRUE.}
+\item{Diamond_Index}{Highlight the index SNP by swapping the standard point shape to a (different by default) coloured diamond; defaults to FALSE, unless called within Regional_Plot, then defaults to TRUE}
 
 \item{Colour_Of_Diamond}{Colour of diamond shape swapped for standard point shape ar index SNPs, when Diamond_Index is TRUE; defaults to "purple"}
 
@@ -95,11 +93,43 @@ Single_Plot(..., session = NULL)
 
 \item{Lab}{Specify an additional info column with information to be labelled regarding Index SNPs, when Label_Index is TRUE; defaults to NULL leading to the values in the SNP ID column being used (Coords/RS codes) by default}
 
-\item{Verbose}{Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE.}
+\item{Verbose}{Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE}
 
 \item{Auto_Lab}{Allow Annotate_Data() to run on the data frame(s) provided so Lab can have RSIDs assigned, if only coordinates exist; defaults to FALSE}
 
 \item{Genome_Build}{Reference genome to base required RSID annotations around; defaults to grch38}
+
+\item{Chromosomes}{Manually specify which chromosomes from the summary statistics to run the function on; defaults to NULL, leading to all being included/absent filtering}
+
+\item{Lower_Mult}{Number of units of coordinate buffering space between bottom of plot area and X axis; defaults to NULL, leading to automatic assignment unless specified}
+
+\item{X_Axis_Title_Vjust}{Number of units of blank space between X_Axis_Title element area and above axis; defaults to -5}
+
+\item{Y_Axis_Title_Vjust}{Number of units of blank space between Y_Axis_Title element area and adjacent axis; defaults to 5}
+
+\item{X_Axis_Text_Vjust}{Number of units of blank space between X_Axis_Text element area and above axis; defaults to -0.5}
+
+\item{X_Axis_Title_Drop_Spaces}{Number of lines of blank space between X_Axis_Title element area and above axis; defaults to 0, allowing for a tight fit}
+
+\item{Title_On}{Toggle on/off whether Title (either manually or automatically determined) displays on final plot; defaults to TRUE}
+
+\item{Title_Drop_Spaces}{Number of lines of blank space between Title element area and plot below; defaults to 0, allowing for a tight fit}
+
+\item{Diamond_Index_SNP}{Manually specify a lead/index SNP of interest to base diamond styling on, rather than automatically allocated local maximum; defaults to NULL}
+
+\item{Top_Expand}{Number of units of coordinate blank spacing between end of top of Y axis line and entire plot area; defaults to NULL, and requires a Y value to engage - particularly useful for Single_With_Regional() for additional spacing of insets}
+
+\item{Upper_Mult}{Number of units of coordinate buffering space between top of plot area and end of Y axis line; defaults to NULL, leading to automatic assignment unless specified}
+
+\item{Right_Mult}{Number of units of coordinate buffering space between right of plot area and end of X axis line; defaults to NULL, leading to automatic assignment unless specified}
+
+\item{Left_Mult}{Number of units of coordinate buffering space between left of plot area and Y axis line; defaults to NULL, leading to automatic assignment unless specified}
+
+\item{Y_Axis_Text_Vjust}{Number of units of blank space between Y_Axis_Text element area and adjacent axis; defaults to 0.5}
+
+\item{Y_Axis_Title_Drop_Spaces}{Number of lines of blank space between Y_Axis_Title element area and adjacent axis; defaults to 0, allowing for a tight fit}
+
+\item{Interactive}{Create plot amenable to interactive viewing - leads to slight modifications in elements used for compatibility and primarily calling in Shiny App; defaults to FALSE}
 }
 \value{
 Image of Manhattan Plot(s) is allocated to specified object and the resulting ggplot object can then be saved to an image
@@ -110,5 +140,4 @@ Annotated, Customised Manhattan Plots
 \examples{
  Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
 
- Manhattan_Plot <- Single_Plot(Data = Intelligence_Sum_Stats)
 }

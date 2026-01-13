@@ -33,6 +33,9 @@ Images of Manhattan Plot(s), Regional Plots(s) and Forest Plot(s) are allocated 
 Visualise GWAS Data
 }
 \examples{
-Plots <- Tube_Alloys(Data = Intelligence_Sum_Stats, Phenos = Fake_PHENOS_Binary, Covars = Fake_COVARS, Chromosomes = 1 )
+Plots <- Tube_Alloys( Data = Intelligence_Sum_Stats,
+                                Phenos = Fake_PHENOS_Binary,
+                                Covars = Fake_COVARS,
+                                Chromosomes = 1 )
 
 }

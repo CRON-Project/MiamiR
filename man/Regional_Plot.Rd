@@ -41,7 +41,7 @@ Regional_Plot(..., session = NULL)
 
 \item{Sense_Arrow_Colour}{Colour of direction of transcription arrow in the gene panel, when Gene_Tracks is TRUE; defaults to black}
 
-\item{Sense_Arrow_Head_Size}{Size of direction of transcription arrow head/tip in the gene panel, when Gene_Tracks is TRUE; defaults to 10}
+\item{Sense_Arrow_Head_Size}{Size of direction of transcription arrow head/tip in the gene panel, when Gene_Tracks is TRUE; defaults to 7}
 
 \item{Sense_Arrow_Body_Thickness}{Width of direction of transcription arrow body in the gene panel, when Gene_Tracks is TRUE; defaults to NULL and when not passed is calculated based on Gene_Structure_Size_Introns X 0.6}
 
@@ -85,7 +85,7 @@ Regional_Plot(..., session = NULL)
 
 \item{Gene_Legend_Title}{Gene_Tracks Legend heading when both Gene_Legend_On and Gene_Tracks are TRUE; defaults to Gene Biotype}
 
-\item{LD_Legend_Title}{Auto_LD Legend heading when both LD_Legend_On and Auto_LD are TRUE; defaults to R² LD}
+\item{LD_Legend_Title}{Auto_LD Legend heading when both LD_Legend_On and Auto_LD are TRUE; defaults to "R\u00b2 LD" - R² LD}
 
 \item{Genome_Build}{Reference genome to base required plot panels and annotations around (e.g. Auto_LD and Gene_Tracks functionality); defaults to grch38}
 
@@ -112,6 +112,26 @@ Regional_Plot(..., session = NULL)
 \item{Gene_Tracks}{Display gene panel below plot with specified bodies within the genomic region shown; defaults to TRUE}
 
 \item{.dots}{Shadow argument to detect inherited arguments passed and modified from the Single_Plot() function; defaults to list()}
+
+\item{Manual_Decimal_Places}{Rounding of places to target regarding the X axis and genomic positions (Mb); defaults to NULL, and is automatically assigned unless specified}
+
+\item{P_Value_Filter}{Threshold below which to ignore, primarily non-important points; defaults to NULL}
+
+\item{Gene_Label_Buffer}{Units of space to add/jitter between each gene label near the edge of the Gene_Tracks panel to align inwards; defaults to 1}
+
+\item{Gene_Label_Vertical_Spacing}{Units of space to add between each gene label and gene track/body in the Gene_Tracks panel; defaults to 0.375}
+
+\item{Panel_Ratio}{Specify ratio when of Plot_Panel area to Annotation area, Gene_Tracks is TRUE; defaults to NULL, leading to auto calculation unless manually specified}
+
+\item{Plot_Panel}{Decide whether to include the Plot area above the gene annotation; defaults to TRUE}
+
+\item{Target_Position_Breaks}{Ideal number of positions to annotate on the genomic position/X axis; defaults to 6}
+
+\item{Gene_Track_Vertical_Spacing}{Units of space to add between each gene track in the Gene_Tracks panel; defaults to 0.75}
+
+\item{Recombination_Axis_Title_Vjust}{Number of units of blank space between Recombination_Axis_Title element area and adjacent axis; defaults to 7}
+
+\item{Manual_LD}{Specify manual LD matrices, in PLINK format to be projected on to the points via colour binning; defaults to NULL}
 }
 \value{
 Image of Regional Plot(s) is allocated to specified object and the resulting ggplot object can then be saved to an image
