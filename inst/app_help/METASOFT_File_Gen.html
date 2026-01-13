@@ -1,0 +1,128 @@
+<!DOCTYPE html><html><head><title>R: Munged summary statistics in preparation for METASOFT-like...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+<script type="text/javascript">
+const macros = { "\\R": "\\textsf{R}", "\\code": "\\texttt"};
+function processMathHTML() {
+    var l = document.getElementsByClassName('reqn');
+    for (let e of l) { katex.render(e.textContent, e, { throwOnError: false, macros }); }
+    return;
+}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+    onload="processMathHTML();"></script>
+<link rel="stylesheet" type="text/css" href="R.css" />
+<style>
+
+:root{--bg:#f7f9fc;--card:#fff;--text:#0b1220;--muted:#475569;--link:#2563eb;--border:#e5e7eb;}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0b0f14;--card:#121823;--text:#e6edf3;--muted:#9fb0c0;--link:#6aa6ff;--border:#233043;}
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+.wrap{max-width:980px;margin:0 auto;padding:24px;}
+.top{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);}
+.top h1{margin:0;font-size:22px;letter-spacing:-.02em;}
+.top .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+.back{display:inline-block;margin-bottom:10px;color:var(--link);text-decoration:none;font-size:13px}
+.back:hover{text-decoration:underline}
+.main{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto;}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:rgba(127,127,127,.12);padding:12px;border-radius:12px;overflow:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
+th{background:rgba(127,127,127,.10)}
+ul.index{list-style:none;padding:0;margin:0;columns:2;column-gap:24px}
+ul.index li{break-inside:avoid;margin:0 0 8px}
+@media (max-width:720px){ul.index{columns:1}}
+
+</style>
+</head><body><div class="container">
+<div class='wrap'>
+<header class='top'><a class='back' href='index.html'>&larr; Index</a><h1>METASOFT_File_Gen</h1></header>
+<main class='main'>
+
+<table style="width: 100%;"><tr><td>METASOFT_File_Gen</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2 id='METASOFT_File_Gen'>Munged summary statistics in preparation for METASOFT-like meta-analysis</h2>
+
+<h3>Description</h3>
+
+<p>Munged summary statistics in preparation for METASOFT-like meta-analysis
+</p>
+
+
+<h3>Usage</h3>
+
+<pre><code class='language-R'>METASOFT_File_Gen(..., session = NULL, Debug = FALSE)
+</code></pre>
+
+
+<h3>Arguments</h3>
+
+<table>
+<tr><td><code id="METASOFT_File_Gen_:_Match_Allele_Direction">Match_Allele_Direction</code></td>
+<td>
+<p>Match the allele directions to avoid effect direction flips; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="METASOFT_File_Gen_:_Match_Allele_Study">Match_Allele_Study</code></td>
+<td>
+<p>Data set used as reference point for effect allele direction; defaults to NULL - automatically assigned as first set</p>
+</td></tr>
+<tr><td><code id="METASOFT_File_Gen_:_Output">Output</code></td>
+<td>
+<p>A selection of columns to isolate, in order, alternating by dataset; defaults to c(&quot;BETA&quot;, &quot;SE&quot;) - standard METASOFT ordered format</p>
+</td></tr>
+<tr><td><code id="METASOFT_File_Gen_:_Data">Data</code></td>
+<td>
+<p>These are the summary statistics (either file path(s), environmental object(s) or a variable(s) containing such contents) to be plotted; defaults to NULL</p>
+</td></tr>
+<tr><td><code id="METASOFT_File_Gen_:_BETA_Column">BETA_Column</code></td>
+<td>
+<p>Manually specify BETA Test Statistic column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="METASOFT_File_Gen_:_Position_Column">Position_Column</code></td>
+<td>
+<p>Manually specify chromosome genomic position column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="METASOFT_File_Gen_:_SNP_ID_Column">SNP_ID_Column</code></td>
+<td>
+<p>Manually specify SNP ID column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="METASOFT_File_Gen_:_PValue_Column">PValue_Column</code></td>
+<td>
+<p>Manually specify P Value column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="METASOFT_File_Gen_:_Reference_Allele_Column">Reference_Allele_Column</code></td>
+<td>
+<p>Manually specify reference allele column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="METASOFT_File_Gen_:_Effect_Allele_Column">Effect_Allele_Column</code></td>
+<td>
+<p>Manually specify effect allele column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="METASOFT_File_Gen_:_SE_Column">SE_Column</code></td>
+<td>
+<p>Manually specify SE of Test Statistic column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Munged dataframe amenable to METASOFT meta-analysis - only including SNPs present in backboned file
+</p>
+
+
+<h3>Examples</h3>
+
+<pre><code class='language-R'>METASOFT &lt;- METASOFT_File_Gen(Data = c("Intelligence_Sum_Stats", "Household_Income_Sum_Stats"))
+
+</code></pre>
+
+
+</div>
+</main>
+</div>
+</body></html>

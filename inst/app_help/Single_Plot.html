@@ -1,0 +1,276 @@
+<!DOCTYPE html><html><head><title>R: Annotated, Customised Manhattan Plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+<script type="text/javascript">
+const macros = { "\\R": "\\textsf{R}", "\\code": "\\texttt"};
+function processMathHTML() {
+    var l = document.getElementsByClassName('reqn');
+    for (let e of l) { katex.render(e.textContent, e, { throwOnError: false, macros }); }
+    return;
+}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+    onload="processMathHTML();"></script>
+<link rel="stylesheet" type="text/css" href="R.css" />
+<style>
+
+:root{--bg:#f7f9fc;--card:#fff;--text:#0b1220;--muted:#475569;--link:#2563eb;--border:#e5e7eb;}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0b0f14;--card:#121823;--text:#e6edf3;--muted:#9fb0c0;--link:#6aa6ff;--border:#233043;}
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+.wrap{max-width:980px;margin:0 auto;padding:24px;}
+.top{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);}
+.top h1{margin:0;font-size:22px;letter-spacing:-.02em;}
+.top .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+.back{display:inline-block;margin-bottom:10px;color:var(--link);text-decoration:none;font-size:13px}
+.back:hover{text-decoration:underline}
+.main{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto;}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:rgba(127,127,127,.12);padding:12px;border-radius:12px;overflow:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
+th{background:rgba(127,127,127,.10)}
+ul.index{list-style:none;padding:0;margin:0;columns:2;column-gap:24px}
+ul.index li{break-inside:avoid;margin:0 0 8px}
+@media (max-width:720px){ul.index{columns:1}}
+
+</style>
+</head><body><div class="container">
+<div class='wrap'>
+<header class='top'><a class='back' href='index.html'>&larr; Index</a><h1>Single_Plot</h1></header>
+<main class='main'>
+
+<table style="width: 100%;"><tr><td>Single_Plot</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2 id='Single_Plot'>Annotated, Customised Manhattan Plots</h2>
+
+<h3>Description</h3>
+
+<p>Annotated, Customised Manhattan Plots
+</p>
+
+
+<h3>Usage</h3>
+
+<pre><code class='language-R'>Single_Plot(..., session = NULL)
+</code></pre>
+
+
+<h3>Arguments</h3>
+
+<table>
+<tr><td><code id="Single_Plot_:_Data">Data</code></td>
+<td>
+<p>These are the summary statistics (either file path(s), environmental object(s) or a variable(s) containing such contents) to be plotted; defaults to NULL</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Chromosome_Column">Chromosome_Column</code></td>
+<td>
+<p>Manually specify chromosome column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Position_Column">Position_Column</code></td>
+<td>
+<p>Manually specify chromosome genomic position column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_SNP_ID_Column">SNP_ID_Column</code></td>
+<td>
+<p>Manually specify SNP ID column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_PValue_Column">PValue_Column</code></td>
+<td>
+<p>Manually specify P Value column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Reference_Allele_Column">Reference_Allele_Column</code></td>
+<td>
+<p>Manually specify reference allele column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Effect_Allele_Column">Effect_Allele_Column</code></td>
+<td>
+<p>Manually specify effect allele column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Title">Title</code></td>
+<td>
+<p>Manually specify title to be displayed; defaults to NULL, leading to auto-detection of dataframe object/file name</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Y_Axis_Title">Y_Axis_Title</code></td>
+<td>
+<p>Manually specify Y axis title; defaults to &quot;-log₁₀P&quot;</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_X_Axis_Title">X_Axis_Title</code></td>
+<td>
+<p>Manually specify X axis title; defaults to NULL, leading to assignment as Chromosome when called solely in Single_Plot() but Genomic Position (Mb) within Regional_Plot() by default.</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Title_Size">Title_Size</code></td>
+<td>
+<p>Size of title; defaults to 35</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Y_Axis_Text_Size">Y_Axis_Text_Size</code></td>
+<td>
+<p>Size of Y axis text; defaults to 30</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Chromosome_Label_Size">Chromosome_Label_Size</code></td>
+<td>
+<p>Size of chromosome numbers (X axis text); defaults to 30</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Y_Axis_Title_Size">Y_Axis_Title_Size</code></td>
+<td>
+<p>Size of Y axis title; defaults to 35</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_X_Axis_Title_Size">X_Axis_Title_Size</code></td>
+<td>
+<p>Size of X axis title; defaults to 35</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Chromosome_Colours">Chromosome_Colours</code></td>
+<td>
+<p>Alternating list of two colours allocated to data points (odd/even chromosome numbers); defaults to c(&quot;blue&quot;, &quot;turquoise&quot;) - specifying the same colour twice will lead to uniform colouring.</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Sig_Line_Colour">Sig_Line_Colour</code></td>
+<td>
+<p>Colour of significance threshold; defaults to &quot;red&quot;</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Sig_Line_Type">Sig_Line_Type</code></td>
+<td>
+<p>Type of significance threshold line; defaults to &quot;dashed&quot;</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Sig_Threshold">Sig_Threshold</code></td>
+<td>
+<p>Value of significance threshold; defaults to standard Bonferroni correction of 5e-8</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Sig_Line_Width">Sig_Line_Width</code></td>
+<td>
+<p>Width of significance threshold line; defaults to 0.5</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Point_Size">Point_Size</code></td>
+<td>
+<p>Size of data points; defaults to 2.5 but defaults to 10 when called within Regional_Plot()</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Label_Index">Label_Index</code></td>
+<td>
+<p>Annotate the index SNPs with ID provided; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Label_Size">Label_Size</code></td>
+<td>
+<p>Size of index labels if Label_Index is TRUE; defaults to 5 but defaults to 9 when called within Regional_Plot()</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Label_Angle">Label_Angle</code></td>
+<td>
+<p>Angle of index labels if Label_Index is TRUE; defaults to 60 (degrees)</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Label_Colour">Label_Colour</code></td>
+<td>
+<p>Colour of index labels if Label_Index is TRUE; defaults to &quot;black&quot;</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Colour_Index">Colour_Index</code></td>
+<td>
+<p>Highlight the index SNP with a circular ring around the original point; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Colour_Of_Index">Colour_Of_Index</code></td>
+<td>
+<p>Colour of index SNP circular highlight if Colour_Index is TRUE; defaults to &quot;darkred&quot;</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Chromosome_Labels">Chromosome_Labels</code></td>
+<td>
+<p>List of chromosomes to show index SNP labels on, given that Label_Index is TRUE; defaults to c(1:22, &quot;X&quot;)</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Chromosome_Index">Chromosome_Index</code></td>
+<td>
+<p>List of chromosomes to show index SNP circular highlight/colour on, given that Colour_Index is TRUE; defaults to c(1:22, &quot;X&quot;)</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Condense_Scale">Condense_Scale</code></td>
+<td>
+<p>Log transform and condense scale above allotted break point to enhance visualisation of 'hits' with vastly different test statistics; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Break_Point">Break_Point</code></td>
+<td>
+<p>Value of P where y axis begins to condense; defaults to 1e-10, guided by frequent max value observed in a small sample GWAS</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Draft_Plot">Draft_Plot</code></td>
+<td>
+<p>Specify whether a random subset of SNPs, the number of which is specified by Random_Selection, is plotted; defaults to FALSE</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Random_Selection">Random_Selection</code></td>
+<td>
+<p>Manually select a random subset of SNPs to plot (more for internal debugging and testing), given that Draft_Plot is TRUE; defaults to 10,000</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Chromosome_Label_Drops">Chromosome_Label_Drops</code></td>
+<td>
+<p>Manually specify which chromosome/X axis labels (as a list) should not be shown to prevent text crowding; defaults to NULL leading to c(21,22) being passed when X chromosome data is present and c(21) when only autosomes are present.</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Interactive">Interactive</code></td>
+<td>
+<p>View the output as amenable to interactive plotly object, which can be used to inspect data, with key overlays (more for shiny App usage); defaults to FALSE</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Index_Size">Index_Size</code></td>
+<td>
+<p>Size of the outer ring diameter used to highlight the index SNPs, when Colour_Index is TRUE; defaults to NULL and if not manually passed is always scaled to 2X the passed or default Point_Size</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Index_Thickness">Index_Thickness</code></td>
+<td>
+<p>Thickness of the outer ring circumference used to highlight the index SNPs, when Colour_Index is TRUE; defaults to 1 but defaults to 4 when called within Regional_Plot()</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Chromosome_Diamond">Chromosome_Diamond</code></td>
+<td>
+<p>List of chromosomes to show index SNP highlight/swapped diamond shape on, given that Diamond_Index is TRUE; defaults to c(1:22, &quot;X&quot;)</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Anchor_Label">Anchor_Label</code></td>
+<td>
+<p>Which side of the point to anchor/position the index label to, when Label_Index is TRUE; defaults to &quot;left&quot;</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Label_Height">Label_Height</code></td>
+<td>
+<p>Spacing between the point and anchoring position of the index SNP label and the beginning of the label print area; defaults to 6 but defaults to 25 when called within Regional_Plot()</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Diamond_Index">Diamond_Index</code></td>
+<td>
+<p>Highlight the index SNP by swapping the standard point shape to a (different by default) coloured diamond; defaults to FALSE, unless called within Regional_Plot, then defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Colour_Of_Diamond">Colour_Of_Diamond</code></td>
+<td>
+<p>Colour of diamond shape swapped for standard point shape ar index SNPs, when Diamond_Index is TRUE; defaults to &quot;purple&quot;</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Diamond_Index_Size">Diamond_Index_Size</code></td>
+<td>
+<p>Size of the index SNP swapped diamond shape used to highlight the index SNPs, when Diamond_Index is TRUE; defaults to NULL and if not passed is scaled to 2X the according default or passed Point_Size</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Lab">Lab</code></td>
+<td>
+<p>Specify an additional info column with information to be labelled regarding Index SNPs, when Label_Index is TRUE; defaults to NULL leading to the values in the SNP ID column being used (Coords/RS codes) by default</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Verbose">Verbose</code></td>
+<td>
+<p>Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Auto_Lab">Auto_Lab</code></td>
+<td>
+<p>Allow Annotate_Data() to run on the data frame(s) provided so Lab can have RSIDs assigned, if only coordinates exist; defaults to FALSE</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Genome_Build">Genome_Build</code></td>
+<td>
+<p>Reference genome to base required RSID annotations around; defaults to grch38</p>
+</td></tr>
+<tr><td><code id="Single_Plot_:_Chromosomes">Chromosomes</code></td>
+<td>
+<p>Manually specify which chromosomes from the summary statistics to run the function on; defaults to NULL, leading to all being included/absent filtering</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Image of Manhattan Plot(s) is allocated to specified object and the resulting ggplot object can then be saved to an image
+</p>
+
+
+<h3>Examples</h3>
+
+<pre><code class='language-R'> Manhattan_Plot &lt;- Single_Plot(Data = Intelligence_Sum_Stats)
+
+</code></pre>
+
+
+</div>
+</main>
+</div>
+</body></html>

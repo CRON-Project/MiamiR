@@ -1,0 +1,295 @@
+<!DOCTYPE html><html><head><title>R: Annotated, Customised Regional Plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+<script type="text/javascript">
+const macros = { "\\R": "\\textsf{R}", "\\code": "\\texttt"};
+function processMathHTML() {
+    var l = document.getElementsByClassName('reqn');
+    for (let e of l) { katex.render(e.textContent, e, { throwOnError: false, macros }); }
+    return;
+}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+    onload="processMathHTML();"></script>
+<link rel="stylesheet" type="text/css" href="R.css" />
+<style>
+
+:root{--bg:#f7f9fc;--card:#fff;--text:#0b1220;--muted:#475569;--link:#2563eb;--border:#e5e7eb;}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0b0f14;--card:#121823;--text:#e6edf3;--muted:#9fb0c0;--link:#6aa6ff;--border:#233043;}
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+.wrap{max-width:980px;margin:0 auto;padding:24px;}
+.top{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);}
+.top h1{margin:0;font-size:22px;letter-spacing:-.02em;}
+.top .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+.back{display:inline-block;margin-bottom:10px;color:var(--link);text-decoration:none;font-size:13px}
+.back:hover{text-decoration:underline}
+.main{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto;}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:rgba(127,127,127,.12);padding:12px;border-radius:12px;overflow:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
+th{background:rgba(127,127,127,.10)}
+ul.index{list-style:none;padding:0;margin:0;columns:2;column-gap:24px}
+ul.index li{break-inside:avoid;margin:0 0 8px}
+@media (max-width:720px){ul.index{columns:1}}
+
+</style>
+</head><body><div class="container">
+<div class='wrap'>
+<header class='top'><a class='back' href='index.html'>&larr; Index</a><h1>Regional_Plot</h1></header>
+<main class='main'>
+
+<table style="width: 100%;"><tr><td>Regional_Plot</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2 id='Regional_Plot'>Annotated, Customised Regional Plots</h2>
+
+<h3>Description</h3>
+
+<p>Annotated, Customised Regional Plots
+</p>
+
+
+<h3>Usage</h3>
+
+<pre><code class='language-R'>Regional_Plot(..., session = NULL)
+</code></pre>
+
+
+<h3>Arguments</h3>
+
+<table>
+<tr><td><code id="Regional_Plot_:_Data">Data</code></td>
+<td>
+<p>These are the summary statistics (either file path(s), environmental object(s) or a variable(s) containing such contents) to be plotted; defaults to NULL</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Chromosome_Column">Chromosome_Column</code></td>
+<td>
+<p>Manually specify chromosome column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Position_Column">Position_Column</code></td>
+<td>
+<p>Manually specify chromosome genomic position column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_SNP_ID_Column">SNP_ID_Column</code></td>
+<td>
+<p>Manually specify SNP ID column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_PValue_Column">PValue_Column</code></td>
+<td>
+<p>Manually specify P Value column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Chromosomes">Chromosomes</code></td>
+<td>
+<p>Manually specify which chromosomes from the summary statistics to run the function on; defaults to NULL, leading to all being included/absent filtering</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_MIN_GENE_GAP">MIN_GENE_GAP</code></td>
+<td>
+<p>Minimum genomic distance between adjacent annotation anchoring/positioning for Gene_Tracks body names, when Gene_Tracks = TRUE; defaults to NULL and if not passed is calculated from 0.3 X the Region_Window size specified.</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Separation_Distance">Separation_Distance</code></td>
+<td>
+<p>The minimum genomic distance between significant regions of interest/lead SNPs to be defined as distinct peaks, defined by P_threshold value; defaults to 1e6</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Region_Window">Region_Window</code></td>
+<td>
+<p>Distance to be included up and downstream of the lead SNP in a region of interest; defaults to 5e5</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Label_Size">Gene_Label_Size</code></td>
+<td>
+<p>Size of the text allocated to the bodies displayed in the gene panel, when Gene_Tracks is TRUE; defaults to 10</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Structure_Size_Exons">Gene_Structure_Size_Exons</code></td>
+<td>
+<p>Size of the exon object allocated to the bodies displayed in the gene panel, when Gene_Tracks is TRUE; defaults to 12</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Structure_Size_Introns">Gene_Structure_Size_Introns</code></td>
+<td>
+<p>Size of the intron object allocated to the bodies displayed in the gene panel, when Gene_Tracks is TRUE; defaults to 2</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Structure_Colour_Exons">Gene_Structure_Colour_Exons</code></td>
+<td>
+<p>Colour of the exon object allocated to the bodies displayed in the gene panel, when Gene_Tracks is TRUE; defaults to black</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Structure_Colour_Introns">Gene_Structure_Colour_Introns</code></td>
+<td>
+<p>Colour of the intron object allocated to the bodies displayed in the gene panel, when Gene_Tracks is TRUE; defaults to black</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Panel_Background_Colour">Gene_Panel_Background_Colour</code></td>
+<td>
+<p>Colour of the background panel surrounding the bodies displayed in the gene panel, when Gene_Tracks is TRUE; defaults to azure</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Sense_Arrow">Sense_Arrow</code></td>
+<td>
+<p>Show direction of transcription arrow in the gene panel, when Gene_Tracks is TRUE; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Sense_Arrow_Colour">Sense_Arrow_Colour</code></td>
+<td>
+<p>Colour of direction of transcription arrow in the gene panel, when Gene_Tracks is TRUE; defaults to black</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Sense_Arrow_Head_Size">Sense_Arrow_Head_Size</code></td>
+<td>
+<p>Size of direction of transcription arrow head/tip in the gene panel, when Gene_Tracks is TRUE; defaults to 10</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Sense_Arrow_Body_Thickness">Sense_Arrow_Body_Thickness</code></td>
+<td>
+<p>Width of direction of transcription arrow body in the gene panel, when Gene_Tracks is TRUE; defaults to NULL and when not passed is calculated based on Gene_Structure_Size_Introns X 0.6</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Sense_Arrow_Body_Length">Sense_Arrow_Body_Length</code></td>
+<td>
+<p>Length of direction of transcription arrow body in the gene panel, when Gene_Tracks is TRUE; defaults to 0.02</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Sense_Arrow_Gene_Gap">Sense_Arrow_Gene_Gap</code></td>
+<td>
+<p>Minimum genomic distance (spacing) between end of Gene_Tracks bodies and beginning of direction of transcription arrow rendering, when Gene_Tracks = TRUE; defaults to 0.005 (factor of view window, proxy for Region_Window)</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Recombination_Line">Recombination_Line</code></td>
+<td>
+<p>Display recombination rate via line plot overlay across region shown; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Recombination_Line_Colour">Recombination_Line_Colour</code></td>
+<td>
+<p>Colour of recombination rate line across region shown when Recombination Line is TRUE; defaults to darkred</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Recombination_Axis_Title">Recombination_Axis_Title</code></td>
+<td>
+<p>Y Axis Title of recombination rate scale when Recombination_Line is TRUE; defaults to Recombination Rate (cM/Mb)</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Recombination_Axis_Text_Size">Recombination_Axis_Text_Size</code></td>
+<td>
+<p>Y Axis text size of recombination rate scale when Recombination_Line is TRUE; defaults to NULL and if not passed is based on inherited Single_Plot() Y_Axis_Text_Size and its default value</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Recombination_Axis_Title_Size">Recombination_Axis_Title_Size</code></td>
+<td>
+<p>Y Axis title size of recombination rate scale when Recombination_Line is TRUE; defaults to NULL and if not passed is based on inherited Single_Plot() Y_Axis_Title_Size and its default value</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Recombination_Line_Thickness">Recombination_Line_Thickness</code></td>
+<td>
+<p>Width of recombination rate line across region shown when Recombination_Line is TRUE; defaults to 1</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Recombination_Line_Type">Recombination_Line_Type</code></td>
+<td>
+<p>Line style of recombination rate line across region shown when Recombination_Line is TRUE; defaults to dotted</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_P_threshold">P_threshold</code></td>
+<td>
+<p>Maximum value of P (minimum LOG10P) allowed for a SNP to be classified as initiating detection as the lead SNP of a peak in the function; defaults to 5e-8</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Point_Colour">Point_Colour</code></td>
+<td>
+<p>Colour of data points shown; defaults to darkblue</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_LD_Legend_Title_Size">LD_Legend_Title_Size</code></td>
+<td>
+<p>Size of title in Auto_LD Legend when both LD_Legend_On and Auto_LD are TRUE; defaults to 30</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_LD_Legend_Text_Size">LD_Legend_Text_Size</code></td>
+<td>
+<p>Size of text in Auto_LD Legend key when both LD_Legend_On and Auto_LD are TRUE; defaults to 20</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_LD_Legend_Location">LD_Legend_Location</code></td>
+<td>
+<p>Relative location of LD Legend in the top panel when both LD_Legend_On and Auto_LD are TRUE; defaults to &quot;Top Right&quot;</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_LD_Legend_On">LD_Legend_On</code></td>
+<td>
+<p>Show Auto_LD Legend, when Auto_LD is TRUE; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Legend_Location">Gene_Legend_Location</code></td>
+<td>
+<p>Relative location of Gene_Tracks Legend in the bottom panel when both Gene_Legend_On and Gene_Tracks are TRUE; defaults to &quot;Right Outside&quot;</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Legend_On">Gene_Legend_On</code></td>
+<td>
+<p>Show Gene_Legend, when Gene_Tracks is TRUE; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Legend_Title_Size">Gene_Legend_Title_Size</code></td>
+<td>
+<p>Size of title in the Gene_Tracks legend when both Gene_Legend_On and Gene_Tracks are TRUE; defaults to 30</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Legend_Text_Size">Gene_Legend_Text_Size</code></td>
+<td>
+<p>Size of text in the Gene_Tracks Legend key when both Gene_Legend_On and Gene_Tracks are TRUE; defaults to 20</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Legend_Title">Gene_Legend_Title</code></td>
+<td>
+<p>Gene_Tracks Legend heading when both Gene_Legend_On and Gene_Tracks are TRUE; defaults to Gene Biotype</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_LD_Legend_Title">LD_Legend_Title</code></td>
+<td>
+<p>Auto_LD Legend heading when both LD_Legend_On and Auto_LD are TRUE; defaults to R² LD</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Genome_Build">Genome_Build</code></td>
+<td>
+<p>Reference genome to base required plot panels and annotations around (e.g. Auto_LD and Gene_Tracks functionality); defaults to grch38</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Population">Population</code></td>
+<td>
+<p>Reference population for Auto_LD query; defaults to &quot;EUR&quot;</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Biotype">Gene_Biotype</code></td>
+<td>
+<p>Filter bodies shown when Gene_Tracks is TRUE by biotype, e.g. coding; defaults to NULL allowing for all available biotypes to be shown.</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Biotype_Colour">Gene_Biotype_Colour</code></td>
+<td>
+<p>Colour of bodies shown when Gene_Tracks is TRUE, either overall or stratified by biotype, e.g. c(&quot;blue&quot;, &quot;red); defaults to NULL allowing for default colouring panel to be allotted</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Name">Gene_Name</code></td>
+<td>
+<p>Filter bodies shown when Gene_Tracks is TRUE by body name, e.g. &quot;DMD&quot;; defaults to NULL allowing for all available bodies to be shown.</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Auto_LD_Region_Size">Auto_LD_Region_Size</code></td>
+<td>
+<p>Region to query centered around the ascertained lead SNP in the peak region, when Auto_LD is TRUE; defaults to 1e6</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Auto_LD">Auto_LD</code></td>
+<td>
+<p>Query for LD via the included LDlinkR::LDproxy functionality, based around Genome_Build &amp; Population arguments, centered around the ascertained lead SNP in the region shown; defaults to FALSE</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Reference_Allele_Column">Reference_Allele_Column</code></td>
+<td>
+<p>Manually specify reference allele column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Effect_Allele_Column">Effect_Allele_Column</code></td>
+<td>
+<p>Manually specify effect allele column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Verbose">Verbose</code></td>
+<td>
+<p>Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE.</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Interactive">Interactive</code></td>
+<td>
+<p>View the output as amenable to interactive plotly object, which can be used to inspect data, with key overlays (more for shiny App usage); defaults to FALSE</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_Gene_Tracks">Gene_Tracks</code></td>
+<td>
+<p>Display gene panel below plot with specified bodies within the genomic region shown; defaults to TRUE</p>
+</td></tr>
+<tr><td><code id="Regional_Plot_:_.dots">.dots</code></td>
+<td>
+<p>Shadow argument to detect inherited arguments passed and modified from the Single_Plot() function; defaults to list()</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Image of Regional Plot(s) is allocated to specified object and the resulting ggplot object can then be saved to an image
+</p>
+
+
+<h3>Examples</h3>
+
+<pre><code class='language-R'> Regional_Plot &lt;- Regional_Plot(Data = Household_Income_Sum_Stats, Chromosomes = 1)
+</code></pre>
+
+
+</div>
+</main>
+</div>
+</body></html>

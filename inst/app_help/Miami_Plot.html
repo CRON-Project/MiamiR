@@ -1,0 +1,136 @@
+<!DOCTYPE html><html><head><title>R: Annotated, Customised Miami Plots</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+<script type="text/javascript">
+const macros = { "\\R": "\\textsf{R}", "\\code": "\\texttt"};
+function processMathHTML() {
+    var l = document.getElementsByClassName('reqn');
+    for (let e of l) { katex.render(e.textContent, e, { throwOnError: false, macros }); }
+    return;
+}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+    onload="processMathHTML();"></script>
+<link rel="stylesheet" type="text/css" href="R.css" />
+<style>
+
+:root{--bg:#f7f9fc;--card:#fff;--text:#0b1220;--muted:#475569;--link:#2563eb;--border:#e5e7eb;}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0b0f14;--card:#121823;--text:#e6edf3;--muted:#9fb0c0;--link:#6aa6ff;--border:#233043;}
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+.wrap{max-width:980px;margin:0 auto;padding:24px;}
+.top{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);}
+.top h1{margin:0;font-size:22px;letter-spacing:-.02em;}
+.top .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+.back{display:inline-block;margin-bottom:10px;color:var(--link);text-decoration:none;font-size:13px}
+.back:hover{text-decoration:underline}
+.main{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto;}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:rgba(127,127,127,.12);padding:12px;border-radius:12px;overflow:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
+th{background:rgba(127,127,127,.10)}
+ul.index{list-style:none;padding:0;margin:0;columns:2;column-gap:24px}
+ul.index li{break-inside:avoid;margin:0 0 8px}
+@media (max-width:720px){ul.index{columns:1}}
+
+</style>
+</head><body><div class="container">
+<div class='wrap'>
+<header class='top'><a class='back' href='index.html'>&larr; Index</a><h1>Miami_Plot</h1></header>
+<main class='main'>
+
+<table style="width: 100%;"><tr><td>Miami_Plot</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2 id='Miami_Plot'>Annotated, Customised Miami Plots</h2>
+
+<h3>Description</h3>
+
+<p>Annotated, Customised Miami Plots
+</p>
+
+
+<h3>Usage</h3>
+
+<pre><code class='language-R'>Miami_Plot(..., session = NULL)
+</code></pre>
+
+
+<h3>Arguments</h3>
+
+<table>
+<tr><td><code id="Miami_Plot_:_...">...</code></td>
+<td>
+<p>Another shadow argument to detect inherited arguments passed and modified from the Single_Plot() function; defaults to list()</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_session">session</code></td>
+<td>
+<p>Blank session definitions; defaults to NULL</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_Top_Data">Top_Data</code></td>
+<td>
+<p>These are the summary statistics (either file path(s),environmental object(s) or a variable(s) containing such contents) to be plotted on the top; defaults to NULL</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_Bottom_Data">Bottom_Data</code></td>
+<td>
+<p>These are the summary statistics (either file path(s),environmental object(s) or a variable(s) containing such contents) to be plotted on the bottom; defaults to NULL</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_Chromosome_Column">Chromosome_Column</code></td>
+<td>
+<p>Manually specify chromosome column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_Position_Column">Position_Column</code></td>
+<td>
+<p>Manually specify chromosome genomic position column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_SNP_ID_Column">SNP_ID_Column</code></td>
+<td>
+<p>Manually specify SNP ID column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_PValue_Column">PValue_Column</code></td>
+<td>
+<p>Manually specify P Value column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_Reference_Allele_Column">Reference_Allele_Column</code></td>
+<td>
+<p>Manually specify reference allele column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_Effect_Allele_Column">Effect_Allele_Column</code></td>
+<td>
+<p>Manually specify effect allele column; defaults to NULL, leading to auto-detection</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_Verbose">Verbose</code></td>
+<td>
+<p>Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE.</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_Adjust">Adjust</code></td>
+<td>
+<p>Shift shared X_Axis_Text down relative to the top plot, the larger the value the greater the shift; defaults to NULL and if not passed then calculated from expression mapped to Chromosome_Label_Size inherted from Single_Plot()</p>
+</td></tr>
+<tr><td><code id="Miami_Plot_:_.dots">.dots</code></td>
+<td>
+<p>Shadow argument to detect inherited arguments passed and modified from the Single_Plot() function; defaults to list()</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Image of Miami Plot(s) is allocated to specified object and the resulting combined grob object can then be saved to an image
+</p>
+
+
+<h3>Examples</h3>
+
+<pre><code class='language-R'>Miami_Plot &lt;- Miami_Plot(Top_Data = Household_Income_Sum_Stats,
+                                   Bottom_Data = Intelligence_Sum_Stats)
+</code></pre>
+
+
+</div>
+</main>
+</div>
+</body></html>

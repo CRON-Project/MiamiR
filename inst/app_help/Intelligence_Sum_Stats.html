@@ -1,0 +1,121 @@
+<!DOCTYPE html><html><head><title>R: 100,000 SNP Sample Subset of GWAS Summary Statistics of...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+<script type="text/javascript">
+const macros = { "\\R": "\\textsf{R}", "\\code": "\\texttt"};
+function processMathHTML() {
+    var l = document.getElementsByClassName('reqn');
+    for (let e of l) { katex.render(e.textContent, e, { throwOnError: false, macros }); }
+    return;
+}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+    onload="processMathHTML();"></script>
+<link rel="stylesheet" type="text/css" href="R.css" />
+<style>
+
+:root{--bg:#f7f9fc;--card:#fff;--text:#0b1220;--muted:#475569;--link:#2563eb;--border:#e5e7eb;}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0b0f14;--card:#121823;--text:#e6edf3;--muted:#9fb0c0;--link:#6aa6ff;--border:#233043;}
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+.wrap{max-width:980px;margin:0 auto;padding:24px;}
+.top{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 18px 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);}
+.top h1{margin:0;font-size:22px;letter-spacing:-.02em;}
+.top .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+.back{display:inline-block;margin-bottom:10px;color:var(--link);text-decoration:none;font-size:13px}
+.back:hover{text-decoration:underline}
+.main{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;overflow:auto;}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:rgba(127,127,127,.12);padding:12px;border-radius:12px;overflow:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--border);padding:8px;vertical-align:top}
+th{background:rgba(127,127,127,.10)}
+ul.index{list-style:none;padding:0;margin:0;columns:2;column-gap:24px}
+ul.index li{break-inside:avoid;margin:0 0 8px}
+@media (max-width:720px){ul.index{columns:1}}
+
+</style>
+</head><body><div class="container">
+<div class='wrap'>
+<header class='top'><a class='back' href='index.html'>&larr; Index</a><h1>Intelligence_Sum_Stats</h1></header>
+<main class='main'>
+
+<table style="width: 100%;"><tr><td>Intelligence_Sum_Stats</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2 id='Intelligence_Sum_Stats'>100,000 SNP Sample Subset of GWAS Summary Statistics of Intelligence</h2>
+
+<h3>Description</h3>
+
+<p>A dataset containing a subset of the summary statistics from the Savage Jansen 2018 Intelligence GWAS
+The variables are as follows:
+</p>
+
+
+<h3>Usage</h3>
+
+<pre><code class='language-R'>data(Intelligence_Sum_Stats)
+</code></pre>
+
+
+<h3>Format</h3>
+
+<p>A data frame with 100,000 rows (randomly selected) and 14 variables from: https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST006001-GCST007000/GCST006250/sumstats/README_SavageJansen_2018_intelligence_metaanalysis.txt
+</p>
+
+
+<h3>Details</h3>
+
+
+<ul>
+<li><p> SNP: rs number
+</p>
+</li>
+<li><p> UNIQUE_ID: unique SNP id based on chromosome, position
+</p>
+</li>
+<li><p> CHR: chromosome number
+</p>
+</li>
+<li><p> POS: base pair position reported on GRCh37
+</p>
+</li>
+<li><p> A1: effect allele
+</p>
+</li>
+<li><p> A2: non-effect allele
+</p>
+</li>
+<li><p> EAF_HRC: effect allele frequency in the Haplotype Reference Consortium reference panel (HRC)
+</p>
+</li>
+<li><p> Zscore: meta-analysis Z score
+</p>
+</li>
+<li><p> stdBeta: standardized beta coefficient*
+</p>
+</li>
+<li><p> SE: standard error of the beta coefficient*
+</p>
+</li>
+<li><p> P: P-value
+</p>
+</li>
+<li><p> N_analyzed: sample size
+</p>
+</li>
+<li><p> minINFO: minimum info score (SNP quality measure) across all cohorts
+</p>
+</li>
+<li><p> EffectDirection: direction of the effect in each of the cohorts, order: COGENT,GENR,GfG,IMAGEN,NESCOG,BLTS-A,BLTS-C,RS,S4S,STSA-SATSA+GENDER,STSA-HARMONY,DTR-L,DTR-M,STR,TEDS1,TEDS2,UKB-ts,UKB-wb,HIQ
+</p>
+</li></ul>
+
+
+
+</div>
+</main>
+</div>
+</body></html>

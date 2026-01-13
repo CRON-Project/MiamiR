@@ -2,14 +2,14 @@
 % Please edit documentation in R/Main_Functions_Annotate_Data.R
 \name{Annotate_Data}
 \alias{Annotate_Data}
-\title{Annotated, Summary Statistics with RSIDs}
+\title{Annotated, Summary Statistics with chromosomal index RsIDs}
 \usage{
 Annotate_Data(..., session = NULL)
 }
 \arguments{
 \item{...}{Shadow argument to detect inherited arguments passed and modified from the Single_Plot() function; defaults to NULL}
 
-\item{Data}{These are the summary statistics (either file path(s),environmental object(s) or a variable(s) containing such contents) to be plotted; defaults to NULL}
+\item{Data}{These are the summary statistics (either file path(s),environmental object(s) or a variable(s) containing such contents) to be plotted; defaults to NULL (can be a list for multiple runs)}
 
 \item{Chromosome_Column}{Manually specify chromosome column; defaults to NULL, leading to auto-detection}
 
@@ -25,14 +25,14 @@ Annotate_Data(..., session = NULL)
 
 \item{Verbose}{Prevent display of progress bar as function is running and instead show key milestone outputs/messages (mainly for debugging purposes); defaults to FALSE.}
 
-\item{Genome_Build}{Reference genome to base required RSID annotations around; defaults to grch38}
+\item{Genome_Build}{Reference genome to base required RSID annotations around; defaults to grch38 (grch37 also allowed)}
 }
 \value{
-Annotated dataframe with Lab column containing RSIDs is allocated to specified object and the resulting summary statistics can then be passed to other MiamiR functions
+Annotated data frame with Lab column containing RsIDs for chromosome index SNPs is allocated to specified object and the resulting summary statistics can then be passed to other MiamiR functions
 }
 \description{
-Annotated, Summary Statistics with RSIDs
+Annotated, Summary Statistics with chromosomal index RsIDs
 }
 \examples{
- Annotated_Data <- Annotate_Data(Data = Intelligence_Sum_Stats)
+ Annotated_Data <- Annotate_Data(Data = Intelligence_Sum_Stats,  Genome_Build = "grch37")
 }
