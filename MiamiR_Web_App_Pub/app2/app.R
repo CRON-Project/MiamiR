@@ -1,39 +1,43 @@
 
-#rm(list = ls(envir = .GlobalEnv), envir = .GlobalEnv)
-
-use_wrapper <- FALSE
-
-#devtools::load_all(".")
-
-suppressPackageStartupMessages({
-
-  library(MiamiR)
-  library(shiny)
-  library(grid)
-  library(ggplot2)
-  library(ggplotify)
-  library(vroom)
-  library(slickR)
-  library(ggiraph)
-  library(rlang)
-  library(tools)
-  library(dplyr)
-  library(stringr)
-  library(stringi)
-  library(ggtext)
-  library(ggh4x)
-  library(patchwork)
-  library(viridis)
-  library(gtable)
-  library(plotly)
-  library(htmlwidgets)
-  library(ggrastr)
-  library(cowplot)
-
-})
+    options(shiny.useragg = FALSE)   # force Shiny NOT to use ragg
+    options(bitmapType = "cairo")    # more reliable headless rendering
 
 
-options(shiny.maxRequestSize = -1)
+  # rm(list = ls(envir = .GlobalEnv), envir = .GlobalEnv)
+
+   use_wrapper <- FALSE
+
+  # devtools::load_all(".")
+
+  suppressPackageStartupMessages({
+
+    library(MiamiR)
+    library(shiny)
+    library(grid)
+    library(ggplot2)
+    library(ggplotify)
+    library(vroom)
+    library(slickR)
+    library(ggiraph)
+    library(rlang)
+    library(tools)
+    library(dplyr)
+    library(stringr)
+    library(stringi)
+    library(ggtext)
+    library(ggh4x)
+    library(patchwork)
+    library(viridis)
+    library(gtable)
+    library(plotly)
+    library(htmlwidgets)
+    library(ggrastr)
+    library(cowplot)
+
+  })
+
+
+  options(shiny.maxRequestSize = -1)
 
 #Load functions from package
 
@@ -48,35 +52,42 @@ if (requireNamespace("MiamiR", quietly = TRUE)) {
   Model_Munge       <- MiamiR::Model_Munge
 
   .Single_Plot_original       <- tryCatch(getFromNamespace(".Single_Plot_original", "MiamiR"),
+
                                           error = function(e) MiamiR::Single_Plot)
 
   .Regional_Plot_original     <- tryCatch(getFromNamespace(".Regional_Plot_original", "MiamiR"),
+
                                           error = function(e) MiamiR::Regional_Plot)
 
   .METASOFT_File_Gen_original <- tryCatch(getFromNamespace("METASOFT_File_Gen", "MiamiR"),
+
                                           error = function(e) MiamiR::METASOFT_File_Gen)
 
   .Forest_Plot_original       <- tryCatch(getFromNamespace(".Forest_Plot_original", "MiamiR"),
+
                                           error = function(e) MiamiR::Forest_Plot)
 
   .Model_Munge_original       <- tryCatch(getFromNamespace("Model_Munge", "MiamiR"),
+
                                           error = function(e) MiamiR::Model_Munge)
 
   Segregate_HLA_Plot <- MiamiR::Segregate_HLA_Plot
 
   .Segregate_HLA_Plot_original <- tryCatch(
-    getFromNamespace(".Segregate_HLA_Plot_original", "MiamiR"),
-    error = function(e) MiamiR::Segregate_HLA_Plot
-  )
 
+    getFromNamespace(".Segregate_HLA_Plot_original", "MiamiR"),
+
+    error = function(e) MiamiR::Segregate_HLA_Plot
+
+  )
 
 } else {
 
   if (file.exists("R/Segregate_HLA_Plot.R")) source("R/Segregate_HLA_Plot.R")
+
   stopifnot(exists("Segregate_HLA_Plot", mode="function"))
 
   .Segregate_HLA_Plot_original <- if (exists(".Segregate_HLA_Plot_original")) .Segregate_HLA_Plot_original else Segregate_HLA_Plot
-
 
   if (file.exists("R/Miami_Plot.R"))        source("R/Miami_Plot.R")
   if (file.exists("R/Single_Plot.R"))       source("R/Single_Plot.R")
@@ -109,19 +120,19 @@ if (requireNamespace("MiamiR", quietly = TRUE)) {
 
 }
 
-#Shared helpers
+  # Shared helpers
 
-#Regional interactive helpers (prefixed)
+  # Regional interactive helpers (prefixed)
 
-`%||%` <- function(a,b) if (!is.null(a)) a else b
+  `%||%` <- function(a,b) if (!is.null(a)) a else b
 
-reg_BASE_SVG_WIDTH_IN <- 30
-reg_DISPLAY_WIDTH_PX  <- 1200
-reg_LEFT_PAD_PT       <- 80
-reg_CAPTURE_SIZE_TOP    <- 18
-reg_CAPTURE_SIZE_BOTTOM <- 14
+  reg_BASE_SVG_WIDTH_IN <- 30
+  reg_DISPLAY_WIDTH_PX  <- 1200
+  reg_LEFT_PAD_PT       <- 80
+  reg_CAPTURE_SIZE_TOP    <- 18
+  reg_CAPTURE_SIZE_BOTTOM <- 14
 
-reg_split_regional <- function(x) {
+ reg_split_regional <- function(x) {
 
   if (is.list(x) && all(c("object","object2") %in% names(x))) return(list(top = x$object, bottom = x$object2))
 
@@ -143,9 +154,9 @@ reg_split_regional <- function(x) {
 
   stop("Couldn't split: unknown structure")
 
-}
+ }
 
-reg_find_xy_for_overlay <- function(p) {
+ reg_find_xy_for_overlay <- function(p) {
 
   pick <- function(nm, map, dat) {
 
@@ -177,18 +188,33 @@ reg_find_xy_for_overlay <- function(p) {
 
         dat$.__ymid <- (dat[[y1]] + dat[[y2]])/2
 
-        return(list(df = dat, x = ".__xmid", y = ".__ymid",
-                    xlab = paste0(x1,"..",x2), ylab = paste0(y1,"..",y2)))
+        return(
+
+          list(
+
+            df = dat, x = ".__xmid", y = ".__ymid",
+                    xlab = paste0(x1,"..",x2), ylab = paste0(y1,"..",y2)
+
+            )
+
+          )
 
       }
 
       if (!is.null(y1)) {
 
         dat$.__ymid <- dat[[y1]]
-        return(list(df = dat, x = ".__xmid", y = ".__ymid",
-                    xlab = paste0(x1,"..",x2), ylab = y1))
 
-      }
+        return(
+
+          list(
+
+            df = dat, x = ".__xmid", y = ".__ymid",
+                    xlab = paste0(x1,"..",x2), ylab = y1)
+
+               )
+
+        }
 
     }
 
@@ -202,6 +228,7 @@ reg_find_xy_for_overlay <- function(p) {
       if (!is.null(ymin) && !is.null(ymax)) {
 
         dat$.__ymid <- (dat[[ymin]] + dat[[ymax]])/2
+
         return(list(df = dat, x = ".__xmid", y = ".__ymid",
                     xlab = paste0(xmin,"..",xmax), ylab = paste0(ymin,"..",ymax)))
 
@@ -215,7 +242,7 @@ reg_find_xy_for_overlay <- function(p) {
 
 }
 
-reg_build_tooltips <- function(df, xlab, ylab, xcol = NULL, ycol = NULL) {
+ reg_build_tooltips <- function(df, xlab, ylab, xcol = NULL, ycol = NULL) {
 
   if ("Hover_Info" %in% names(df)) return(as.character(df$Hover_Info))
 
@@ -234,7 +261,9 @@ reg_build_tooltips <- function(df, xlab, ylab, xcol = NULL, ycol = NULL) {
     if (!is.null(cl) && cl %in% c("P", "LOG10P")) {
 
       num <- suppressWarnings(as.numeric(v))
+
       if (is.finite(num)) return(format(signif(num, 3), trim = TRUE, scientific = TRUE))
+
       return(as.character(v))
 
     }
@@ -301,7 +330,7 @@ reg_build_tooltips <- function(df, xlab, ylab, xcol = NULL, ycol = NULL) {
 
 }
 
-reg_add_big_capture_layer <- function(p, size_pts = 60, tag = "panel") {
+ reg_add_big_capture_layer <- function(p, size_pts = 60, tag = "panel") {
 
   info <- reg_find_xy_for_overlay(p)
 
@@ -5809,8 +5838,11 @@ data = list(rows_map = rows_map, col_order = col_order)
     )
 
     g <- htmlwidgets::prependContent(
+
       g,
+
       htmltools::tags$style(htmltools::HTML("
+
       html, body { margin:0; background:#fff; }
       #sp-modal { position: fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.4); z-index:99999; }
       #sp-modal .content { position:relative; background:#fff; width:min(720px,92vw); border-radius:16px; padding:22px 24px 18px; box-shadow:0 18px 40px rgba(0,0,0,.25); border:1px solid #e5e7eb; }
@@ -5832,6 +5864,7 @@ data = list(rows_map = rows_map, col_order = col_order)
     data_payload <- list(rows_map = rows_map, cols = attr(p_i, "cols"))
 
     g <- htmlwidgets::onRender(
+
       g,
       "
     function(el, x, data){
@@ -5873,7 +5906,7 @@ data = list(rows_map = rows_map, col_order = col_order)
 
   var keys = (order && order.length) ? order.slice() : Object.keys(row).sort();
 
-  // ✂️ cut at CHROM (exclude CHROM and everything after it)
+  // cut at CHROM (exclude CHROM and everything after it)
 
   var cut = keys.findIndex(function(k){ return String(k) === 'CHROM'; });
   if (cut >= 0) keys = keys.slice(0, cut);
@@ -5891,8 +5924,6 @@ data = list(rows_map = rows_map, col_order = col_order)
   container.appendChild(tbl);
 
 }
-
-
       function findRS(s){ var m=String(s||'').match(/rs\\d+/i); return m?m[0]:''; }
 
       el.addEventListener('click', function(e){
@@ -5912,6 +5943,7 @@ data = list(rows_map = rows_map, col_order = col_order)
           var pos = row.POS || row.GENPOS || row.Position || row.BP || row.position;
           if(chr && pos) term = String(chr)+':'+String(pos);
         }
+
         var q = encodeURIComponent(term || bare || 'variant');
         aGo.href = 'https://www.google.com/search?q=' + q;
         aDb.href = rs ? ('https://www.ncbi.nlm.nih.gov/snp/' + rs)
@@ -5919,9 +5951,13 @@ data = list(rows_map = rows_map, col_order = col_order)
 
         modal.style.display = 'flex';
       });
+
     }
+
     ",
+
     data = data_payload
+
     )
 
     tmphtml <- tempfile(pattern = "single_girafe_", fileext = ".html")
@@ -5969,6 +6005,7 @@ data = list(rows_map = rows_map, col_order = col_order)
     else textInput(inputId, label = paste0(name, ""), value = deparse(val, width.cutoff = 60))
 
   }
+
   parse_input_val_reg <- function(x) {
 
     if (is.null(x)) return(NULL)
@@ -6006,8 +6043,11 @@ data = list(rows_map = rows_map, col_order = col_order)
     f_reg <- get_target_fun(); f_sin <- get_single_fun()
     reg_fmls <- formals(f_reg); sin_fmls <- formals(f_sin)
     drops <- c("Data","Top_Data","Bottom_Data","...",".dots")
+
     keep_reg <- setdiff(names(reg_fmls), drops); keep_sin <- setdiff(names(sin_fmls), drops)
+
     reg_def <- lapply(reg_fmls[keep_reg], function(x) safe_eval_default_reg(x, environment(f_reg))); names(reg_def) <- keep_reg
+
     sin_def <- lapply(sin_fmls[keep_sin], function(x) safe_eval_default_reg(x, environment(f_sin))); names(sin_def) <- keep_sin
     combined <- modifyList(sin_def, reg_def)
 
@@ -6034,6 +6074,7 @@ data = list(rows_map = rows_map, col_order = col_order)
       else {
 
         val <- input[[paste0("arg_", nm)]]
+
         if (is.null(val)) regional_defaults()[[nm]] else parse_input_val_reg(val)
 
       }
@@ -6047,9 +6088,13 @@ data = list(rows_map = rows_map, col_order = col_order)
   build_call_preview_reg <- function(arg_list, data_label = "user_data") {
 
     shown <- Filter(Negate(is.null), arg_list)
+
     parts <- vapply(names(shown), function(nm) paste0(nm, " = ", format_arg_val_reg(shown[[nm]])), "")
+
     paste0("Regional_Plot(\n  Data = ", data_label,
+
            if (length(parts)) paste0(",\n  ", paste(parts, collapse = ",\n  ")) else "",
+
            "\n)")
 
   }
@@ -6134,8 +6179,10 @@ data = list(rows_map = rows_map, col_order = col_order)
       results[[key]] <- list(label = dispname, plots = plots)
 
       img_files <- lapply(seq_along(plots), function(j) {
+
         plot_obj <- plots[[j]]
         dynamic_height <- attr(plot_obj, "dynamic_height")
+
         if (is.null(dynamic_height) || !is.finite(dynamic_height)) dynamic_height <- 7
 
         tmpfile <- tempfile(fileext = ".png")
@@ -6143,6 +6190,7 @@ data = list(rows_map = rows_map, col_order = col_order)
         gg <- if (inherits(plot_obj, c("gg","ggplot"))) plot_obj else ggplotify::as.ggplot(plot_obj)
 
         ggsave(
+
           filename = tmpfile,
           plot     = gg,
           width    = w_run,
@@ -6152,6 +6200,7 @@ data = list(rows_map = rows_map, col_order = col_order)
           limitsize = FALSE
         )
         tmpfile
+
       })
 
       previews[[key]] <- unlist(img_files, use.names = FALSE)
@@ -6165,22 +6214,31 @@ data = list(rows_map = rows_map, col_order = col_order)
   output$regional_dynamic_tabs <- renderUI({
 
     res <- regional_results(); prevs <- regional_previews()
+
     tabs <- lapply(names(res), function(k) {
+
       lbl <- res[[k]]$label
+
       tabPanel(
+
         title = lbl, value = k,
+
         div(
+
           slickROutput(paste0("regional_carousel_", k), width = "100%", height = "750px"),
           tags$br()
 
         )
+
       )
+
     })
 
     for (k in names(res)) local({
 
       kk <- k
       output[[paste0("regional_carousel_", kk)]] <- renderSlickR({
+
         imgs <- regional_previews()[[kk]]
 
         if (!length(imgs)) return(NULL)
@@ -6189,6 +6247,7 @@ data = list(rows_map = rows_map, col_order = col_order)
           settings(dots = TRUE, infinite = TRUE, arrows = TRUE, adaptiveHeight = FALSE)
 
         htmlwidgets::onRender(
+
           w,
           sprintf("
           function(el){
@@ -6208,9 +6267,11 @@ data = list(rows_map = rows_map, col_order = col_order)
       })
 
       output[[paste0("download_zip_png_regional_", kk)]] <- downloadHandler(
+
         filename = function() {
 
           paste0("Regional_", sanitize(regional_results()[[kk]]$label), "_plots_png.zip")
+
         },
 
         content  = function(file) {
@@ -6242,19 +6303,27 @@ data = list(rows_map = rows_map, col_order = col_order)
             gg <- if (inherits(p, c("gg","ggplot"))) p else ggplotify::as.ggplot(p)
 
             ggsave(
+
               filename = f, plot = gg,
               width = w, height = h, dpi = dpi,
               units = "in", limitsize = FALSE
+
             )
+
             f
+
           }, character(1))
 
           zip_it(files, file)
+
         },
-        contentType = "application/zip"
+
+        contentType = "application/zip"#
+
       )
 
       # PDF ZIP per dataset (full replacement)
+
       output[[paste0("download_zip_pdf_regional_", kk)]] <- downloadHandler(
 
         filename = function() {
@@ -6307,7 +6376,7 @@ data = list(rows_map = rows_map, col_order = col_order)
     do.call(tabsetPanel, c(list(id = "regional_output_tabs"), tabs))
   })
 
-  #Annotate_Data
+  # Annotate_Data
 
   annotate_defaults <- reactive({
 
@@ -6320,6 +6389,7 @@ data = list(rows_map = rows_map, col_order = col_order)
     if (length(keep) == 0) {
 
       return(list(
+
         Chromosome_Column       = NULL,
         Position_Column         = NULL,
         SNP_ID_Column           = NULL,
@@ -6366,6 +6436,7 @@ data = list(rows_map = rows_map, col_order = col_order)
            if (length(parts)) paste0(",\n  ", paste(parts, collapse = ",\n  ")) else "",
 
            "\n)")
+
   }
 
   annotate_call_txt <- reactive({
@@ -6379,7 +6450,6 @@ data = list(rows_map = rows_map, col_order = col_order)
   })
 
   output$annotate_call_preview <- renderText(annotate_call_txt())
-
 
   observeEvent(input$run_annotate, {
 
@@ -6419,13 +6489,17 @@ data = list(rows_map = rows_map, col_order = col_order)
       lbl <- res[[k]]$label
 
       tabPanel(
+
         title = lbl, value = k,
         div(
+
           h4("Preview (first 10 rows)"),
           tableOutput(paste0("annotate_table_", k))
+
         )
 
       )
+
     })
 
     for (k in names(res)) local({
@@ -6461,11 +6535,17 @@ data = list(rows_map = rows_map, col_order = col_order)
   })
 
   .METASOFT_File_Gen_original <- tryCatch(
+
     getFromNamespace(".METASOFT_File_Gen_original", "MiamiR"),
+
     error = function(e) {
+
       tryCatch(getFromNamespace("METASOFT_File_Gen", "MiamiR"),
+
                error = function(e2) MiamiR::METASOFT_File_Gen)
+
     }
+
   )
 
   .METASOFT_File_Gen_original <-
@@ -6475,21 +6555,27 @@ data = list(rows_map = rows_map, col_order = col_order)
   else METASOFT_File_Gen
 
 
-  #METASOFT
+  # METASOFT
 
   meta_defaults <- reactive({
+
     fmls  <- tryCatch(formals(.METASOFT_File_Gen_original), error = function(e) NULL)
+
     drops <- c("Data", "...", ".dots", "session", "input", "output")
 
     keep  <- if (!is.null(fmls)) setdiff(names(fmls), drops) else character(0)
 
     defs  <- lapply(fmls[keep], function(x)
+
       tryCatch(eval(x, envir = environment(.METASOFT_File_Gen_original)), error = function(e) NULL))
+
     names(defs) <- keep
     defs
+
   })
 
   output$meta_arg_inputs <- renderUI({
+
     defs <- meta_defaults()
 
     if (is.null(defs) || !length(defs))
@@ -6497,6 +6583,7 @@ data = list(rows_map = rows_map, col_order = col_order)
       return(helpText("No additional METASOFT settings found in this build."))
 
     lapply(names(defs), function(nm) make_input_like_meta("meta_", nm, defs[[nm]]))
+
   })
 
 
@@ -6515,8 +6602,10 @@ data = list(rows_map = rows_map, col_order = col_order)
   build_call_preview_meta <- function(arg_list, file_labels) {
 
     shown <- Filter(Negate(is.null), arg_list)
+
     parts <- vapply(names(shown), function(nm) paste0(nm, " = ", format_arg_val_meta(shown[[nm]])), "")
     paste0("METASOFT_File_Gen(\n  Data = c(", paste(paste0("\"", file_labels, "\""), collapse = ", "), ")",
+
 
            if (length(parts)) paste0(",\n  ", paste(parts, collapse = ",\n  ")) else "", "\n)")
 
@@ -6545,6 +6634,7 @@ data = list(rows_map = rows_map, col_order = col_order)
     }
 
     args <- meta_arg_vals(); args$Data <- lbls
+
     out_df <- tryCatch({ do.call(.METASOFT_File_Gen_original, args) }, error = function(e) { showNotification(paste("Error:", e$message), type = "error"); NULL })
 
     if (!is.null(out_df)) meta_results(as.data.frame(out_df))
@@ -6554,9 +6644,13 @@ data = list(rows_map = rows_map, col_order = col_order)
   output$meta_output_preview <- renderTable({ head(meta_results(), 10) }, striped = TRUE, bordered = TRUE, hover = TRUE, rownames = FALSE)
 
   output$download_meta_csv <- downloadHandler(
+
     filename = function() "METASOFT_File_Gen_output.csv",
+
     content = function(file) { utils::write.csv(meta_results(), file, row.names = FALSE, na = "") },
+
     contentType = "text/csv"
+
   )
 
   #Forest_Plot
@@ -6573,43 +6667,58 @@ data = list(rows_map = rows_map, col_order = col_order)
 
   })
 
-  # --- Forest_Plot: collect args from the settings panel ---
+  # Forest_Plot: collect args from the settings
+
   collect_forest_args <- function() {
+
     fun <- tryCatch(.Forest_Plot_original, error = function(e) NULL)
+
     if (!is.function(fun)) fun <- get_forest_fun()
 
     sa   <- formals(fun)
     keep <- setdiff(names(sa), c("Data", "session", "..."))
 
     args <- list()
+
     for (arg in keep) {
+
       v <- parse_input_val_meta(input[[paste0("forest_", arg)]])
       if (!is.null(v)) args[[arg]] <- v
+
     }
+
     list(fun = fun, args = args)
+
   }
 
+  # Forest_Plot: build settings panel inputs
 
-  # --- Forest_Plot: build settings panel inputs ---
   output$forest_arg_inputs <- renderUI({
-    # Prefer the original if present; otherwise use the public function
+
     fun <- tryCatch(.Forest_Plot_original, error = function(e) NULL)
     if (!is.function(fun)) fun <- get_forest_fun()
 
     sa <- formals(fun)
 
     # Don't generate controls for these arguments
+
     drop <- c("Data", "session", "...")
     keep <- setdiff(names(sa), drop)
 
     lapply(
+
       keep,
+
       function(arg) make_input_like_meta(
+
         prefix  = "forest_",
         name    = arg,
         default = safe_eval_default_any(sa[[arg]], environment(fun))
+
       )
+
     )
+
   })
 
 
@@ -6642,22 +6751,30 @@ data = list(rows_map = rows_map, col_order = col_order)
   })
 
   output$forest_call_preview <- renderText({
+
     fun <- tryCatch(.Forest_Plot_original, error = function(e) NULL)
+
     if (!is.function(fun)) fun <- get_forest_fun()
+
     sa <- formals(fun)
 
     drop <- c("Data", "session", "...")
     keep <- setdiff(names(sa), drop)
 
     args <- list()
+
     for (arg in keep) {
+
       v <- parse_input_val_meta(input[[paste0("forest_", arg)]])
       if (!is.null(v)) args[[arg]] <- v
+
     }
 
     shown <- Filter(Negate(is.null), args)
     parts <- vapply(names(shown),
+
                     function(nm) sprintf("%s = %s", nm, format_arg_val_meta(shown[[nm]])),
+
                     character(1))
 
     paste0("Forest_Plot(\n  Data = <file(s)>",
@@ -6665,11 +6782,12 @@ data = list(rows_map = rows_map, col_order = col_order)
            "\n)")
   })
 
-  # --- Forest_Plot: run with user-specified args (single call; supports 1..N files) ---
+  # Forest_Plot: run with user-specified args
+
   observeEvent(input$run_forest, {
     req(input$forest_files)
 
-    fa          <- collect_forest_args()             # from earlier snippet
+    fa          <- collect_forest_args()
     fun         <- fa$fun
     extra_args  <- fa$args
 
@@ -6677,34 +6795,51 @@ data = list(rows_map = rows_map, col_order = col_order)
     labels_vec  <- tools::file_path_sans_ext(input$forest_files$name)
     key_vec     <- vapply(labels_vec, sanitize, character(1))
 
-    # Single call: pass ALL files in one go
+    # Single call: pass files in one go
+
     args <- c(list(Data = paths), extra_args)
 
     forest_append_log("Running Forest_Plot with ", length(paths), " file(s) ...")
+
     out <- tryCatch(
+
       do.call(fun, args),
+
       error = function(e) { forest_append_log("ERROR: ", conditionMessage(e)); NULL }
+
     )
     req(!is.null(out))
 
-    # Normalize output → list of plots
+    # Normalize output
+
     plots <- list()
+
     if (tube_is_plot_like(out)) {
+
       plots <- list(out)
       names(plots) <- key_vec[1]
+
     } else if (is.list(out)) {
+
       # keep only plot-like entries; if nested, flatten shallowly
+
       cand <- Filter(tube_is_plot_like, out)
       if (!length(cand) && any(vapply(out, is.list, logical(1)))) {
         cand <- Filter(tube_is_plot_like, unlist(out, recursive = FALSE))
+
       }
+
       plots <- cand
+
     }
     validate(need(length(plots) > 0, "Forest_Plot returned no plot objects."))
 
     # Build previews/tabs
+
     grobs <- list(); previews <- list(); labels <- list(); heights <- numeric(0); i <- 0
+
     for (nm in names(plots)) {
+
       i <- i + 1
       gp  <- plots[[nm]]
       key <- nm %||% key_vec[pmin(i, length(key_vec))]
@@ -6715,10 +6850,13 @@ data = list(rows_map = rows_map, col_order = col_order)
       heights[key]  <- tube_get_dyn_height(gp, fallback = 8)
 
       tmp <- tempfile(fileext = ".png")
+
       ggsave(
+
         filename = tmp, plot = ggplotify::as.ggplot(gp),
         width = forest_last_w(), height = heights[key],
         dpi = forest_last_dpi(), units = "in", limitsize = FALSE
+
       )
       previews[[key]] <- tmp
     }
@@ -6909,7 +7047,9 @@ data = list(rows_map = rows_map, col_order = col_order)
 
     }, contentType = "image/png"
   )
+
   output$download_forest_pdf <- downloadHandler(
+
     filename = function() paste0(make_forest_base(), ".pdf"),
 
     content = function(file) {
@@ -6945,39 +7085,56 @@ data = list(rows_map = rows_map, col_order = col_order)
     names(defs) <- keep; defs
   })
 
-  # --- Model_Munge: build settings panel inputs ---
-  # --- Model_Munge: build settings panel inputs ---
+  # Model_Munge: build settings panel inputs
+
   output$mm_arg_inputs <- renderUI({
+
     # Prefer the original if present; otherwise use the public function
+
     fun <- tryCatch(.Model_Munge_original, error = function(e) NULL)
+
     if (!is.function(fun)) fun <- Model_Munge
+
     if (!is.function(fun)) {
+
       return(div(helpText("Model_Munge() not found.")))
+
     }
 
     sa   <- formals(fun)
+
     drop <- c("Data", "Model", "session", "...")
+
     keep <- setdiff(names(sa), drop)
 
-    # If there are no configurable args, show a helpful note + an optional “extra args” box
+    # If there are no configurable args, show a helpful note
+
     if (length(keep) == 0) {
+
       return(tagList(
+
         div(class = "text-muted",
             "Data/Model already considered")
-        # Optional: let power users pass extras via ...
+
       ))
+
     }
 
     lapply(
+
       keep,
+
       function(arg) make_input_like_meta(
+
         prefix  = "mm_",
         name    = arg,
         default = safe_eval_default_any(sa[[arg]], environment(fun))
-      )
-    )
-  })
 
+      )
+
+    )
+
+  })
 
   mm_arg_vals <- reactive({
 

@@ -130,7 +130,7 @@ Single_Plot<- function(Data = NULL,
                        Lower_Mult = NULL,
                        Upper_Mult = NULL,
                        Top_Expand = NULL,
-                       Interactive = FALSE,
+                       Interactive = TRUE,
                        Verbose = FALSE)
 
 {
