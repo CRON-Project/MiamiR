@@ -522,7 +522,7 @@ ggplot2::ggsave(
   plot = Forest_Plot,
   height = attr(Forest_Plot, "dynamic_height", exact = TRUE),
   width = 10,
-  dpi = 600,
+  dpi = 900,
   units = "in"
 )
 ```
