@@ -1071,13 +1071,13 @@ Single_Plot<- function(Data = NULL,
 
   message("Using standard for Single_Plot()")
 
-  print(head(Data))
+  #print(head(Data))
 
   # Pretty count like 123,456
 
   .point_count <- formatC(nrow(Data), format = "d", big.mark = ",")
 
-  print(head(Data))
+  #print(head(Data))
 
   a <- .progress_break(
 

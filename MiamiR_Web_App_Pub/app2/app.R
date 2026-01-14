@@ -1,6 +1,6 @@
 
-    options(shiny.useragg = FALSE)   # force Shiny NOT to use ragg
-    options(bitmapType = "cairo")    # more reliable headless rendering
+  # options(shiny.useragg = FALSE)   # force Shiny NOT to use ragg
+  # options(bitmapType = "cairo")    # more reliable headless rendering
 
 
   # rm(list = ls(envir = .GlobalEnv), envir = .GlobalEnv)
