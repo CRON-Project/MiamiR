@@ -1071,6 +1071,9 @@ Single_Plot<- function(Data = NULL,
 
   message("Using standard for Single_Plot()")
 
+
+  print(Data)
+
   # Pretty count like 123,456
 
   .point_count <- formatC(nrow(Data), format = "d", big.mark = ",")
