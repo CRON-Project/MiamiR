@@ -22,3 +22,4 @@
 #' @name Fake_HLA_10K
 #' @usage data(Fake_HLA_10K)
 #' @format A data frame with 10,000 rows (randomly selected) and 6 variables
+"Fake_HLA_10K"

@@ -13,7 +13,7 @@
 #' @param X_Axis_Separation Continuous value of the specific break separation to show on the X axis; defaults to NULL - leading to auto-calculation
 #' @param Strip_Colour Colour of the strips highlighting the groups of covariates or SNPs under a certain category; defaults to NULL
 #' @param Strips Display strips highlighting groups of interest; defaults to TRUE
-#' @param Pre_Calculated_CIs Indicate that custom CIs are pre-calculated and available in datasets; defaults to FALSE
+#' @param Pre_Calculated_CIs Indicate that custom CIs are pre-calculated and available in datasets; defaults to NULL, leading to determination automatically
 #' @param Legend_Title_Size Legend title size; defaults to 13
 #' @param Legend_Text_Size Legend text size; defaults to 11
 #' @param Legend_Title Title to display next to the legend; defaults to "Data"
@@ -107,7 +107,7 @@
         Effect_Allele_Column = NULL,
         Upper_CI_Column = NULL,
         Lower_CI_Column = NULL,
-        Pre_Calculated_CIs = FALSE,
+        Pre_Calculated_CIs = NULL,
         Names = NULL,
         Styles = NULL,
         Shapes = NULL,
@@ -496,6 +496,30 @@
     Upper_CI_Column      <- detect_upper_ci_column (Data, Upper_CI_Column)
     Lower_CI_Column      <- detect_lower_ci_column (Data, Lower_CI_Column)
 
+    if(is.null(Pre_Calculated_CIs)){
+
+    Pre_Calculated_CIs <- FALSE
+
+    if (!is.null(Lower_CI_Column) &&
+
+        !is.null(Upper_CI_Column) &&
+
+        Lower_CI_Column %in% names(Data) &&
+
+        Upper_CI_Column %in% names(Data) &&
+
+        !anyNA(Data[[Lower_CI_Column]]) &&
+
+        !anyNA(Data[[Upper_CI_Column]])) {
+
+      Pre_Calculated_CIs <- TRUE
+
+      message("Uisng detected pre-calculated CIs")
+
+    }
+
+    }
+
     message("Assigning key columns to standardised nomenclature")
 
     if(!is.null(Chromosome_Column))
@@ -554,9 +578,73 @@
 
         Test_Statistic <- "BETA"
 
+      } else if (!is.null(BETA_Column) && !is.null(OR_Column)) {
+
+        n_na_beta <- sum(is.na(Data[[BETA_Column]]))
+        n_na_or   <- sum(is.na(Data[[OR_Column]]))
+
+        Test_Statistic <- if (n_na_or < n_na_beta) "OR" else "BETA"  # tie -> BETA
+
       } else {
 
-        Test_Statistic <- "BETA" # Default if both are NULL
+        Test_Statistic <- "BETA" # Default if both are NULL o other condition unaccounted for...
+
+      }
+
+    }
+
+    if(Pre_Calculated_CIs == TRUE)
+
+    {
+
+      Test_Statistic_Choice <- Test_Statistic # Make sure it is correct
+
+
+    }
+
+
+    if(Pre_Calculated_CIs == T)
+
+    {
+
+      Data$UL <- Data[[Upper_CI_Column]]
+      Data$LL <- Data[[Lower_CI_Column]]
+
+      # If using autos need to specify what is being used
+
+    }else{
+
+      # Make sure they exist at least for select()
+
+      Data$LL <- NA
+      Data$UL <- NA
+
+    }
+
+    message("Using ", Test_Statistic, " Values")
+
+    if (all(is.na(Data[[SE_Column]]))) {
+
+      message("Calculating proxy SE, as all missing, for tabular information")
+
+      p <- Data[[PValue_Column]]
+      z <- qnorm(p / 2, lower.tail = FALSE)
+
+      Data[[SE_Column]] <- NA_real_
+
+      ok <- is.finite(p) & p > 0 & p < 1 & is.finite(z) & z > 0
+
+      if (identical(Test_Statistic, "BETA")) {
+
+        b <- Data[[BETA_Column]]
+        ok2 <- ok & is.finite(b)
+        Data[[SE_Column]][ok2] <- abs(b[ok2] / z[ok2])
+
+      } else if (identical(Test_Statistic, "OR")) {
+
+        or <- Data[[OR_Column]]
+        ok2 <- ok & is.finite(or) & or > 0
+        Data[[SE_Column]][ok2] <- abs(log(or[ok2]) / z[ok2])
 
       }
 
@@ -590,14 +678,6 @@
 
     }
 
-    if(Pre_Calculated_CIs == T)
-
-    {
-
-      Data$LL <- Data[[Upper_CI_Column]]
-      Data$UL <- Data[[Lower_CI_Column]]
-
-    }
 
     if(Model_Reference == T)
 
@@ -723,7 +803,7 @@
 
     {
 
-      Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, OR, BETA_SE, OR_SE,  P, STUDY, Shape, Style, !!Lab_Col,Real_ID)
+      Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, OR, BETA_SE, OR_SE, UL, LL, P, STUDY, Shape, Style, !!Lab_Col,Real_ID)
 
     }
 
@@ -731,7 +811,7 @@
 
     {
 
-      Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, OR, BETA_SE, OR_SE,  P, STUDY, Shape, Style,Real_ID)
+      Data <- Data %>% dplyr::select(ID, ALLELE0, ALLELE1, CHROM, GENPOS, BETA, OR, BETA_SE, OR_SE, UL, LL,  P, STUDY, Shape, Style,Real_ID)
 
     }
 
@@ -1653,6 +1733,8 @@
 
   message("Computing CIs")
 
+  if(Pre_Calculated_CIs == FALSE) {
+
   if(Test_Statistic_Choice == "BETA")
 
   {
@@ -1666,6 +1748,15 @@
 
     res$ci_lower <- res$beta - (1.96 * res$se)
     res$ci_upper <- res$beta + (1.96 * res$se)
+
+  }
+
+  }else{
+
+
+    res$ci_lower <- res$LL
+    res$ci_upper <- res$UL
+
 
   }
 
@@ -2743,7 +2834,9 @@
 
     min_axis <- null_center - range_width
     max_axis <- null_center + range_width
-    breaks <- seq(min_axis, max_axis, by = X_Axis_Separation)
+
+    kmax <- ceiling(max(abs(mincalc - null_center), abs(maxcalc - null_center)) / X_Axis_Separation)
+    breaks <- null_center + (-kmax:kmax) * X_Axis_Separation
 
     # Null buffer
 

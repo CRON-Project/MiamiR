@@ -20,3 +20,4 @@
 #' @name Fake_Demo_Data
 #' @usage data(Fake_Demo_Data)
 #' @format A data frame with 1,000 rows and 6 variables (simulated)
+"Fake_Demo_Data"

@@ -64,6 +64,7 @@
 #' @param Gene_Track_Vertical_Spacing Units of space to add between each gene track in the Gene_Tracks panel; defaults to 0.75
 #' @param Recombination_Axis_Title_Vjust Number of units of blank space between Recombination_Axis_Title element area and adjacent axis; defaults to 7
 #' @param Manual_LD Specify manual LD matrices, in PLINK format to be projected on to the points via colour binning; defaults to NULL
+#' @param Outline_Points Specify that when showing layered regional association plot with LD values included, that points have a black outline for better resolution interpretation; defaults to TRUE
 #'
 #' @returns Image of Regional Plot(s) is allocated to specified object and the resulting ggplot object can then be saved to an image
 #' @export
@@ -112,6 +113,7 @@ Regional_Plot <- function(Data = NULL,
                           P_Value_Filter = NULL,
                           Panel_Ratio = NULL,
                           Plot_Panel = TRUE,
+                          Outline_Points = TRUE,
                           Target_Position_Breaks = 6,
                           Manual_Decimal_Places = NULL,
                           Point_Colour = "darkblue",
@@ -2725,6 +2727,94 @@ Regional_Plot <- function(Data = NULL,
 
         }
 
+
+      if(Outline_Points == TRUE)
+
+      {
+
+      outline_existing_points_skip_highlights <- function(
+    p,
+    stroke = 0.4,
+    shape = 21,
+    diamond_shape = 18,
+    skip_n_max = 5
+      ) {
+        p2 <- unserialize(serialize(p, NULL))  # deep copy so original isn't touched
+
+        `%||%` <- function(a, b) if (!is.null(a)) a else b
+
+        get_colour_mapping <- function(layer, plot) {
+          layer$mapping$colour %||%
+            layer$mapping$color %||%
+            plot$mapping$colour %||%
+            plot$mapping$color %||%
+            NULL
+        }
+
+        is_diamond_layer <- function(layer) {
+          if (!is.null(layer$aes_params$shape) && identical(layer$aes_params$shape, diamond_shape)) return(TRUE)
+
+          if (!is.null(layer$mapping$shape)) {
+            s <- tryCatch(rlang::get_expr(layer$mapping$shape), error = function(e) NULL)
+            if (is.call(s) && identical(s[[1]], as.name("I")) && length(s) == 2 && identical(s[[2]], diamond_shape)) return(TRUE)
+            if (is.numeric(s) && identical(s, diamond_shape)) return(TRUE)
+          }
+
+          FALSE
+        }
+
+        is_small_highlight_layer <- function(layer, n_max) {
+          d <- layer$data
+          is.data.frame(d) && nrow(d) > 0 && nrow(d) <= n_max
+        }
+
+        for (i in seq_along(p2$layers)) {
+          lyr <- p2$layers[[i]]
+          if (!inherits(lyr$geom, "GeomPoint")) next
+
+          # skip diamond + small highlight layers (e.g., "top one")
+          if (is_diamond_layer(lyr)) next
+          if (is_small_highlight_layer(lyr, skip_n_max)) next
+
+          col_map <- get_colour_mapping(lyr, p2)
+
+          # ensure fill uses the original colour logic
+          if (is.null(lyr$mapping$fill)) {
+            if (!is.null(col_map)) {
+              lyr$mapping$fill <- col_map
+            } else {
+              if (!is.null(lyr$aes_params$colour)) lyr$aes_params$fill <- lyr$aes_params$colour
+              if (!is.null(lyr$aes_params$color))  lyr$aes_params$fill <- lyr$aes_params$color
+            }
+          }
+
+          # black outline, keep fill for original colours
+          lyr$mapping$colour <- rlang::expr(I("black"))
+          lyr$mapping$color  <- NULL
+
+          lyr$aes_params$shape  <- shape
+          lyr$aes_params$stroke <- stroke
+
+          p2$layers[[i]] <- lyr
+        }
+
+        # copy colour scale -> fill scale so fills match exactly
+        sc_col <- p2$scales$get_scales("colour")
+        if (is.null(sc_col)) sc_col <- p2$scales$get_scales("color")
+        if (!is.null(sc_col)) {
+          sc_fill <- sc_col
+          sc_fill$aesthetics <- "fill"
+          p2$scales$add(sc_fill)
+        }
+
+        p2 + ggplot2::guides(fill = "none")
+      }
+
+      p <- outline_existing_points_skip_highlights(p, stroke = 2, skip_n_max = 5)
+     # a_outlined
+
+      }
+
     suppressMessages(suppressWarnings({
 
     if(Gene_Tracks == TRUE)
@@ -2883,6 +2973,8 @@ Regional_Plot <- function(Data = NULL,
 
          attr(plot, "dynamic_height") <- 15
     }
+
+
 
       if (Interactive == 12) {
 
@@ -3194,7 +3286,14 @@ Regional_Plot <- function(..., session = NULL) {
 
     })
 
+
+
+
+
     return(invisible(plots))
+
+
+
   }
 
   # single df

@@ -28,4 +28,4 @@
 #' @name Intelligence_Sum_Stats
 #' @usage data(Intelligence_Sum_Stats)
 #' @format A data frame with 100,000 rows (randomly selected) and 14 variables from: https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST006001-GCST007000/GCST006250/sumstats/README_SavageJansen_2018_intelligence_metaanalysis.txt
-
+"Intelligence_Sum_Stats"

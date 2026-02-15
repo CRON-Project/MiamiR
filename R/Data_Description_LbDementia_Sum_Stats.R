@@ -26,4 +26,4 @@
 #' @usage data(LbDementia_Sum_Stats)
 #' @format A data frame with 100,000 rows (randomly selected) and 10 variables from:
 #' https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90001001-GCST90002000/GCST90001390/
-
+"LbDementia_Sum_Stats"

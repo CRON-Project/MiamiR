@@ -22,3 +22,4 @@
 #' @name Model_One
 #' @usage data(Model_One)
 #' @format A model object
+"Model_One"

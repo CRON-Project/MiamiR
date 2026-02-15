@@ -12,7 +12,7 @@
 #'
 #' @examples METASOFT_Output <- METASOFT_Run(Data = METASOFT_Example_Input)
 
-  METASOFT_Run <- function(Data = NULL, options = character(), REGENIE_Cols = TRUE, Verbose = FALSE ) {
+  METASOFT_Run <- function(Data = NULL, options = character(), REGENIE_Cols = TRUE, METASOFT_jar_location = NULL, Verbose = FALSE ) {
 
   # Allow Data to be a file path
 
@@ -58,7 +58,17 @@
 
     java_path <- tryCatch(system("which java", intern = TRUE), error = function(e) "")
 
-  }else{
+    message("Found java path")
+
+  }
+
+  else if (tolower(Sys.info()[["sysname"]]) == "windows") {
+
+      java_path <- tryCatch(system("where java", intern = TRUE), error = function(e) "")
+
+  }
+
+  else{
 
     java_path <- tryCatch(system("wsl which java", intern = TRUE), error = function(e) "")
 
@@ -74,8 +84,18 @@
 
   # Locate files in MiamiR package (inst/java)
 
-  jar_path <- system.file("java", "METASOFT.jar", package = "MiamiR")
-  p_table  <- system.file("java", "HanEskinPvalueTable.txt", package = "MiamiR")
+  if(is.null(METASOFT_jar_location))
+
+  {
+
+    METASOFT_jar_location <- get("METASOFT_jar_location", envir = parent.frame())
+
+  }
+
+  jar_path <- METASOFT_jar_location
+  p_table <- file.path(dirname(METASOFT_jar_location), "HanEskinPvalueTable.txt")
+  #jar_path <- system.file("java", "METASOFT.jar", package = "MiamiR")
+  #p_table  <- system.file("java", "HanEskinPvalueTable.txt", package = "MiamiR")
 
   # Preview input data (first 10 rows)
 
@@ -134,8 +154,30 @@
 
     res <- system2("java", args = args, stdout = TRUE, stderr = TRUE)
 
+  } else if (tolower(Sys.info()[["sysname"]]) == "windows") {
 
-  } else {
+    args <- c(
+
+      "-jar", jar_path,
+      "-input", input_file,
+      "-output", output_file,
+      "-pvalue_table", p_table,
+      options
+
+    )
+
+    message("jar_path: ", jar_path)
+    message("java_path: ", paste(java_path, collapse = " "))
+    message("input_file: ", input_file)
+    message("output_file: ", output_file)
+
+    message("Running METASOFT meta-analysis...")
+
+    res <- system2(system("where java", intern = TRUE)[1], args = args, stdout = TRUE, stderr = TRUE)
+
+  }
+
+  else {
 
     # Windows via WSL: convert all paths to /mnt/c/... and quote them
 

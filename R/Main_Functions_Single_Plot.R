@@ -130,7 +130,7 @@ Single_Plot<- function(Data = NULL,
                        Lower_Mult = NULL,
                        Upper_Mult = NULL,
                        Top_Expand = NULL,
-                       Interactive = TRUE,
+                       Interactive = FALSE,
                        Verbose = FALSE)
 
 {
@@ -450,7 +450,7 @@ Single_Plot<- function(Data = NULL,
 
   }
 
-  message("Addressing variable chromosome X nomenclature")
+  message("Addressing variable chromosome X, Y and MT nomenclature")
 
   # Use the detected column
 
@@ -463,21 +463,34 @@ Single_Plot<- function(Data = NULL,
   if (is.factor(v)) {
 
     lv <- levels(v)
-    hit <- (lv == "23") | (lv == 23L)
 
-    if (any(hit)) levels(v)[hit] <- "X"
+    hit23 <- (lv == "23") | (lv == 23L)
+    hit24 <- (lv == "24") | (lv == 24L)
+    hit25 <- (lv == "25") | (lv == 25L)
+
+    if (any(hit23)) levels(v)[hit23] <- "X"
+
+    if (any(hit24)) levels(v)[hit24] <- "Y"
+
+    if (any(hit25)) levels(v)[hit25] <- "M"
 
     Data[[col]] <- v
 
   } else {
 
+    # non-factor branch
+
     vc <- as.character(v)
 
-    # map 23/23L -> X
+    idx23 <- (vc == "23") | (vc == "23L")
+    idx24 <- (vc == "24") | (vc == "24L")
+    idx25 <- (vc == "25") | (vc == "25L")
 
-    idx <- (vc == "23") | (vc == "23L")
+    if (any(idx23)) vc[idx23] <- "X"
 
-    if (any(idx)) vc[idx] <- "X"
+    if (any(idx24)) vc[idx24] <- "Y"
+
+    if (any(idx25)) vc[idx25] <- "M"
 
     Data[[col]] <- vc
 
@@ -596,6 +609,8 @@ Single_Plot<- function(Data = NULL,
 
   message("Chromosomes ordered")
 
+  # Need as unique scaling after Single_Plot(), although it also specifies
+
   if (is.null(Chromosome_Label_Drops)){
 
     message("Assigning auto Chromosome_Label_Drops")
@@ -608,7 +623,7 @@ Single_Plot<- function(Data = NULL,
 
     } else {
 
-      Chromosome_Label_Drops <- c(21, 22, "Y")
+      Chromosome_Label_Drops <- c(21, 22, "Y", "M")
 
     }
 
@@ -1023,6 +1038,7 @@ Single_Plot<- function(Data = NULL,
 
   })
 
+
   if(Diamond_Index == TRUE)
 
   {
@@ -1394,6 +1410,13 @@ Single_Plot<- function(Data = NULL,
 
   }
 
+  if (Anchor_Label == "right mirror") {
+
+    HJUST <- 1   # grows right
+    VJUST <- 0.25
+
+  }
+
   if(Anchor_Label == "centre")
 
   {
@@ -1531,7 +1554,7 @@ Single_Plot<- function(Data = NULL,
           ggplot2::aes(x = .data[[Position_Column]], y = log10pval),
           color = Colour_Of_Diamond,
           size = Diamond_Index_Size,
-          alpha = 0.5,
+          alpha = 1,
           pch = 18
         )
 
@@ -1952,6 +1975,57 @@ Single_Plot<- function(Data = NULL,
 
   Plot_Outcome <- d
 
+  # Always round whole number due to condense or not
+
+  # Plot_Outcome <- Plot_Outcome +
+  #
+  #   ggplot2::scale_y_continuous(
+  #
+  #     labels = function(x) formatC(round(x, 0), format = "f", digits = 0)
+  #
+  #   )
+
+  .maybe_clean_y_labels <- function(p) {
+
+    b <- ggplot2::ggplot_build(p)
+
+    # Try to get the actual breaks ggplot decided to use
+
+    pp <- b$layout$panel_params[[1]]
+
+    y_breaks <- NULL
+
+    if (!is.null(pp$y$breaks)) y_breaks <- pp$y$breaks
+    if (is.null(y_breaks) && !is.null(pp$y.major)) y_breaks <- pp$y.major
+
+    # Fallback: if we can't see breaks, do nothing
+
+    if (is.null(y_breaks) || !length(y_breaks)) return(p)
+
+    # Only change anything IF there are non-integer breaks (i.e., would create .5, .0 etc)
+
+    tol <- .Machine$double.eps^0.5
+    has_decimals <- any(abs(y_breaks - round(y_breaks)) > tol, na.rm = TRUE)
+
+    if (!has_decimals) return(p)  # don't fiddle
+
+    # Otherwise: integers print as integers; anything with decimals gets blanked
+
+    message("Eviscerating decimal displays")
+
+    p + ggplot2::scale_y_continuous(
+      labels = function(x) {
+        is_int <- abs(x - round(x)) <= tol
+        out <- rep("", length(x))
+        out[is_int] <- formatC(round(x[is_int], 0), format = "f", digits = 0)
+        out
+      }
+    )
+  }
+
+  Plot_Outcome <- .maybe_clean_y_labels(Plot_Outcome)
+
+
   if (is_called_by_regional_plot) { # need separate defaults here due to scaling
 
     y_mult <- c(0.03, 0.05)  # c(lower, upper)
@@ -2031,6 +2105,59 @@ Single_Plot<- function(Data = NULL,
     Plot_Outcome <- Plot_Outcome + ggplot2::labs(title = NULL)
 
   }
+
+  # --- Make ONLY the main SNP cloud outlined (black border), keep its colours ---
+  .make_main_cloud_outlined <- function(p, stroke = 2.8) {
+
+    b <- ggplot2::ggplot_build(p)
+
+    # pick the layer that draws the most points (the "massive set")
+    n_by_layer <- vapply(b$data, nrow, integer(1))
+    i_main <- which.max(n_by_layer)
+
+    lyr <- p$layers[[i_main]]
+
+    # Only proceed if it's actually a point layer
+    if (!inherits(lyr$geom, "GeomPoint")) return(p)
+
+    # If that main layer is already a special shape (diamond/ring), don't touch it
+    shp <- lyr$aes_params$shape %||% lyr$aes_params$pch
+    if (!is.null(shp) && shp %in% c(18, 21, 22, 23, 24, 25)) return(p)
+
+    # Figure out what colour mapping expression the plot uses (layer or global)
+    col_expr <- NULL
+    if (!is.null(lyr$mapping$colour)) col_expr <- lyr$mapping$colour
+    if (is.null(col_expr) && !is.null(lyr$mapping$color)) col_expr <- lyr$mapping$color
+    if (is.null(col_expr) && !is.null(p$mapping$colour)) col_expr <- p$mapping$colour
+    if (is.null(col_expr) && !is.null(p$mapping$color))  col_expr <- p$mapping$color
+
+    # Move mapped colour -> fill (or set fill from global mapping)
+    if (!is.null(col_expr)) {
+      lyr$mapping$fill   <- col_expr
+      lyr$mapping$colour <- NULL
+      lyr$mapping$color  <- NULL
+    } else {
+      # fallback: if your plot data has colour_group, use it
+      lyr$mapping$fill <- ggplot2::aes(fill = .data$colour_group)
+    }
+
+    # Force outlined circle for ONLY the main cloud
+    lyr$aes_params$shape  <- 21
+    lyr$aes_params$colour <- "black"   # outline
+    lyr$aes_params$stroke <- stroke    # thickness
+
+    p$layers[[i_main]] <- lyr
+
+    # fill values are literal colours (e.g., "blue", "turquoise", "#RRGGBB")
+    p <- p + ggplot2::scale_fill_identity()
+
+    p
+  }
+
+  `%||%` <- function(a, b) if (!is.null(a)) a else b
+
+  #Plot_Outcome <- .make_main_cloud_outlined(Plot_Outcome, stroke = 3.2)
+
 
   message("Plot Complete")
 
@@ -2284,6 +2411,8 @@ Single_Plot<- function(Data = NULL,
           # Data = "Intelligence_Sum_Stats" - use the string without adding extra quotes to final plot title
 
           name <- expr
+
+          if (grepl("[/\\\\]", name)) name <- basename(name)  # keep only after last / or \
 
         } else {
 

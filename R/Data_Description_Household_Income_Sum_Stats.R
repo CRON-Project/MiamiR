@@ -22,6 +22,6 @@
 #' @name Household_Income_Sum_Stats
 #' @usage data(Household_Income_Sum_Stats)
 #' @format A data frame with 100,000 rows (randomly selected) and 8 variables from: https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST009001-GCST010000/GCST009523/
-
+"Household_Income_Sum_Stats"
 
 

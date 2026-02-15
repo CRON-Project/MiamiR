@@ -9,19 +9,19 @@ Segregate_HLA_Plot(
   Verbose = FALSE,
   Title = NULL,
   Title_On = TRUE,
-  Title_Size = 28,
+  Title_Size = 20,
   X_Axis_Title = "HLA Genes",
   Y_Axis_Title = "-log₁₀(P)",
-  X_Axis_Title_Size = 26,
-  Y_Axis_Title_Size = 26,
-  X_Axis_Title_Vjust = -3,
+  X_Axis_Title_Size = 20,
+  Y_Axis_Title_Size = 20,
+  X_Axis_Title_Vjust = -6,
   Y_Axis_Title_Vjust = 6,
   X_Axis_Text_Vjust = -0.2,
   Y_Axis_Text_Vjust = 0.2,
-  X_Axis_Text_Size = 20,
-  Y_Axis_Text_Size = 20,
+  X_Axis_Text_Size = 15,
+  Y_Axis_Text_Size = 15,
   Label_Index = TRUE,
-  Label_Size = 3,
+  Label_Size = 4,
   Label_Height = 2,
   Segment_Width = 0.18,
   Segment_Thickness = 0.9,
@@ -41,17 +41,17 @@ Segregate_HLA_Plot(
 
 \item{Title_On}{Toggle on/off whether Title (either manually or automatically determined) displays on final plot; defaults to TRUE}
 
-\item{Title_Size}{Size of title; defaults to 28}
+\item{Title_Size}{Size of title; defaults to 20}
 
 \item{X_Axis_Title}{Manually specify X axis title; defaults to "HLA Genes"}
 
 \item{Y_Axis_Title}{Manually specify Y axis title; defaults to "-log\u2081\u2080(P)" - shows as "-log₁₀(P)"}
 
-\item{X_Axis_Title_Size}{Size of X axis title; defaults to 26}
+\item{X_Axis_Title_Size}{Size of X axis title; defaults to 20}
 
-\item{Y_Axis_Title_Size}{Size of Y axis title; defaults to 26}
+\item{Y_Axis_Title_Size}{Size of Y axis title; defaults to 20}
 
-\item{X_Axis_Title_Vjust}{Number of units of blank space between X_Axis_Title element area and above axis; defaults to -3}
+\item{X_Axis_Title_Vjust}{Number of units of blank space between X_Axis_Title element area and above axis; defaults to -6}
 
 \item{Y_Axis_Title_Vjust}{Number of units of blank space between Y_Axis_Title element area and adjacent axis; defaults to 6}
 
@@ -59,13 +59,13 @@ Segregate_HLA_Plot(
 
 \item{Y_Axis_Text_Vjust}{Number of units of blank space between Y_Axis_Text element area and adjacent axis; defaults to 0.2}
 
-\item{X_Axis_Text_Size}{Size of X axis text; defaults to 20}
+\item{X_Axis_Text_Size}{Size of X axis text; defaults to 15}
 
-\item{Y_Axis_Text_Size}{Size of Y axis text; defaults to 20}
+\item{Y_Axis_Text_Size}{Size of Y axis text; defaults to 15}
 
 \item{Label_Index}{Annotate the index SNPs with ID provided; defaults to TRUE}
 
-\item{Label_Size}{Size of index labels if Label_Index is TRUE; defaults to 3}
+\item{Label_Size}{Size of index labels if Label_Index is TRUE; defaults to 4}
 
 \item{Label_Height}{Spacing between the point and the label position; defaults to 2}
 

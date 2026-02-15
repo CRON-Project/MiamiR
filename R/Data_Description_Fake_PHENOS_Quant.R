@@ -17,4 +17,4 @@
 #' @name Fake_PHENOS_Quant
 #' @usage data(Fake_PHENOS_Quant)
 #' @format A data frame with 5,000 rows and 3 variables (simulated)
-
+"Fake_PHENOS_Quant"

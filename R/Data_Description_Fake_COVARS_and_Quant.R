@@ -23,3 +23,4 @@
 #' @name Fake_COVARS_and_Quant
 #' @usage data(Fake_COVARS_and_Quant)
 #' @format A data frame with 5,000 rows and 9 variables (simulated)
+"Fake_COVARS_and_Quant"

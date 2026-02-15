@@ -53,7 +53,7 @@ Single_Plot(..., session = NULL)
 
 \item{Label_Size}{Size of index labels if Label_Index is TRUE; defaults to 5 but is automatically scaled in inherited functions}
 
-\item{Label_Angle}{Angle of index labels if Label_Index is TRUE; defaults to 15 (degrees)}
+\item{Label_Angle}{Angle of index labels if Label_Index is TRUE; defaults to 45 (degrees)}
 
 \item{Label_Colour}{Colour of index labels if Label_Index is TRUE; defaults to "black"}
 

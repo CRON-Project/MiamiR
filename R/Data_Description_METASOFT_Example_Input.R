@@ -18,4 +18,4 @@
 #' @name METASOFT_Example_Input
 #' @usage data(METASOFT_Example_Input)
 #' @format A data frame with 100,000 rows (randomly selected) and 5 variables
-#'
+"METASOFT_Example_Input"

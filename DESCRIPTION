@@ -8,13 +8,13 @@ Description: The MiamiR package currently enables flexible and complex Manhattan
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports: 
     biomaRt,
     dplyr,
     ggh4x,
     ggmanh,
-    ggplot2,
+    ggplot2 (== 3.5.2),
     ggtext,
     grid,
     magrittr,
@@ -35,15 +35,13 @@ Imports:
     png,
     ragg,
     rlang,
-    vroom
+    vroom,
+    data.table
 biocViews: Visualization, Software
 Depends: 
     R (>= 3.5)
 LazyData: true
 LazyDataCompression: xz
-Suggests: 
-    knitr,
-    rmarkdown
 VignetteBuilder: knitr
 SystemRequirements: Rscript
 Scripts: MiamiR_Forest_Plot = inst/bin/MiamiR_Forest_Plot

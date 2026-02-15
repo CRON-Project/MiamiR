@@ -625,6 +625,8 @@
 
   }
 
+  # Need as unique scaling after Single_Plot(), although it also specifies
+
   if (is.null(final_top_args$Chromosome_Label_Drops)){
 
     message("Remembering default chromosome label drops")
@@ -641,7 +643,7 @@
 
       message("X Present")
 
-      final_top_args$Chromosome_Label_Drops <- c(21,22)
+      final_top_args$Chromosome_Label_Drops <-c(21, 22, "Y", "M")
 
     }
 

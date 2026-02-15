@@ -1,4 +1,75 @@
 
+
+  # Installer? for METSOFT
+
+  # Official Distribution
+
+  METASOFT_ZIP_URL <- "https://hanlab-snu.github.io/METASOFT/meta/repository/2.0.1/Metasoft.zip"
+
+  install_metasoft_simple <- function() {
+
+    # Where METASOFT will live (persistent, user-writable)
+
+    dest_dir <- file.path(tools::R_user_dir("MiamiR", "data"), "java")
+    dir.create(dest_dir, recursive = TRUE, showWarnings = FALSE)
+    final_jar <- file.path(dest_dir, "Metasoft.jar")
+
+    # Ask user (or overwrite if already exists)
+
+    if (file.exists(final_jar)) {
+
+      ans <- readline(paste0("METASOFT already exists at: ", final_jar, "\n", "Overwrite? [y/N] "))
+
+      if (!tolower(substr(ans, 1, 1)) %in% "y") {
+
+        assign("METASOFT_jar_location", final_jar, envir = .GlobalEnv)
+
+        message("Using existing jar: ", final_jar)
+
+        return(invisible(final_jar))
+
+      }
+
+    } else {
+
+      ans <- readline("Install METASOFT now? [y/N] ")
+
+      if (!tolower(substr(ans, 1, 1)) %in% "y") return(invisible(NA_character_))
+
+    }
+
+    # Download + unzip
+
+    tf <- tempfile(fileext = ".zip")
+    utils::download.file(METASOFT_ZIP_URL, tf, mode = "wb", quiet = FALSE)
+    utils::unzip(tf, exdir = dest_dir)
+
+    # Locate jar (could be inside a subfolder)
+
+    jar <- list.files(dest_dir, pattern = "Metasoft\\.jar$", recursive = TRUE, full.names = TRUE)
+
+    if (!length(jar)) stop("Metasoft.jar not found after unzip.")
+
+    # Ensure jar is at the fixed path
+
+    if (normalizePath(jar[1], winslash = "/", mustWork = FALSE) !=
+
+        normalizePath(final_jar, winslash = "/", mustWork = FALSE)) {
+
+      file.copy(jar[1], final_jar, overwrite = TRUE)
+
+    }
+
+    # Store path in a global variable for immediate use
+
+    assign("METASOFT_jar_location", final_jar, envir = .GlobalEnv)
+
+    message("Installed. \nMETASOFT_jar_location = ", final_jar)
+
+    invisible(final_jar)
+
+  }
+
   # General helpers for detecting column types by common name
 
   # Don't need R documentation (Rd) for these helpers
@@ -63,7 +134,7 @@
   #' @noRd
   detect_upper_ci_column <- function(Data, Upper_CI_Column = NULL) {
 
-    allowed <- c("UL", "Upper_CI", "CIU", "CI_Upper")
+    allowed <- c("UL", "Upper_CI", "CIU", "CI_Upper", "ci_upper")
 
     detect_column(Data, Upper_CI_Column, allowed, column_type = "upper CI")
 
@@ -72,7 +143,7 @@
   #' @noRd
   detect_lower_ci_column <- function(Data, Lower_CI_Column = NULL) {
 
-    allowed <- c("LL", "Lower_CI", "CIL", "CI_Lower")
+    allowed <- c("LL", "Lower_CI", "CIL", "CI_Lower",  "ci_lower")
 
     detect_column(Data, Lower_CI_Column, allowed, column_type = "lower CI")
 

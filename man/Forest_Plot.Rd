@@ -33,7 +33,7 @@ Forest_Plot(Data, ..., session = NULL)
 
 \item{Strips}{Display strips highlighting groups of interest; defaults to TRUE}
 
-\item{Pre_Calculated_CIs}{Indicate that custom CIs are pre-calculated and available in datasets; defaults to FALSE}
+\item{Pre_Calculated_CIs}{Indicate that custom CIs are pre-calculated and available in datasets; defaults to NULL, leading to determination automatically}
 
 \item{Legend_Title_Size}{Legend title size; defaults to 13}
 
